@@ -344,8 +344,9 @@
     <!-- MODAL CATEGORIE -->
     <div id="categoryModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800 text-sm">🏷️ Ajouter une Catégorie</h3><button onclick="closeCategoryModal()" class="text-xl font-bold">&times;</button></div>
+            <div class="flex items-center justify-between border-b pb-3"><h3 id="categoryModalTitle" class="font-bold text-slate-800 text-sm">🏷️ Ajouter une Catégorie</h3><button onclick="closeCategoryModal()" class="text-xl font-bold">&times;</button></div>
             <form onsubmit="handleAddCategory(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="catIdInput" value="">
                 <div><label class="font-semibold block mb-1">Nom de la catégorie</label><input type="text" id="catNameInput" required placeholder="ex: Voirie / Espaces Verts" class="w-full border rounded p-2"></div>
                 <div><label class="font-semibold block mb-1">Émoji / Icône</label><input type="text" id="catEmojiInput" required placeholder="ex: 🛣️" value="📌" class="w-full border rounded p-2"></div>
                 <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeCategoryModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
@@ -356,8 +357,9 @@
     <!-- MODAL LIEU -->
     <div id="locationModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800 text-sm">📍 Ajouter un Lieu Récurrent</h3><button onclick="closeLocationModal()" class="text-xl font-bold">&times;</button></div>
+            <div class="flex items-center justify-between border-b pb-3"><h3 id="locationModalTitle" class="font-bold text-slate-800 text-sm">📍 Ajouter un Lieu Récurrent</h3><button onclick="closeLocationModal()" class="text-xl font-bold">&times;</button></div>
             <form onsubmit="handleAddLocation(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="locIdInput" value="">
                 <div><label class="font-semibold block mb-1">Commune</label><select id="locCommuneSelect" class="w-full border rounded p-2"></select></div>
                 <div><label class="font-semibold block mb-1">Nom du lieu / Bâtiment</label><input type="text" id="locNameInput" required placeholder="ex: Gymnase Municipal" class="w-full border rounded p-2"></div>
                 <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeLocationModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
@@ -368,13 +370,14 @@
     <!-- MODAL UTILISATEUR -->
     <div id="userModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800 text-sm">👤 Ajouter un Utilisateur</h3><button onclick="closeUserModal()" class="text-xl font-bold">&times;</button></div>
+            <div class="flex items-center justify-between border-b pb-3"><h3 id="userModalTitle" class="font-bold text-slate-800 text-sm">👤 Ajouter un Utilisateur</h3><button onclick="closeUserModal()" class="text-xl font-bold">&times;</button></div>
             <form onsubmit="handleAddUser(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="userIdInput" value="">
                 <div><label class="font-semibold block mb-1">Nom complet</label><input type="text" id="userNameInput" required placeholder="Jean Dupont" class="w-full border rounded p-2"></div>
                 <div><label class="font-semibold block mb-1">Email / Identifiant</label><input type="email" id="userEmailInput" required placeholder="jean.dupont@commune.fr" class="w-full border rounded p-2"></div>
                 <div><label class="font-semibold block mb-1">Rôle</label><select id="userRoleSelect" class="w-full border rounded p-2"><option value="demandeur">Demandeur</option><option value="agent">Agent ST</option><option value="responsable" selected>Responsable ST</option><option value="direction">Maire / DGS</option><option value="admin">Admin</option></select></div>
                 <div><label class="font-semibold block mb-1">Commune rattachée</label><select id="userCommuneSelect" class="w-full border rounded p-2"></select></div>
-                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeUserModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Créer le compte</button></div>
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeUserModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
             </form>
         </div>
     </div>
@@ -382,14 +385,15 @@
     <!-- MODAL AGENT -->
     <div id="agentModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800 text-sm">👨‍🔧 Ajouter un Agent Technique</h3><button onclick="closeAgentModal()" class="text-xl font-bold">&times;</button></div>
+            <div class="flex items-center justify-between border-b pb-3"><h3 id="agentModalTitle" class="font-bold text-slate-800 text-sm">👨‍🔧 Ajouter un Agent Technique</h3><button onclick="closeAgentModal()" class="text-xl font-bold">&times;</button></div>
             <form onsubmit="handleAddAgent(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="agentIdInput" value="">
                 <div><label class="font-semibold block mb-1">Nom & Prénom</label><input type="text" id="agentNameInput" required placeholder="Paul Martin" class="w-full border rounded p-2"></div>
                 <div><label class="font-semibold block mb-1">Rôle / Spécialité</label><input type="text" id="agentRoleInput" required placeholder="ex: Électricien / Voirie" class="w-full border rounded p-2"></div>
                 <div><label class="font-semibold block mb-1">Habilitations / Permis</label><input type="text" id="agentSkillInput" placeholder="ex: CACES / Habilitation BR" class="w-full border rounded p-2"></div>
                 <div><label class="font-semibold block mb-1">Commune</label><select id="agentCommuneSelect" class="w-full border rounded p-2"></select></div>
                 <div><label class="font-semibold block mb-1">Statut</label><select id="agentStatusSelect" class="w-full border rounded p-2"><option value="Disponible">Disponible</option><option value="En mission">En mission</option><option value="Congés">Congés / Absent</option></select></div>
-                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeAgentModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Ajouter l'agent</button></div>
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeAgentModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
             </form>
         </div>
     </div>
@@ -397,13 +401,14 @@
     <!-- MODAL EQUIPEMENT -->
     <div id="equipmentModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800 text-sm">🚜 Ajouter un Équipement / Engin</h3><button onclick="closeEquipmentModal()" class="text-xl font-bold">&times;</button></div>
+            <div class="flex items-center justify-between border-b pb-3"><h3 id="equipmentModalTitle" class="font-bold text-slate-800 text-sm">🚜 Ajouter un Équipement / Engin</h3><button onclick="closeEquipmentModal()" class="text-xl font-bold">&times;</button></div>
             <form onsubmit="handleAddEquipment(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="eqIdInput" value="">
                 <div><label class="font-semibold block mb-1">Intitulé du matériel</label><input type="text" id="eqNameInput" required placeholder="ex: Camion Benne 3.5T" class="w-full border rounded p-2"></div>
                 <div><label class="font-semibold block mb-1">Commune propriétaire</label><select id="eqOwnerSelect" class="w-full border rounded p-2"></select></div>
                 <div><label class="font-semibold block mb-1">Description / Usage</label><textarea id="eqDescInput" rows="2" placeholder="Domaine d'utilisation..." class="w-full border rounded p-2"></textarea></div>
                 <div><label class="font-semibold block mb-1">Icône</label><input type="text" id="eqIconInput" value="🚜" class="w-full border rounded p-2"></div>
-                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeEquipmentModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Ajouter</button></div>
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeEquipmentModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
             </form>
         </div>
     </div>
@@ -411,10 +416,12 @@
     <!-- MODAL COMMUNE -->
     <div id="communeModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800 text-sm">🏛️ Ajouter une Commune Membre</h3><button onclick="closeCommuneModal()" class="text-xl font-bold">&times;</button></div>
+            <div class="flex items-center justify-between border-b pb-3"><h3 id="communeModalTitle" class="font-bold text-slate-800 text-sm">🏛️ Ajouter une Commune Membre</h3><button onclick="closeCommuneModal()" class="text-xl font-bold">&times;</button></div>
             <form onsubmit="handleAddCommune(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="comIdInput" value="">
                 <div><label class="font-semibold block mb-1">Nom de la commune</label><input type="text" id="comNameInput" required placeholder="ex: Saint-Aurin" class="w-full border rounded p-2"></div>
-                <div><label class="font-semibold block mb-1">Nombre d'habitants</label><input type="number" id="comPopInput" required placeholder="3120" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Responsable technique</label><input type="text" id="comRespInput" required placeholder="ex: Marc Bernard" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Téléphone</label><input type="tel" id="comPhoneInput" required placeholder="ex: 05 62 00 11 22" class="w-full border rounded p-2"></div>
                 <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeCommuneModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
             </form>
         </div>
@@ -463,9 +470,9 @@
         ];
 
         let communesList = [
-            { id: 1, name: "Saint-Aurin", population: 3120 },
-            { id: 2, name: "Val-de-Marse", population: 1850 },
-            { id: 3, name: "Beaulieu-les-Pins", population: 2410 }
+            { id: 1, name: "Saint-Aurin", respTech: "Jean Dupont", phone: "05 62 00 11 22" },
+            { id: 2, name: "Val-de-Marse", respTech: "Marc Bernard", phone: "05 62 11 22 33" },
+            { id: 3, name: "Beaulieu-les-Pins", respTech: "Alain Mercier", phone: "05 62 22 33 44" }
         ];
 
         let usersList = [
@@ -791,7 +798,10 @@
                 <tr>
                     <td class="p-2">${c.emoji}</td>
                     <td class="p-2 font-semibold">${c.name}</td>
-                    <td class="p-2 text-right"><button onclick="deleteCategory(${c.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button></td>
+                    <td class="p-2 text-right space-x-1">
+                        <button onclick="editCategory(${c.id})" class="text-brand-600 hover:text-brand-800 font-bold px-2 py-1 bg-brand-50 rounded">✏️ Modifier</button>
+                        <button onclick="deleteCategory(${c.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button>
+                    </td>
                 </tr>
             `).join('');
 
@@ -800,7 +810,10 @@
                 <tr>
                     <td class="p-2 font-semibold">${l.name}</td>
                     <td class="p-2">${l.commune}</td>
-                    <td class="p-2 text-right"><button onclick="deleteLocation(${l.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button></td>
+                    <td class="p-2 text-right space-x-1">
+                        <button onclick="editLocation(${l.id})" class="text-brand-600 hover:text-brand-800 font-bold px-2 py-1 bg-brand-50 rounded">✏️ Modifier</button>
+                        <button onclick="deleteLocation(${l.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button>
+                    </td>
                 </tr>
             `).join('');
 
@@ -811,7 +824,10 @@
                     <td class="p-2 text-slate-500">${u.email}</td>
                     <td class="p-2"><span class="bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded text-[10px]">${u.role}</span></td>
                     <td class="p-2 text-slate-500">${u.commune}</td>
-                    <td class="p-2 text-right"><button onclick="deleteUser(${u.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button></td>
+                    <td class="p-2 text-right space-x-1">
+                        <button onclick="editUser(${u.id})" class="text-brand-600 hover:text-brand-800 font-bold px-2 py-1 bg-brand-50 rounded">✏️ Modifier</button>
+                        <button onclick="deleteUser(${u.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button>
+                    </td>
                 </tr>
             `).join('');
 
@@ -822,7 +838,10 @@
                     <td class="p-2">${a.role}</td>
                     <td class="p-2 text-slate-500">${a.commune}</td>
                     <td class="p-2"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold">${a.status}</span></td>
-                    <td class="p-2 text-right"><button onclick="deleteAgent(${a.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button></td>
+                    <td class="p-2 text-right space-x-1">
+                        <button onclick="editAgent(${a.id})" class="text-brand-600 hover:text-brand-800 font-bold px-2 py-1 bg-brand-50 rounded">✏️ Modifier</button>
+                        <button onclick="deleteAgent(${a.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button>
+                    </td>
                 </tr>
             `).join('');
 
@@ -832,7 +851,10 @@
                     <td class="p-2 font-semibold">${e.icon} ${e.name}</td>
                     <td class="p-2">${e.owner}</td>
                     <td class="p-2 text-slate-500">${e.status}</td>
-                    <td class="p-2 text-right"><button onclick="deleteEquipment('${e.id}')" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button></td>
+                    <td class="p-2 text-right space-x-1">
+                        <button onclick="editEquipment('${e.id}')" class="text-brand-600 hover:text-brand-800 font-bold px-2 py-1 bg-brand-50 rounded">✏️ Modifier</button>
+                        <button onclick="deleteEquipment('${e.id}')" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button>
+                    </td>
                 </tr>
             `).join('');
 
@@ -840,8 +862,12 @@
             document.getElementById('tableCommunesBody').innerHTML = communesList.map(c => `
                 <tr>
                     <td class="p-2 font-semibold">${c.name}</td>
-                    <td class="p-2">${c.population} hab.</td>
-                    <td class="p-2 text-right"><button onclick="deleteCommune(${c.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button></td>
+                    <td class="p-2 font-medium text-slate-700">👤 ${c.respTech || 'N/A'}</td>
+                    <td class="p-2 text-slate-500">📞 ${c.phone || 'N/A'}</td>
+                    <td class="p-2 text-right space-x-1">
+                        <button onclick="editCommune(${c.id})" class="text-brand-600 hover:text-brand-800 font-bold px-2 py-1 bg-brand-50 rounded">✏️ Modifier</button>
+                        <button onclick="deleteCommune(${c.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button>
+                    </td>
                 </tr>
             `).join('');
             
@@ -866,17 +892,38 @@
         }
 
         /* ACTIONS MODALES & CRUD PARAMETRES */
-        function openCategoryModal() { document.getElementById('categoryModal').classList.remove('hidden'); }
+        function openCategoryModal() {
+            document.getElementById('catIdInput').value = '';
+            document.getElementById('catNameInput').value = '';
+            document.getElementById('catEmojiInput').value = '📌';
+            document.getElementById('categoryModalTitle').innerText = '🏷️ Ajouter une Catégorie';
+            document.getElementById('categoryModal').classList.remove('hidden');
+        }
         function closeCategoryModal() { document.getElementById('categoryModal').classList.add('hidden'); }
+        function editCategory(id) {
+            const cat = categoriesList.find(c => c.id === id);
+            if (!cat) return;
+            document.getElementById('catIdInput').value = cat.id;
+            document.getElementById('catNameInput').value = cat.name;
+            document.getElementById('catEmojiInput').value = cat.emoji;
+            document.getElementById('categoryModalTitle').innerText = '🏷️ Modifier la Catégorie';
+            document.getElementById('categoryModal').classList.remove('hidden');
+        }
         function handleAddCategory(e) {
             e.preventDefault();
+            const id = document.getElementById('catIdInput').value;
             const name = document.getElementById('catNameInput').value;
             const emoji = document.getElementById('catEmojiInput').value;
-            categoriesList.push({ id: Date.now(), name, emoji });
+            if (id) {
+                const item = categoriesList.find(c => c.id == id);
+                if (item) { item.name = name; item.emoji = emoji; }
+            } else {
+                categoriesList.push({ id: Date.now(), name, emoji });
+            }
             updateCategoryDropdowns();
             renderParamTables();
             closeCategoryModal();
-            showToast("Catégorie ajoutée avec succès", "success");
+            showToast("Catégorie enregistrée avec succès", "success");
         }
         function deleteCategory(id) {
             categoriesList = categoriesList.filter(c => c.id !== id);
@@ -885,17 +932,39 @@
             showToast("Catégorie supprimée", "info");
         }
 
-        function openLocationModal() { updateCommuneDropdowns(); document.getElementById('locationModal').classList.remove('hidden'); }
+        function openLocationModal() {
+            updateCommuneDropdowns();
+            document.getElementById('locIdInput').value = '';
+            document.getElementById('locNameInput').value = '';
+            document.getElementById('locationModalTitle').innerText = '📍 Ajouter un Lieu Récurrent';
+            document.getElementById('locationModal').classList.remove('hidden');
+        }
         function closeLocationModal() { document.getElementById('locationModal').classList.add('hidden'); }
+        function editLocation(id) {
+            updateCommuneDropdowns();
+            const loc = locationsList.find(l => l.id === id);
+            if (!loc) return;
+            document.getElementById('locIdInput').value = loc.id;
+            document.getElementById('locCommuneSelect').value = loc.commune;
+            document.getElementById('locNameInput').value = loc.name;
+            document.getElementById('locationModalTitle').innerText = '📍 Modifier le Lieu';
+            document.getElementById('locationModal').classList.remove('hidden');
+        }
         function handleAddLocation(e) {
             e.preventDefault();
+            const id = document.getElementById('locIdInput').value;
             const commune = document.getElementById('locCommuneSelect').value;
             const name = document.getElementById('locNameInput').value;
-            locationsList.push({ id: Date.now(), commune, name });
+            if (id) {
+                const item = locationsList.find(l => l.id == id);
+                if (item) { item.commune = commune; item.name = name; }
+            } else {
+                locationsList.push({ id: Date.now(), commune, name });
+            }
             updateModalLocationDropdown();
             renderParamTables();
             closeLocationModal();
-            showToast("Lieu récurrent ajouté", "success");
+            showToast("Lieu enregistré", "success");
         }
         function deleteLocation(id) {
             locationsList = locationsList.filter(l => l.id !== id);
@@ -904,18 +973,43 @@
             showToast("Lieu supprimé", "info");
         }
 
-        function openUserModal() { updateCommuneDropdowns(); document.getElementById('userModal').classList.remove('hidden'); }
+        function openUserModal() {
+            updateCommuneDropdowns();
+            document.getElementById('userIdInput').value = '';
+            document.getElementById('userNameInput').value = '';
+            document.getElementById('userEmailInput').value = '';
+            document.getElementById('userModalTitle').innerText = '👤 Ajouter un Utilisateur';
+            document.getElementById('userModal').classList.remove('hidden');
+        }
         function closeUserModal() { document.getElementById('userModal').classList.add('hidden'); }
+        function editUser(id) {
+            updateCommuneDropdowns();
+            const usr = usersList.find(u => u.id === id);
+            if (!usr) return;
+            document.getElementById('userIdInput').value = usr.id;
+            document.getElementById('userNameInput').value = usr.name;
+            document.getElementById('userEmailInput').value = usr.email;
+            document.getElementById('userRoleSelect').value = usr.role;
+            document.getElementById('userCommuneSelect').value = usr.commune;
+            document.getElementById('userModalTitle').innerText = '👤 Modifier l\'Utilisateur';
+            document.getElementById('userModal').classList.remove('hidden');
+        }
         function handleAddUser(e) {
             e.preventDefault();
+            const id = document.getElementById('userIdInput').value;
             const name = document.getElementById('userNameInput').value;
             const email = document.getElementById('userEmailInput').value;
             const role = document.getElementById('userRoleSelect').value;
             const commune = document.getElementById('userCommuneSelect').value;
-            usersList.push({ id: Date.now(), name, email, role, commune });
+            if (id) {
+                const item = usersList.find(u => u.id == id);
+                if (item) { item.name = name; item.email = email; item.role = role; item.commune = commune; }
+            } else {
+                usersList.push({ id: Date.now(), name, email, role, commune });
+            }
             renderParamTables();
             closeUserModal();
-            showToast("Utilisateur créé avec succès", "success");
+            showToast("Utilisateur enregistré", "success");
         }
         function deleteUser(id) {
             usersList = usersList.filter(u => u.id !== id);
@@ -923,20 +1017,47 @@
             showToast("Utilisateur supprimé", "info");
         }
 
-        function openAgentModal() { updateCommuneDropdowns(); document.getElementById('agentModal').classList.remove('hidden'); }
+        function openAgentModal() {
+            updateCommuneDropdowns();
+            document.getElementById('agentIdInput').value = '';
+            document.getElementById('agentNameInput').value = '';
+            document.getElementById('agentRoleInput').value = '';
+            document.getElementById('agentSkillInput').value = '';
+            document.getElementById('agentModalTitle').innerText = '👨‍🔧 Ajouter un Agent Technique';
+            document.getElementById('agentModal').classList.remove('hidden');
+        }
         function closeAgentModal() { document.getElementById('agentModal').classList.add('hidden'); }
+        function editAgent(id) {
+            updateCommuneDropdowns();
+            const ag = agentsList.find(a => a.id === id);
+            if (!ag) return;
+            document.getElementById('agentIdInput').value = ag.id;
+            document.getElementById('agentNameInput').value = ag.name;
+            document.getElementById('agentRoleInput').value = ag.role;
+            document.getElementById('agentSkillInput').value = ag.skill;
+            document.getElementById('agentCommuneSelect').value = ag.commune;
+            document.getElementById('agentStatusSelect').value = ag.status;
+            document.getElementById('agentModalTitle').innerText = '👨‍🔧 Modifier l\'Agent';
+            document.getElementById('agentModal').classList.remove('hidden');
+        }
         function handleAddAgent(e) {
             e.preventDefault();
+            const id = document.getElementById('agentIdInput').value;
             const name = document.getElementById('agentNameInput').value;
             const role = document.getElementById('agentRoleInput').value;
             const skill = document.getElementById('agentSkillInput').value || 'Technicien';
             const commune = document.getElementById('agentCommuneSelect').value;
             const status = document.getElementById('agentStatusSelect').value;
-            agentsList.push({ id: Date.now(), name, role, skill, commune, status, avatar: "👨‍🔧" });
+            if (id) {
+                const item = agentsList.find(a => a.id == id);
+                if (item) { item.name = name; item.role = role; item.skill = skill; item.commune = commune; item.status = status; }
+            } else {
+                agentsList.push({ id: Date.now(), name, role, skill, commune, status, avatar: "👨‍🔧" });
+            }
             renderAgents();
             renderParamTables();
             closeAgentModal();
-            showToast("Agent technique ajouté", "success");
+            showToast("Agent technique enregistré", "success");
         }
         function deleteAgent(id) {
             agentsList = agentsList.filter(a => a.id !== id);
@@ -945,19 +1066,45 @@
             showToast("Agent supprimé", "info");
         }
 
-        function openEquipmentModal() { updateCommuneDropdowns(); document.getElementById('equipmentModal').classList.remove('hidden'); }
+        function openEquipmentModal() {
+            updateCommuneDropdowns();
+            document.getElementById('eqIdInput').value = '';
+            document.getElementById('eqNameInput').value = '';
+            document.getElementById('eqDescInput').value = '';
+            document.getElementById('eqIconInput').value = '🚜';
+            document.getElementById('equipmentModalTitle').innerText = '🚜 Ajouter un Équipement / Engin';
+            document.getElementById('equipmentModal').classList.remove('hidden');
+        }
         function closeEquipmentModal() { document.getElementById('equipmentModal').classList.add('hidden'); }
+        function editEquipment(id) {
+            updateCommuneDropdowns();
+            const eq = equipmentList.find(e => e.id === id);
+            if (!eq) return;
+            document.getElementById('eqIdInput').value = eq.id;
+            document.getElementById('eqNameInput').value = eq.name;
+            document.getElementById('eqOwnerSelect').value = eq.owner;
+            document.getElementById('eqDescInput').value = eq.desc;
+            document.getElementById('eqIconInput').value = eq.icon;
+            document.getElementById('equipmentModalTitle').innerText = '🚜 Modifier l\'Équipement';
+            document.getElementById('equipmentModal').classList.remove('hidden');
+        }
         function handleAddEquipment(e) {
             e.preventDefault();
+            const id = document.getElementById('eqIdInput').value;
             const name = document.getElementById('eqNameInput').value;
             const owner = document.getElementById('eqOwnerSelect').value;
             const desc = document.getElementById('eqDescInput').value || 'Matériel communal';
             const icon = document.getElementById('eqIconInput').value || '🚜';
-            equipmentList.push({ id: `EQ-${Date.now().toString().slice(-3)}`, name, owner, status: 'Libre', desc, icon });
+            if (id) {
+                const item = equipmentList.find(e => e.id === id);
+                if (item) { item.name = name; item.owner = owner; item.desc = desc; item.icon = icon; }
+            } else {
+                equipmentList.push({ id: `EQ-${Date.now().toString().slice(-3)}`, name, owner, status: 'Libre', desc, icon });
+            }
             renderEquipment();
             renderParamTables();
             closeEquipmentModal();
-            showToast("Équipement ajouté", "success");
+            showToast("Équipement enregistré", "success");
         }
         function deleteEquipment(id) {
             equipmentList = equipmentList.filter(e => e.id !== id);
@@ -966,17 +1113,41 @@
             showToast("Équipement supprimé", "info");
         }
 
-        function openCommuneModal() { document.getElementById('communeModal').classList.remove('hidden'); }
+        function openCommuneModal() {
+            document.getElementById('comIdInput').value = '';
+            document.getElementById('comNameInput').value = '';
+            document.getElementById('comRespInput').value = '';
+            document.getElementById('comPhoneInput').value = '';
+            document.getElementById('communeModalTitle').innerText = '🏛️ Ajouter une Commune Membre';
+            document.getElementById('communeModal').classList.remove('hidden');
+        }
         function closeCommuneModal() { document.getElementById('communeModal').classList.add('hidden'); }
+        function editCommune(id) {
+            const com = communesList.find(c => c.id === id);
+            if (!com) return;
+            document.getElementById('comIdInput').value = com.id;
+            document.getElementById('comNameInput').value = com.name;
+            document.getElementById('comRespInput').value = com.respTech || '';
+            document.getElementById('comPhoneInput').value = com.phone || '';
+            document.getElementById('communeModalTitle').innerText = '🏛️ Modifier la Commune';
+            document.getElementById('communeModal').classList.remove('hidden');
+        }
         function handleAddCommune(e) {
             e.preventDefault();
-            const name = document.value = document.getElementById('comNameInput').value;
-            const population = parseInt(document.getElementById('comPopInput').value) || 0;
-            communesList.push({ id: Date.now(), name, population });
+            const id = document.getElementById('comIdInput').value;
+            const name = document.getElementById('comNameInput').value;
+            const respTech = document.getElementById('comRespInput').value;
+            const phone = document.getElementById('comPhoneInput').value;
+            if (id) {
+                const item = communesList.find(c => c.id == id);
+                if (item) { item.name = name; item.respTech = respTech; item.phone = phone; }
+            } else {
+                communesList.push({ id: Date.now(), name, respTech, phone });
+            }
             updateCommuneDropdowns();
             renderParamTables();
             closeCommuneModal();
-            showToast("Commune ajoutée", "success");
+            showToast("Commune enregistrée", "success");
         }
         function deleteCommune(id) {
             communesList = communesList.filter(c => c.id !== id);

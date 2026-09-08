@@ -96,7 +96,8 @@ function initDatabase($pdo) {
     $pdo->exec("CREATE TABLE IF NOT EXISTS communes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT UNIQUE,
-        population INTEGER
+        respTech TEXT,
+        phone TEXT
     )");
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS categories (
@@ -164,7 +165,7 @@ function initDatabase($pdo) {
     // Insertion des données initiales de démonstration si les tables sont vides
     $stmt = $pdo->query("SELECT COUNT(*) FROM communes");
     if ($stmt->fetchColumn() == 0) {
-        $pdo->exec("INSERT INTO communes (name, population) VALUES ('Saint-Aurin', 3120), ('Val-de-Marse', 1850), ('Beaulieu-les-Pins', 2410)");
+        $pdo->exec("INSERT INTO communes (name, respTech, phone) VALUES ('Saint-Aurin', 'Jean Dupont', '05 62 00 11 22'), ('Val-de-Marse', 'Marc Bernard', '05 62 11 22 33'), ('Beaulieu-les-Pins', 'Alain Mercier', '05 62 22 33 44')");
         $pdo->exec("INSERT INTO categories (name, emoji) VALUES ('Voirie & Signalisat.', '🛣️'), ('Bâtiments & Écoles', '🏫'), ('Espaces Verts', '🌳'), ('Éclairage / Élec', '💡'), ('Festivités & Matériel', '🎪'), ('Propreté & Salubrité', '🧹')");
         $pdo->exec("INSERT INTO lieux (commune, name) VALUES ('Saint-Aurin', 'École Maternelle Les Lutins'), ('Saint-Aurin', 'Mairie Centrale & Place'), ('Saint-Aurin', 'Gymnase Municipal'), ('Val-de-Marse', 'Place de la Halle'), ('Beaulieu-les-Pins', 'Salle des Fêtes Communale')");
         $pdo->exec("INSERT INTO agents (name, role, skill, commune, status, avatar) VALUES ('Jean Dupont', 'Chef Plomberie', 'CACES Nacelle', 'Saint-Aurin', 'Disponible', '👨‍🔧'), ('Marc Lambert', 'Électricien', 'Habilitation BR/HO', 'Saint-Aurin', 'En mission', '⚡'), ('Pierre Moreau', 'Espaces Verts', 'Taille / Élagage', 'Saint-Aurin', 'Disponible', '🌳')");
