@@ -341,6 +341,85 @@
         </div>
     </div>
 
+    <!-- MODAL CATEGORIE -->
+    <div id="categoryModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800 text-sm">🏷️ Ajouter une Catégorie</h3><button onclick="closeCategoryModal()" class="text-xl font-bold">&times;</button></div>
+            <form onsubmit="handleAddCategory(event)" class="space-y-3 text-xs">
+                <div><label class="font-semibold block mb-1">Nom de la catégorie</label><input type="text" id="catNameInput" required placeholder="ex: Voirie / Espaces Verts" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Émoji / Icône</label><input type="text" id="catEmojiInput" required placeholder="ex: 🛣️" value="📌" class="w-full border rounded p-2"></div>
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeCategoryModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL LIEU -->
+    <div id="locationModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800 text-sm">📍 Ajouter un Lieu Récurrent</h3><button onclick="closeLocationModal()" class="text-xl font-bold">&times;</button></div>
+            <form onsubmit="handleAddLocation(event)" class="space-y-3 text-xs">
+                <div><label class="font-semibold block mb-1">Commune</label><select id="locCommuneSelect" class="w-full border rounded p-2"></select></div>
+                <div><label class="font-semibold block mb-1">Nom du lieu / Bâtiment</label><input type="text" id="locNameInput" required placeholder="ex: Gymnase Municipal" class="w-full border rounded p-2"></div>
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeLocationModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL UTILISATEUR -->
+    <div id="userModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800 text-sm">👤 Ajouter un Utilisateur</h3><button onclick="closeUserModal()" class="text-xl font-bold">&times;</button></div>
+            <form onsubmit="handleAddUser(event)" class="space-y-3 text-xs">
+                <div><label class="font-semibold block mb-1">Nom complet</label><input type="text" id="userNameInput" required placeholder="Jean Dupont" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Email / Identifiant</label><input type="email" id="userEmailInput" required placeholder="jean.dupont@commune.fr" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Rôle</label><select id="userRoleSelect" class="w-full border rounded p-2"><option value="demandeur">Demandeur</option><option value="agent">Agent ST</option><option value="responsable" selected>Responsable ST</option><option value="direction">Maire / DGS</option><option value="admin">Admin</option></select></div>
+                <div><label class="font-semibold block mb-1">Commune rattachée</label><select id="userCommuneSelect" class="w-full border rounded p-2"></select></div>
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeUserModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Créer le compte</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL AGENT -->
+    <div id="agentModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800 text-sm">👨‍🔧 Ajouter un Agent Technique</h3><button onclick="closeAgentModal()" class="text-xl font-bold">&times;</button></div>
+            <form onsubmit="handleAddAgent(event)" class="space-y-3 text-xs">
+                <div><label class="font-semibold block mb-1">Nom & Prénom</label><input type="text" id="agentNameInput" required placeholder="Paul Martin" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Rôle / Spécialité</label><input type="text" id="agentRoleInput" required placeholder="ex: Électricien / Voirie" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Habilitations / Permis</label><input type="text" id="agentSkillInput" placeholder="ex: CACES / Habilitation BR" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Commune</label><select id="agentCommuneSelect" class="w-full border rounded p-2"></select></div>
+                <div><label class="font-semibold block mb-1">Statut</label><select id="agentStatusSelect" class="w-full border rounded p-2"><option value="Disponible">Disponible</option><option value="En mission">En mission</option><option value="Congés">Congés / Absent</option></select></div>
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeAgentModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Ajouter l'agent</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL EQUIPEMENT -->
+    <div id="equipmentModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800 text-sm">🚜 Ajouter un Équipement / Engin</h3><button onclick="closeEquipmentModal()" class="text-xl font-bold">&times;</button></div>
+            <form onsubmit="handleAddEquipment(event)" class="space-y-3 text-xs">
+                <div><label class="font-semibold block mb-1">Intitulé du matériel</label><input type="text" id="eqNameInput" required placeholder="ex: Camion Benne 3.5T" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Commune propriétaire</label><select id="eqOwnerSelect" class="w-full border rounded p-2"></select></div>
+                <div><label class="font-semibold block mb-1">Description / Usage</label><textarea id="eqDescInput" rows="2" placeholder="Domaine d'utilisation..." class="w-full border rounded p-2"></textarea></div>
+                <div><label class="font-semibold block mb-1">Icône</label><input type="text" id="eqIconInput" value="🚜" class="w-full border rounded p-2"></div>
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeEquipmentModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Ajouter</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL COMMUNE -->
+    <div id="communeModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800 text-sm">🏛️ Ajouter une Commune Membre</h3><button onclick="closeCommuneModal()" class="text-xl font-bold">&times;</button></div>
+            <form onsubmit="handleAddCommune(event)" class="space-y-3 text-xs">
+                <div><label class="font-semibold block mb-1">Nom de la commune</label><input type="text" id="comNameInput" required placeholder="ex: Saint-Aurin" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Nombre d'habitants</label><input type="number" id="comPopInput" required placeholder="3120" class="w-full border rounded p-2"></div>
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeCommuneModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
+            </form>
+        </div>
+    </div>
+
     <!-- Toast Notifications -->
     <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
 
@@ -351,36 +430,11 @@
         let activeTicketId = null;
 
         const roleData = {
-            demandeur: {
-                title: "Espace Demandeur / Service Interne",
-                desc: "Saisie rapide de nouvelles demandes et suivi en direct de vos signalements.",
-                badge: "Demandeur",
-                icon: "👤"
-            },
-            agent: {
-                title: "Espace Agent du Service Technique",
-                desc: "Consultation des fiches de travail, mise à jour des statuts et rapports de terrain.",
-                badge: "Agent ST",
-                icon: "👨‍🔧"
-            },
-            responsable: {
-                title: "Espace Responsable du Service Technique",
-                desc: "Validation, affectation aux agents, planification et suivi direct du matériel.",
-                badge: "Responsable ST",
-                icon: "👔"
-            },
-            direction: {
-                title: "Espace Direction (Maire / DGS)",
-                desc: "Vue synthétique globale, suivi budgétaire, statistiques et mutualisation intercommunale.",
-                badge: "Maire / DGS",
-                icon: "🏛️"
-            },
-            admin: {
-                title: "Espace Administrateur Système",
-                desc: "Gestion globale des droits, référentiels, comptes utilisateurs, communes et données.",
-                badge: "Admin",
-                icon: "⚡"
-            }
+            demandeur: { title: "Espace Demandeur / Service Interne", desc: "Saisie rapide de nouvelles demandes et suivi en direct de vos signalements.", badge: "Demandeur", icon: "👤" },
+            agent: { title: "Espace Agent du Service Technique", desc: "Consultation des fiches de travail, mise à jour des statuts et rapports de terrain.", badge: "Agent ST", icon: "👨‍🔧" },
+            responsable: { title: "Espace Responsable du Service Technique", desc: "Validation, affectation aux agents, planification et suivi direct du matériel.", badge: "Responsable ST", icon: "👔" },
+            direction: { title: "Espace Direction (Maire / DGS)", desc: "Vue synthétique globale, suivi budgétaire, statistiques et mutualisation intercommunale.", badge: "Maire / DGS", icon: "🏛️" },
+            admin: { title: "Espace Administrateur Système", desc: "Gestion globale des droits, référentiels, comptes utilisateurs, communes et données.", badge: "Admin", icon: "⚡" }
         };
 
         const rolePermissions = {
@@ -412,6 +466,12 @@
             { id: 1, name: "Saint-Aurin", population: 3120 },
             { id: 2, name: "Val-de-Marse", population: 1850 },
             { id: 3, name: "Beaulieu-les-Pins", population: 2410 }
+        ];
+
+        let usersList = [
+            { id: 1, name: "Jean Dupont", email: "j.dupont@st-aurin.fr", role: "responsable", commune: "Saint-Aurin" },
+            { id: 2, name: "Marie Curie", email: "m.curie@val-demarse.fr", role: "direction", commune: "Val-de-Marse" },
+            { id: 3, name: "Paul Martin", email: "p.martin@st-aurin.fr", role: "agent", commune: "Saint-Aurin" }
         ];
 
         let agentsList = [
@@ -548,10 +608,15 @@
         }
 
         function updateCommuneDropdowns() {
-            ['communeSelect', 'modalCommune'].forEach(id => {
+            ['communeSelect', 'modalCommune', 'locCommuneSelect', 'userCommuneSelect', 'agentCommuneSelect', 'eqOwnerSelect'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el && id !== 'communeSelect') {
-                    el.innerHTML = communesList.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+                if (el) {
+                    if (id === 'communeSelect') {
+                        el.innerHTML = communesList.map(c => `<option value="${c.name}">Commune : ${c.name}</option>`).join('') + `<option value="ALL">🌐 Vue Communauté de Communes</option>`;
+                        el.value = currentCommuneFilter;
+                    } else {
+                        el.innerHTML = communesList.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+                    }
                 }
             });
         }
@@ -721,9 +786,64 @@
         }
 
         function renderParamTables() {
-            document.getElementById('tableCategoriesBody').innerHTML = categoriesList.map(c => `<tr><td class="p-2">${c.emoji}</td><td class="p-2 font-semibold">${c.name}</td></tr>`).join('');
-            document.getElementById('tableLocationsBody').innerHTML = locationsList.map(l => `<tr><td class="p-2 font-semibold">${l.name}</td><td class="p-2">${l.commune}</td></tr>`).join('');
-            document.getElementById('tableCommunesBody').innerHTML = communesList.map(c => `<tr><td class="p-2 font-semibold">${c.name}</td><td class="p-2">${c.population} hab.</td></tr>`).join('');
+            // 1. Catégories
+            document.getElementById('tableCategoriesBody').innerHTML = categoriesList.map(c => `
+                <tr>
+                    <td class="p-2">${c.emoji}</td>
+                    <td class="p-2 font-semibold">${c.name}</td>
+                    <td class="p-2 text-right"><button onclick="deleteCategory(${c.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button></td>
+                </tr>
+            `).join('');
+
+            // 2. Lieux
+            document.getElementById('tableLocationsBody').innerHTML = locationsList.map(l => `
+                <tr>
+                    <td class="p-2 font-semibold">${l.name}</td>
+                    <td class="p-2">${l.commune}</td>
+                    <td class="p-2 text-right"><button onclick="deleteLocation(${l.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button></td>
+                </tr>
+            `).join('');
+
+            // 3. Utilisateurs
+            document.getElementById('tableUsersBody').innerHTML = usersList.map(u => `
+                <tr>
+                    <td class="p-2 font-semibold">${u.name}</td>
+                    <td class="p-2 text-slate-500">${u.email}</td>
+                    <td class="p-2"><span class="bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded text-[10px]">${u.role}</span></td>
+                    <td class="p-2 text-slate-500">${u.commune}</td>
+                    <td class="p-2 text-right"><button onclick="deleteUser(${u.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button></td>
+                </tr>
+            `).join('');
+
+            // 4. Agents
+            document.getElementById('tableAgentsBody').innerHTML = agentsList.map(a => `
+                <tr>
+                    <td class="p-2 font-semibold">${a.avatar} ${a.name}</td>
+                    <td class="p-2">${a.role}</td>
+                    <td class="p-2 text-slate-500">${a.commune}</td>
+                    <td class="p-2"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold">${a.status}</span></td>
+                    <td class="p-2 text-right"><button onclick="deleteAgent(${a.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button></td>
+                </tr>
+            `).join('');
+
+            // 5. Équipements
+            document.getElementById('tableEquipmentBody').innerHTML = equipmentList.map(e => `
+                <tr>
+                    <td class="p-2 font-semibold">${e.icon} ${e.name}</td>
+                    <td class="p-2">${e.owner}</td>
+                    <td class="p-2 text-slate-500">${e.status}</td>
+                    <td class="p-2 text-right"><button onclick="deleteEquipment('${e.id}')" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button></td>
+                </tr>
+            `).join('');
+
+            // 6. Communes
+            document.getElementById('tableCommunesBody').innerHTML = communesList.map(c => `
+                <tr>
+                    <td class="p-2 font-semibold">${c.name}</td>
+                    <td class="p-2">${c.population} hab.</td>
+                    <td class="p-2 text-right"><button onclick="deleteCommune(${c.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button></td>
+                </tr>
+            `).join('');
             
             // Matrice des rôles et permissions
             const roleLabels = { demandeur: "Demandeur", agent: "Agent ST", responsable: "Responsable ST", direction: "Maire / DGS", admin: "Administrateur" };
@@ -745,12 +865,126 @@
             }
         }
 
-        function openCategoryModal() { showToast("Ouvre la modale catégorie", "info"); }
-        function openLocationModal() { showToast("Ouvre la modale lieu", "info"); }
-        function openUserModal() { showToast("Ouvre la modale utilisateur", "info"); }
-        function openAgentModal() { showToast("Ouvre la modale agent", "info"); }
-        function openEquipmentModal() { showToast("Ouvre la modale équipement", "info"); }
-        function openCommuneModal() { showToast("Ouvre la modale commune", "info"); }
+        /* ACTIONS MODALES & CRUD PARAMETRES */
+        function openCategoryModal() { document.getElementById('categoryModal').classList.remove('hidden'); }
+        function closeCategoryModal() { document.getElementById('categoryModal').classList.add('hidden'); }
+        function handleAddCategory(e) {
+            e.preventDefault();
+            const name = document.getElementById('catNameInput').value;
+            const emoji = document.getElementById('catEmojiInput').value;
+            categoriesList.push({ id: Date.now(), name, emoji });
+            updateCategoryDropdowns();
+            renderParamTables();
+            closeCategoryModal();
+            showToast("Catégorie ajoutée avec succès", "success");
+        }
+        function deleteCategory(id) {
+            categoriesList = categoriesList.filter(c => c.id !== id);
+            updateCategoryDropdowns();
+            renderParamTables();
+            showToast("Catégorie supprimée", "info");
+        }
+
+        function openLocationModal() { updateCommuneDropdowns(); document.getElementById('locationModal').classList.remove('hidden'); }
+        function closeLocationModal() { document.getElementById('locationModal').classList.add('hidden'); }
+        function handleAddLocation(e) {
+            e.preventDefault();
+            const commune = document.getElementById('locCommuneSelect').value;
+            const name = document.getElementById('locNameInput').value;
+            locationsList.push({ id: Date.now(), commune, name });
+            updateModalLocationDropdown();
+            renderParamTables();
+            closeLocationModal();
+            showToast("Lieu récurrent ajouté", "success");
+        }
+        function deleteLocation(id) {
+            locationsList = locationsList.filter(l => l.id !== id);
+            updateModalLocationDropdown();
+            renderParamTables();
+            showToast("Lieu supprimé", "info");
+        }
+
+        function openUserModal() { updateCommuneDropdowns(); document.getElementById('userModal').classList.remove('hidden'); }
+        function closeUserModal() { document.getElementById('userModal').classList.add('hidden'); }
+        function handleAddUser(e) {
+            e.preventDefault();
+            const name = document.getElementById('userNameInput').value;
+            const email = document.getElementById('userEmailInput').value;
+            const role = document.getElementById('userRoleSelect').value;
+            const commune = document.getElementById('userCommuneSelect').value;
+            usersList.push({ id: Date.now(), name, email, role, commune });
+            renderParamTables();
+            closeUserModal();
+            showToast("Utilisateur créé avec succès", "success");
+        }
+        function deleteUser(id) {
+            usersList = usersList.filter(u => u.id !== id);
+            renderParamTables();
+            showToast("Utilisateur supprimé", "info");
+        }
+
+        function openAgentModal() { updateCommuneDropdowns(); document.getElementById('agentModal').classList.remove('hidden'); }
+        function closeAgentModal() { document.getElementById('agentModal').classList.add('hidden'); }
+        function handleAddAgent(e) {
+            e.preventDefault();
+            const name = document.getElementById('agentNameInput').value;
+            const role = document.getElementById('agentRoleInput').value;
+            const skill = document.getElementById('agentSkillInput').value || 'Technicien';
+            const commune = document.getElementById('agentCommuneSelect').value;
+            const status = document.getElementById('agentStatusSelect').value;
+            agentsList.push({ id: Date.now(), name, role, skill, commune, status, avatar: "👨‍🔧" });
+            renderAgents();
+            renderParamTables();
+            closeAgentModal();
+            showToast("Agent technique ajouté", "success");
+        }
+        function deleteAgent(id) {
+            agentsList = agentsList.filter(a => a.id !== id);
+            renderAgents();
+            renderParamTables();
+            showToast("Agent supprimé", "info");
+        }
+
+        function openEquipmentModal() { updateCommuneDropdowns(); document.getElementById('equipmentModal').classList.remove('hidden'); }
+        function closeEquipmentModal() { document.getElementById('equipmentModal').classList.add('hidden'); }
+        function handleAddEquipment(e) {
+            e.preventDefault();
+            const name = document.getElementById('eqNameInput').value;
+            const owner = document.getElementById('eqOwnerSelect').value;
+            const desc = document.getElementById('eqDescInput').value || 'Matériel communal';
+            const icon = document.getElementById('eqIconInput').value || '🚜';
+            equipmentList.push({ id: `EQ-${Date.now().toString().slice(-3)}`, name, owner, status: 'Libre', desc, icon });
+            renderEquipment();
+            renderParamTables();
+            closeEquipmentModal();
+            showToast("Équipement ajouté", "success");
+        }
+        function deleteEquipment(id) {
+            equipmentList = equipmentList.filter(e => e.id !== id);
+            renderEquipment();
+            renderParamTables();
+            showToast("Équipement supprimé", "info");
+        }
+
+        function openCommuneModal() { document.getElementById('communeModal').classList.remove('hidden'); }
+        function closeCommuneModal() { document.getElementById('communeModal').classList.add('hidden'); }
+        function handleAddCommune(e) {
+            e.preventDefault();
+            const name = document.value = document.getElementById('comNameInput').value;
+            const population = parseInt(document.getElementById('comPopInput').value) || 0;
+            communesList.push({ id: Date.now(), name, population });
+            updateCommuneDropdowns();
+            renderParamTables();
+            closeCommuneModal();
+            showToast("Commune ajoutée", "success");
+        }
+        function deleteCommune(id) {
+            communesList = communesList.filter(c => c.id !== id);
+            updateCommuneDropdowns();
+            renderParamTables();
+            showToast("Commune supprimée", "info");
+        }
+
         function handleLogoFileUpload(e) { showToast("Aperçu du logo chargé", "success"); }
         function handleLogoError(img) { if (img) img.classList.add('hidden'); }
 
