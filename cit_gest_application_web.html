@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cit-Gest - Service Technique, Lieux & Mutualisation Intercommunale</title>
+    <title>Cit-Gest - Services Techniques, Patrimoine & Mutualisation Intercommunale</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js for analytics & meter reading graphs -->
+    <!-- Chart.js pour statistiques et graphiques de consommations -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -29,64 +29,72 @@
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .print-only { display: none; }
+        .no-print { display: block; }
         @media print {
             .no-print { display: none !important; }
-            .print-only { display: block !important; }
-            body { background: white !important; font-size: 12pt; }
+            body { background: white !important; font-size: 11pt; }
         }
     </style>
 </head>
 <body class="h-full font-sans text-slate-800 flex flex-col antialiased selection:bg-brand-500 selection:text-white">
 
+    <!-- HEADER & BARRE SUPÉRIEURE -->
     <header class="no-print bg-slate-900 text-white sticky top-0 z-30 shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <!-- Logo & Commune Label -->
+                <!-- Logo & Libellé Commune -->
                 <div class="flex items-center gap-3">
-                    <div id="logoContainer" class="bg-white p-1 rounded-xl text-slate-800 font-bold text-xl flex items-center justify-center w-11 h-11 shadow-sm border border-slate-700/50 overflow-hidden shrink-0">
-                        <img id="appLogoImg" src="" alt="Logo" class="w-full h-full object-contain hidden" onerror="handleLogoError(this)">
-                        <span id="appLogoFallback" class="text-xl">🏛️</span>
+                    <div id="logoContainer" class="bg-white p-0.5 rounded-xl text-slate-800 font-bold text-xl flex items-center justify-center w-11 h-11 shadow-sm border border-slate-700/50 overflow-hidden shrink-0">
+                        <img id="appLogoImg" src="logo.png" alt="Logo Gimont" class="w-full h-full object-contain hidden" onerror="handleLogoError(this)">
+                        <!-- Logo vectoriel de Gimont - Portes du Gers -->
+                        <div id="appLogoFallback" class="w-full h-full flex items-center justify-center">
+                            <svg viewBox="0 0 200 200" class="w-full h-full rounded-lg">
+                                <circle cx="100" cy="100" r="96" fill="#0d828a"/>
+                                <path d="M 40 95 Q 60 92 78 95 L 82 72 Q 95 62 108 72 L 108 88 L 112 88 L 112 65 Q 115 62 118 65 L 118 88 L 122 88 L 124 95 Q 140 93 160 97" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                                <rect x="96" y="66" width="12" height="24" fill="#0d828a"/>
+                                <path d="M 94 66 L 102 58 L 110 66 Z" fill="#ffffff"/>
+                                <text x="100" y="115" font-family="'Brush Script MT', cursive, sans-serif" font-size="44" font-weight="bold" fill="#ffffff" text-anchor="middle" font-style="italic">Gimont</text>
+                                <text x="100" y="142" font-family="'Inter', sans-serif" font-size="16" font-weight="500" fill="#ffffff" text-anchor="middle" letter-spacing="0.5">Portes du Gers</text>
+                            </svg>
+                        </div>
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-lg tracking-tight">Cit-Gest</span>
-                            <span class="bg-brand-500/30 text-brand-200 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-medium border border-brand-400/30">v4.0 Interco</span>
+                            <span class="bg-brand-500/30 text-brand-200 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-medium border border-brand-400/30">v4.1</span>
                         </div>
                         <p class="text-xs text-slate-400 flex items-center gap-1">
                             <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                            <span id="currentCommuneLabel">Saint-Aurin (3 120 hab.)</span>
+                            <span id="currentCommuneLabel">Gimont (3 050 hab.)</span>
                         </p>
                     </div>
                 </div>
 
-                <!-- Admin Simulator Role Switcher Dropdown (Only visible for Admin user or in Test mode) -->
+                <!-- Admin Simulator Dropdown (Accessible Uniquement par le Rôle Admin) -->
                 <div id="adminRoleSimulator" class="hidden md:flex items-center bg-slate-800/90 rounded-xl px-3 py-1 border border-amber-500/40 shadow-inner text-xs gap-2">
                     <span class="text-amber-400 font-semibold flex items-center gap-1">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                        Simulateur Rôle :
+                        Simulateur Rôle Admin :
                     </span>
                     <select id="roleSimulatorSelect" onchange="quickSwitchUserRole(this.value)" class="bg-slate-900 text-slate-200 text-xs rounded border border-slate-600 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-amber-400">
                         <option value="demandeur">👤 Demandeur (Public / Interne)</option>
                         <option value="agent">👨‍🔧 Agent Technique (Terrain)</option>
-                        <option value="responsable" selected>👔 Responsable Service Technique</option>
+                        <option value="responsable">👔 Responsable Service Technique</option>
                         <option value="direction">🏛️ Direction (Maire / DGS)</option>
-                        <option value="admin">⚡ Administrateur Système</option>
+                        <option value="admin" selected>⚡ Administrateur Système</option>
                     </select>
                 </div>
 
-                <!-- Right Actions: Commune Selector, Auth Widget, New Ticket Button -->
+                <!-- Actions Droite: Commune, Widget Auth, Nouvelle Demande -->
                 <div class="flex items-center gap-2 sm:gap-3">
                     <select id="communeSelect" onchange="changeCommune(this.value)" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500">
-                        <option value="Saint-Aurin">Commune : Saint-Aurin</option>
-                        <option value="Val-de-Marse">Commune : Val-de-Marse</option>
-                        <option value="Beaulieu-les-Pins">Commune : Beaulieu-les-Pins</option>
+                        <option value="Gimont">Commune : Gimont</option>
+                        <option value="Aubiet">Commune : Aubiet</option>
+                        <option value="Juilles">Commune : Juilles</option>
                         <option value="ALL">🌐 Vue Communauté de Communes</option>
                     </select>
 
-                    <div id="userAuthWidget" class="flex items-center gap-2">
-                        <!-- Populated by JS: Login button or User Profile badge -->
-                    </div>
+                    <div id="userAuthWidget" class="flex items-center gap-2"></div>
 
                     <button onclick="openNewTicketModal()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs sm:text-sm font-semibold px-3 py-2 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center gap-1.5 transform active:scale-95">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
@@ -100,6 +108,7 @@
     <!-- MAIN CONTAINER -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 flex flex-col w-full">
         
+        <!-- Welcome Banner for Non-Logged Users / Public -->
         <div id="publicWelcomeBanner" class="mb-6 bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 border border-brand-500/30 text-white rounded-2xl p-6 shadow-md flex flex-col md:flex-row items-center justify-between gap-6">
             <div class="space-y-2 text-center md:text-left">
                 <span class="bg-emerald-500/20 text-emerald-300 text-xs font-semibold px-2.5 py-1 rounded-full border border-emerald-500/30 inline-block">Portail Services Techniques & Citoyen</span>
@@ -140,22 +149,27 @@
                 <span id="badgeOpenCount" class="bg-brand-100 text-brand-700 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold">0</span>
             </button>
 
-            <!-- NEW TAB: LIEUX & BÂTIMENTS -->
-            <button onclick="switchTab('lieux')" id="tab-lieux" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
-                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                <span>📍 Lieux & Consommations</span>
-                <span class="bg-emerald-100 text-emerald-800 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold">Compteurs</span>
+            <!-- ONGLET PATRIMOINE MUNICIPAL (4 PILIERS) -->
+            <button onclick="switchTab('patrimoine')" id="tab-patrimoine" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V10a2 2 0 012-2h2a2 2 0 012 2v11"/></svg>
+                <span>🏛️ Patrimoine Municipal</span>
+                <span class="bg-emerald-100 text-emerald-800 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold">Bâtiments & Biens</span>
+            </button>
+
+            <!-- ONGLET SPÉCIFIQUE RELEVÉS DE COMPTEURS -->
+            <button onclick="switchTab('releves')" id="tab-releves" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
+                <svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>📊 Relevés & Consommations</span>
             </button>
 
             <button onclick="switchTab('mutualisation')" id="tab-mutualisation" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                 <span>Mutualisation Matériel</span>
-                <span class="bg-amber-100 text-amber-800 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold">Interco</span>
             </button>
 
             <button onclick="switchTab('equipe')" id="tab-equipe" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                <span>Équipe Agents & Utilisateurs</span>
+                <span>Équipe & Utilisateurs</span>
             </button>
 
             <button onclick="switchTab('statistiques')" id="tab-statistiques" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
@@ -169,6 +183,7 @@
             </button>
         </div>
 
+        <!-- VUE 1: DEMANDES D'INTERVENTIONS -->
         <div id="view-interventions" class="space-y-6">
             <div class="no-print bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
                 <div class="relative flex-1">
@@ -207,100 +222,128 @@
             </div>
         </div>
 
-        <div id="view-lieux" class="hidden space-y-6">
-            <div class="bg-gradient-to-r from-emerald-900 to-teal-900 border border-emerald-500/30 text-white rounded-xl p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <!-- VUE 2: PATRIMOINE MUNICIPAL (4 PILIERS) -->
+        <div id="view-patrimoine" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 border border-emerald-500/30 text-white rounded-xl p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
-                    <div class="p-3 bg-emerald-500/20 rounded-xl text-2xl">📍</div>
+                    <div class="p-3 bg-emerald-500/20 rounded-xl text-2xl">🏛️</div>
                     <div>
-                        <h3 class="font-bold text-base">Gestion des Bâtiments, Lieux & Relevés de Consommation</h3>
-                        <p class="text-xs text-emerald-200">Suivi complet des infrastructures communales, numéros de compteurs d'eau/électricité et historique des consommations.</p>
+                        <h3 class="font-bold text-base">Gestion Intégrale du Patrimoine Municipal</h3>
+                        <p class="text-xs text-emerald-200">Suivi des 4 piliers : Données juridiques & financières, Caractéristiques techniques, Contrôles réglementaires et Documents numériques.</p>
                     </div>
                 </div>
-                <div class="flex gap-2">
-                    <button onclick="openReleveModal()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-3 py-2 rounded-lg transition-all shadow">+ Nouveau Relevé</button>
-                    <button onclick="openLocationModal()" class="bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 font-medium text-xs px-3 py-2 rounded-lg transition-all">+ Ajouter Lieu</button>
-                </div>
+                <button onclick="openPatrimoineModal()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-lg transition-all shadow-md flex items-center gap-1.5 shrink-0">
+                    <span>+ Ajouter un bien au Patrimoine</span>
+                </button>
             </div>
 
-            <!-- Locations list and consumption detail analytics -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Location Cards -->
-                <div class="lg:col-span-1 space-y-3" id="locationsListContainer"></div>
+            <!-- Grille des biens du patrimoine -->
+            <div id="patrimoineGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        </div>
 
-                <!-- Active Location Meter Analysis -->
+        <!-- VUE 3: RELEVÉS & CONSOMMATIONS (PAGE DÉDIÉE) -->
+        <div id="view-releves" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-cyan-900 via-blue-900 to-slate-900 border border-cyan-500/30 text-white rounded-xl p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="p-3 bg-cyan-500/20 rounded-xl text-2xl">📊</div>
+                    <div>
+                        <h3 class="font-bold text-base">Module de Relevés de Compteurs & Sobriété Énergétique</h3>
+                        <p class="text-xs text-cyan-200">Enregistrement périodique des index d'eau, d'électricité et de gaz pour l'ensemble des bâtiments communaux.</p>
+                    </div>
+                </div>
+                <button onclick="openReleveModal()" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-lg transition-all shadow-md shrink-0">
+                    + Nouveau Relevé de Compteur
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Selecteur de bien / Sélecteur rapide -->
+                <div class="lg:col-span-1 bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                    <h4 class="font-bold text-xs text-slate-800 uppercase tracking-wider">Sélectionner un Bâtiment</h4>
+                    <div id="relevesPatrimoineList" class="space-y-2 max-h-[500px] overflow-y-auto pr-1"></div>
+                </div>
+
+                <!-- Analyse et graphique du bâtiment actif -->
                 <div class="lg:col-span-2 space-y-5">
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
                         <div class="flex justify-between items-center border-b pb-3">
                             <div>
-                                <h3 class="font-bold text-slate-800 text-base" id="activeLieuTitle">École Maternelle Les Lutins</h3>
-                                <p class="text-xs text-slate-500" id="activeLieuAddress">12 Rue des Écoles - Saint-Aurin</p>
+                                <h3 class="font-bold text-slate-800 text-base" id="activeReleveTitle">École Maternelle Saint-Éloi</h3>
+                                <p class="text-xs text-slate-500" id="activeReleveSub">Gimont - N° Inventaire: PAT-2024-001</p>
                             </div>
-                            <span class="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded" id="activeLieuCategory">Bâtiment</span>
+                            <span class="bg-cyan-50 text-cyan-700 text-xs font-bold px-2.5 py-1 rounded-full border border-cyan-200" id="activeReleveMetersCount">3 Compteurs</span>
                         </div>
 
-                        <!-- Meter Specs Grid -->
-                        <div class="grid grid-cols-2 gap-4 text-xs">
-                            <div class="p-3 bg-blue-50/60 rounded-lg border border-blue-100">
-                                <span class="text-slate-500 block">⚡ Compteur Électrique :</span>
-                                <span class="font-mono font-bold text-slate-800 text-sm" id="activeLieuElecMeter">ELE-99823</span>
+                        <!-- Références Compteurs -->
+                        <div class="grid grid-cols-3 gap-3 text-xs">
+                            <div class="p-2.5 bg-blue-50 rounded-lg border border-blue-100">
+                                <span class="text-slate-500 block">⚡ Compteur Élec :</span>
+                                <span class="font-mono font-bold text-slate-800" id="activeElecMeter">ELE-99823</span>
                             </div>
-                            <div class="p-3 bg-emerald-50/60 rounded-lg border border-emerald-100">
-                                <span class="text-slate-500 block">💧 Compteur d'Eau :</span>
-                                <span class="font-mono font-bold text-slate-800 text-sm" id="activeLieuWaterMeter">EAU-1029</span>
+                            <div class="p-2.5 bg-emerald-50 rounded-lg border border-emerald-100">
+                                <span class="text-slate-500 block">💧 Compteur Eau :</span>
+                                <span class="font-mono font-bold text-slate-800" id="activeWaterMeter">EAU-1029</span>
+                            </div>
+                            <div class="p-2.5 bg-amber-50 rounded-lg border border-amber-100">
+                                <span class="text-slate-500 block">🔥 Compteur Gaz :</span>
+                                <span class="font-mono font-bold text-slate-800" id="activeGasMeter">GAZ-4410</span>
                             </div>
                         </div>
 
-                        <!-- Meter Consumption Chart -->
-                        <div class="pt-2">
-                            <h4 class="font-bold text-xs text-slate-700 mb-2">📊 Historique des Consommations</h4>
-                            <div class="h-56"><canvas id="lieuConsumptionChart"></canvas></div>
+                        <!-- Graphique Chart.js -->
+                        <div>
+                            <h4 class="font-bold text-xs text-slate-700 mb-2">📈 Évolution des Consommations</h4>
+                            <div class="h-60"><canvas id="relevesConsumptionChart"></canvas></div>
                         </div>
                     </div>
 
-                    <!-- Readings Log Table -->
+                    <!-- Tableau Historique -->
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
-                        <h4 class="font-bold text-xs text-slate-800">📋 Relevés Récents pour ce lieu</h4>
+                        <h4 class="font-bold text-xs text-slate-800">📋 Historique Chronologique des Relevés</h4>
                         <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-50 font-semibold text-slate-600">
+                            <thead class="bg-slate-50 font-semibold text-slate-600 border-b">
                                 <tr>
-                                    <th class="p-2">Date</th>
-                                    <th class="p-2">Fluide</th>
-                                    <th class="p-2">Index Relevé</th>
-                                    <th class="p-2">Agent</th>
-                                    <th class="p-2 text-right">Action</th>
+                                    <th class="p-2.5">Date</th>
+                                    <th class="p-2.5">Fluide</th>
+                                    <th class="p-2.5">Index Relevé</th>
+                                    <th class="p-2.5">Agent / Releveur</th>
+                                    <th class="p-2.5 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="lieuReadingsTableBody" class="divide-y divide-slate-100"></tbody>
+                            <tbody id="relevesTableBody" class="divide-y divide-slate-100"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- VUE 4: MUTUALISATION MATÉRIEL -->
         <div id="view-mutualisation" class="hidden space-y-6">
             <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
                     <div class="p-3 bg-amber-200/80 rounded-lg text-xl">🚜</div>
                     <div>
                         <h3 class="font-bold text-base">Plateforme de Mutualisation des Équipements Lourds</h3>
-                        <p class="text-xs text-amber-800">Partagez vos engins spécifiques entre communes pour optimiser les coûts d'achat et d'entretien.</p>
+                        <p class="text-xs text-amber-800">Partagez vos engins spécifiques entre communes membres pour optimiser les coûts d'achat et d'entretien.</p>
                     </div>
                 </div>
             </div>
             <div id="equipmentGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </div>
 
+        <!-- VUE 5: ÉQUIPE & UTILISATEURS -->
         <div id="view-equipe" class="hidden space-y-6">
             <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
                 <div>
                     <h3 class="font-bold text-sm">Effectif des Agents & Utilisateurs Système</h3>
-                    <p class="text-xs text-slate-500">Les agents sont des utilisateurs rattachés au rôle "Agent ST" avec des qualifications terrain.</p>
+                    <p class="text-xs text-slate-500">Les agents techniques sont des comptes utilisateurs rattachés au rôle "Agent ST" avec des qualifications terrain.</p>
                 </div>
-                <button onclick="openUserModal()" class="bg-brand-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-brand-700">+ Créer un utilisateur/agent</button>
+                <button onclick="openUserModal()" class="bg-brand-600 text-white px-3.5 py-2 rounded-lg text-xs font-semibold hover:bg-brand-700">+ Créer un utilisateur / agent</button>
             </div>
             <div id="agentsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </div>
 
+        <!-- VUE 6: STATISTIQUES -->
         <div id="view-statistiques" class="hidden space-y-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
@@ -326,64 +369,69 @@
             </div>
         </div>
 
+        <!-- VUE 7: PARAMÉTRAGE GLOBAL (AVEC BOUTONS D'ÉDITION & SUPPRESSION) -->
         <div id="view-parametres" class="hidden space-y-6">
             <div class="bg-slate-100 p-1.5 rounded-xl border border-slate-200 flex flex-wrap gap-2 text-xs font-semibold">
                 <button onclick="switchParamSubTab('roles')" id="btn-param-roles" class="param-sub-btn px-4 py-2 rounded-lg bg-white text-brand-600 shadow-xs">🔒 Rôles & Droits</button>
-                <button onclick="switchParamSubTab('referentiels')" id="btn-param-referentiels" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">🏷️ Catégories & Lieux</button>
-                <button onclick="switchParamSubTab('utilisateurs')" id="btn-param-utilisateurs" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">👤 Comptes Utilisateurs / Agents</button>
+                <button onclick="switchParamSubTab('referentiels')" id="btn-param-referentiels" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">🏷️ Catégories</button>
+                <button onclick="switchParamSubTab('utilisateurs')" id="btn-param-utilisateurs" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">👤 Comptes Utilisateurs & Agents</button>
                 <button onclick="switchParamSubTab('equipements')" id="btn-param-equipements" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">🚜 Équipements</button>
                 <button onclick="switchParamSubTab('communes')" id="btn-param-communes" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">🏛️ Communes</button>
             </div>
 
-            <!-- Param subviews -->
+            <!-- Sous-vue Rôles -->
             <div id="param-subview-roles" class="bg-white rounded-xl border border-slate-200 p-5">
+                <h4 class="font-bold text-sm mb-3">Matrice des Autorisations par Rôle</h4>
                 <table class="w-full text-left text-xs">
-                    <thead class="bg-slate-50 font-semibold"><tr><th class="p-3">Rôle</th><th class="p-3 text-center">Interventions</th><th class="p-3 text-center">Lieux</th><th class="p-3 text-center">Mutualisation</th><th class="p-3 text-center">Équipe</th><th class="p-3 text-center">Statistiques</th><th class="p-3 text-center">Paramètres</th></tr></thead>
+                    <thead class="bg-slate-50 font-semibold border-b"><tr><th class="p-3">Rôle</th><th class="p-3 text-center">Interventions</th><th class="p-3 text-center">Patrimoine</th><th class="p-3 text-center">Relevés</th><th class="p-3 text-center">Mutualisation</th><th class="p-3 text-center">Équipe</th><th class="p-3 text-center">Statistiques</th><th class="p-3 text-center">Paramètres</th></tr></thead>
                     <tbody id="rolePermissionsTableBody" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
 
+            <!-- Sous-vue Catégories -->
             <div id="param-subview-referentiels" class="hidden space-y-6">
                 <div class="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
-                    <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Catégories</h4><button onclick="openCategoryModal()" class="bg-brand-600 text-white px-3 py-1 rounded text-xs">+ Ajouter</button></div>
-                    <table class="w-full text-left text-xs"><tbody id="tableCategoriesBody" class="divide-y divide-slate-100"></tbody></table>
+                    <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Catégories d'Intervention</h4><button onclick="openCategoryModal()" class="bg-brand-600 text-white px-3 py-1.5 rounded text-xs font-semibold">+ Ajouter Catégorie</button></div>
+                    <table class="w-full text-left text-xs border-t"><tbody id="tableCategoriesBody" class="divide-y divide-slate-100"></tbody></table>
                 </div>
             </div>
 
+            <!-- Sous-vue Utilisateurs -->
             <div id="param-subview-utilisateurs" class="hidden bg-white rounded-xl border border-slate-200 p-5 space-y-3">
-                <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Utilisateurs & Agents</h4><button onclick="openUserModal()" class="bg-brand-600 text-white px-3 py-1 rounded text-xs">+ Créer</button></div>
-                <table class="w-full text-left text-xs"><tbody id="tableUsersBody" class="divide-y divide-slate-100"></tbody></table>
+                <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Gestion des Comptes & Agents</h4><button onclick="openUserModal()" class="bg-brand-600 text-white px-3 py-1.5 rounded text-xs font-semibold">+ Créer Utilisateur</button></div>
+                <table class="w-full text-left text-xs border-t"><tbody id="tableUsersBody" class="divide-y divide-slate-100"></tbody></table>
             </div>
 
+            <!-- Sous-vue Équipements -->
             <div id="param-subview-equipements" class="hidden bg-white rounded-xl border border-slate-200 p-5 space-y-3">
-                <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Équipements</h4><button onclick="openEquipmentModal()" class="bg-brand-600 text-white px-3 py-1 rounded text-xs">+ Ajouter</button></div>
-                <table class="w-full text-left text-xs"><tbody id="tableEquipmentBody" class="divide-y divide-slate-100"></tbody></table>
+                <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Parc Équipements Mutualisés</h4><button onclick="openEquipmentModal()" class="bg-brand-600 text-white px-3 py-1.5 rounded text-xs font-semibold">+ Ajouter Équipement</button></div>
+                <table class="w-full text-left text-xs border-t"><tbody id="tableEquipmentBody" class="divide-y divide-slate-100"></tbody></table>
             </div>
 
+            <!-- Sous-vue Communes -->
             <div id="param-subview-communes" class="hidden bg-white rounded-xl border border-slate-200 p-5 space-y-3">
-                <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Communes</h4><button onclick="openCommuneModal()" class="bg-brand-600 text-white px-3 py-1 rounded text-xs">+ Ajouter</button></div>
-                <table class="w-full text-left text-xs"><tbody id="tableCommunesBody" class="divide-y divide-slate-100"></tbody></table>
+                <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Communes Membres de l'Intercommunalité</h4><button onclick="openCommuneModal()" class="bg-brand-600 text-white px-3 py-1.5 rounded text-xs font-semibold">+ Ajouter Commune</button></div>
+                <table class="w-full text-left text-xs border-t"><tbody id="tableCommunesBody" class="divide-y divide-slate-100"></tbody></table>
             </div>
         </div>
 
     </div>
 
-
-    <!-- MODAL 1: NEW TICKET -->
+    <!-- MODALE 1: NOUVELLE DEMANDE / TICKET -->
     <div id="newTicketModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 space-y-4">
             <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800">🛠️ Nouvelle Demande d'Intervention</h3><button onclick="closeNewTicketModal()" class="text-2xl font-bold">&times;</button></div>
             <form onsubmit="handleCreateTicket(event)" class="space-y-3 text-xs">
                 <div class="grid grid-cols-2 gap-3">
-                    <div><label class="font-semibold block mb-1">Commune</label><select id="modalCommune" onchange="updateModalLocationDropdown()" required class="w-full border rounded p-2"></select></div>
+                    <div><label class="font-semibold block mb-1">Commune</label><select id="modalCommune" onchange="updateModalPatrimoineDropdown()" required class="w-full border rounded p-2"></select></div>
                     <div><label class="font-semibold block mb-1">Catégorie</label><select id="modalCategory" required class="w-full border rounded p-2"></select></div>
                 </div>
                 <div><label class="font-semibold block mb-1">Intitulé court</label><input type="text" id="modalTitle" required placeholder="ex: Fuite d'eau lavabo école" class="w-full border rounded p-2"></div>
                 <div class="grid grid-cols-2 gap-3">
-                    <div><label class="font-semibold block mb-1">Lieu / Bâtiment</label><select id="modalLocationSelect" onchange="handleLocationSelectChange(this.value)" class="w-full border rounded p-2"></select><input type="text" id="modalLocationCustom" placeholder="Saisie libre..." class="w-full border rounded p-2 mt-1 hidden"></div>
+                    <div><label class="font-semibold block mb-1">Lieu / Bâtiment</label><select id="modalPatrimoineSelect" onchange="handlePatrimoineSelectChange(this.value)" class="w-full border rounded p-2"></select><input type="text" id="modalLocationCustom" placeholder="Saisie libre lieu..." class="w-full border rounded p-2 mt-1 hidden"></div>
                     <div><label class="font-semibold block mb-1">Urgence</label><select id="modalPriority" required class="w-full border rounded p-2"><option value="BASSE">🟢 Basse</option><option value="MOYEN" selected>🟠 Normale</option><option value="URGENT">🚨 Urgente</option></select></div>
                 </div>
-                <div><label class="font-semibold block mb-1">Description</label><textarea id="modalDescription" rows="3" class="w-full border rounded p-2"></textarea></div>
+                <div><label class="font-semibold block mb-1">Description du problème</label><textarea id="modalDescription" rows="3" class="w-full border rounded p-2"></textarea></div>
                 <div class="grid grid-cols-2 gap-3">
                     <div><label class="font-semibold block mb-1">Demandeur</label><input type="text" id="modalRequester" required value="Mairie / École / Usager" class="w-full border rounded p-2"></div>
                     <div><label class="font-semibold block mb-1">Contact (Tél / Email)</label><input type="text" id="modalContact" placeholder="ex: 06 12 34 56 78" class="w-full border rounded p-2"></div>
@@ -393,7 +441,7 @@
         </div>
     </div>
 
-    <!-- MODAL 2: DETAIL TICKET -->
+    <!-- MODALE 2: DETAIL TICKET -->
     <div id="detailTicketModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 space-y-4">
             <div id="detailModalHeader" class="flex justify-between border-b pb-3"></div>
@@ -405,76 +453,146 @@
                 </div>
             </div>
             <div id="commentsTimeline" class="space-y-2 bg-slate-50 p-3 rounded-lg text-xs max-h-40 overflow-y-auto"></div>
-            <form onsubmit="handleAddComment(event)" class="flex gap-2 text-xs"><input type="text" id="newCommentInput" placeholder="Note technique / Rapport..." class="flex-1 border rounded p-2"><button type="submit" class="bg-slate-800 text-white px-3 py-2 rounded">Ajouter</button></form>
-            <div class="pt-3 border-t flex justify-between"><button onclick="window.print()" class="px-3 py-1 border rounded text-xs">🖨️ Imprimer</button><button onclick="closeDetailTicketModal()" class="px-4 py-1 bg-slate-800 text-white rounded text-xs">Fermer</button></div>
+            <form onsubmit="handleAddComment(event)" class="flex gap-2 text-xs"><input type="text" id="newCommentInput" placeholder="Note technique / Rapport..." class="flex-1 border rounded p-2"><button type="submit" class="bg-slate-800 text-white px-3 py-2 rounded font-semibold">Ajouter</button></form>
+            <div class="pt-3 border-t flex justify-between"><button onclick="window.print()" class="px-3 py-1.5 border rounded text-xs">🖨️ Imprimer la fiche</button><button onclick="closeDetailTicketModal()" class="px-4 py-1.5 bg-slate-800 text-white rounded text-xs font-semibold">Fermer</button></div>
         </div>
     </div>
 
-    <!-- MODAL 3: LOGIN / AUTH -->
+    <!-- MODALE 3: LOGIN / AUTHENTIFICATION -->
     <div id="loginModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800">🔑 Connexion Espace Agent</h3><button onclick="closeLoginModal()" class="text-xl font-bold">&times;</button></div>
+            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800">🔑 Connexion Espace Agent / Mairie</h3><button onclick="closeLoginModal()" class="text-xl font-bold">&times;</button></div>
             <form onsubmit="handleUserLogin(event)" class="space-y-3 text-xs">
-                <div><label class="font-semibold block mb-1">Email / Identifiant</label><input type="email" id="loginEmail" required placeholder="nom@commune.fr" class="w-full border rounded p-2"></div>
-                <div><label class="font-semibold block mb-1">Mot de passe</label><input type="password" id="loginPass" required value="demo123" class="w-full border rounded p-2"></div>
-                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white py-2 rounded font-semibold text-xs">Se Connecter</button>
+                <div><label class="font-semibold block mb-1">Identifiant / Email</label><input type="text" id="loginUsername" required value="admin" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Mot de passe</label><input type="password" id="loginPass" required value="admin" class="w-full border rounded p-2"></div>
+                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white py-2 rounded font-semibold text-xs shadow">Se Connecter</button>
             </form>
-            <div class="border-t pt-3 text-center text-xs text-slate-500">
-                <p class="mb-2">Ou simulation rapide :</p>
+            <div class="border-t pt-3 text-center text-xs text-slate-500 space-y-2">
+                <p class="font-semibold text-slate-700">Comptes de démonstration :</p>
                 <div class="grid grid-cols-2 gap-1.5">
-                    <button onclick="loginAs('p.martin@st-aurin.fr')" class="bg-slate-100 hover:bg-slate-200 p-1.5 rounded font-medium text-[10px]">👨‍🔧 Agent Paul</button>
-                    <button onclick="loginAs('j.dupont@st-aurin.fr')" class="bg-slate-100 hover:bg-slate-200 p-1.5 rounded font-medium text-[10px]">👔 Resp. Dupont</button>
+                    <button onclick="loginWithCredentials('admin', 'admin')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 p-1.5 rounded font-bold text-[10px]">⚡ Admin (admin/admin)</button>
+                    <button onclick="loginWithCredentials('j.dupont', 'demo123')" class="bg-slate-100 hover:bg-slate-200 p-1.5 rounded font-medium text-[10px]">👔 Resp. Dupont</button>
+                    <button onclick="loginWithCredentials('p.martin', 'demo123')" class="bg-slate-100 hover:bg-slate-200 p-1.5 rounded font-medium text-[10px]">👨‍🔧 Agent Paul</button>
+                    <button onclick="loginWithCredentials('m.curie', 'demo123')" class="bg-slate-100 hover:bg-slate-200 p-1.5 rounded font-medium text-[10px]">🏛️ Maire Curie</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL 4: LIEU & COMPTEURS -->
-    <div id="locationModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3"><h3 id="locationModalTitle" class="font-bold text-slate-800 text-sm">📍 Fiche Lieu & Compteurs</h3><button onclick="closeLocationModal()" class="text-xl font-bold">&times;</button></div>
-            <form onsubmit="handleAddLocation(event)" class="space-y-3 text-xs">
-                <input type="hidden" id="locIdInput" value="">
-                <div><label class="font-semibold block mb-1">Commune</label><select id="locCommuneSelect" class="w-full border rounded p-2"></select></div>
-                <div><label class="font-semibold block mb-1">Nom du Bâtiment / Site</label><input type="text" id="locNameInput" required placeholder="ex: École Maternelle" class="w-full border rounded p-2"></div>
-                <div><label class="font-semibold block mb-1">Adresse</label><input type="text" id="locAddressInput" placeholder="ex: 12 Rue des Écoles" class="w-full border rounded p-2"></div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div><label class="font-semibold block mb-1">Compteur Élec (Réf)</label><input type="text" id="locElecInput" placeholder="ex: ELE-1234" class="w-full border rounded p-2"></div>
-                    <div><label class="font-semibold block mb-1">Compteur Eau (Réf)</label><input type="text" id="locWaterInput" placeholder="ex: EAU-5678" class="w-full border rounded p-2"></div>
+    <!-- MODALE 4: PATRIMOINE MUNICIPAL COMPLET (4 PILIERS) -->
+    <div id="patrimoineModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[92vh] overflow-y-auto shadow-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3">
+                <h3 id="patrimoineModalTitle" class="font-bold text-slate-800 text-sm">🏛️ Fiche Bien du Patrimoine Municipal</h3>
+                <button onclick="closePatrimoineModal()" class="text-xl font-bold">&times;</button>
+            </div>
+            
+            <form onsubmit="handleSavePatrimoine(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="patIdInput" value="">
+                
+                <!-- Sub-tabs modal -->
+                <div class="bg-slate-100 p-1 rounded-lg flex space-x-1 font-semibold text-[11px]">
+                    <button type="button" onclick="switchPatrimoineTab('juridique')" id="patTabBtn-juridique" class="pat-tab-btn flex-1 py-1.5 rounded bg-white shadow-xs text-brand-600">1. Admin & Juridique</button>
+                    <button type="button" onclick="switchPatrimoineTab('technique')" id="patTabBtn-technique" class="pat-tab-btn flex-1 py-1.5 rounded text-slate-600">2. Technique & Physique</button>
+                    <button type="button" onclick="switchPatrimoineTab('securite')" id="patTabBtn-securite" class="pat-tab-btn flex-1 py-1.5 rounded text-slate-600">3. Sécurité & Maintenance</button>
+                    <button type="button" onclick="switchPatrimoineTab('documents')" id="patTabBtn-documents" class="pat-tab-btn flex-1 py-1.5 rounded text-slate-600">4. Documents</button>
                 </div>
-                <div><label class="font-semibold block mb-1">Notes / Consignes d'accès</label><textarea id="locNotesInput" rows="2" class="w-full border rounded p-2"></textarea></div>
-                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeLocationModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
+
+                <!-- Section 1: Juridique -->
+                <div id="patSection-juridique" class="space-y-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div><label class="font-semibold block mb-1">Commune</label><select id="patCommuneSelect" class="w-full border rounded p-2"></select></div>
+                        <div><label class="font-semibold block mb-1">Type de Bien</label><select id="patTypeSelect" class="w-full border rounded p-2"><option value="Bâtiment">Bâtiment Municipal</option><option value="Foncier / Terrain">Foncier / Terrain</option><option value="Matériel Lourd">Matériel Lourd / Engin</option></select></div>
+                    </div>
+                    <div><label class="font-semibold block mb-1">Nom du Bâtiment / Bien</label><input type="text" id="patNameInput" required placeholder="ex: École Maternelle Saint-Éloi" class="w-full border rounded p-2"></div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div><label class="font-semibold block mb-1">N° Inventaire</label><input type="text" id="patNumInventaire" placeholder="PAT-2024-001" class="w-full border rounded p-2"></div>
+                        <div><label class="font-semibold block mb-1">Réf Cadastrale</label><input type="text" id="patRefCadastrale" placeholder="AC-104" class="w-full border rounded p-2"></div>
+                    </div>
+                    <div><label class="font-semibold block mb-1">Adresse complète</label><input type="text" id="patAddressInput" placeholder="Rue des Écoles" class="w-full border rounded p-2"></div>
+                    <div><label class="font-semibold block mb-1">Statut de propriété</label><input type="text" id="patStatutPropriete" placeholder="Domaine public / Domaine privé communal" class="w-full border rounded p-2"></div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div><label class="font-semibold block mb-1">Valeur d'Acquisition (€)</label><input type="number" id="patValeurAcquisition" placeholder="1250000" class="w-full border rounded p-2"></div>
+                        <div><label class="font-semibold block mb-1">Date d'achat / Construction</label><input type="date" id="patDateAchat" class="w-full border rounded p-2"></div>
+                        <div><label class="font-semibold block mb-1">Assurance Annuelle (€)</label><input type="number" id="patAssuranceMontant" placeholder="1800" class="w-full border rounded p-2"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label class="font-semibold block mb-1">N° Police Assurance</label><input type="text" id="patAssuranceRef" placeholder="POL-99218-AXA" class="w-full border rounded p-2"></div>
+                        <div><label class="font-semibold block mb-1">Subventions associées</label><input type="text" id="patSubventions" placeholder="DETR 2024 / Région" class="w-full border rounded p-2"></div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Technique -->
+                <div id="patSection-technique" class="hidden space-y-3">
+                    <div class="grid grid-cols-3 gap-2">
+                        <div><label class="font-semibold block mb-1">Surface au sol (m²)</label><input type="number" id="patSurfaceSol" placeholder="850" class="w-full border rounded p-2"></div>
+                        <div><label class="font-semibold block mb-1">Surface Utile (m²)</label><input type="number" id="patSurfaceUtile" placeholder="620" class="w-full border rounded p-2"></div>
+                        <div><label class="font-semibold block mb-1">Nombre de pièces</label><input type="number" id="patNbPieces" placeholder="8" class="w-full border rounded p-2"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label class="font-semibold block mb-1">N° de Série (si Matériel)</label><input type="text" id="patNumSerie" placeholder="N° Série" class="w-full border rounded p-2"></div>
+                        <div><label class="font-semibold block mb-1">État Général</label><input type="text" id="patEtatGeneral" placeholder="Bon état / À rénover" class="w-full border rounded p-2"></div>
+                    </div>
+                    <div><label class="font-semibold block mb-1">Diagnostics techniques (DPE, Amiante, Plomb)</label><textarea id="patDiagnostics" rows="2" placeholder="DPE: C | Amiante: Réalisé 2021" class="w-full border rounded p-2"></textarea></div>
+                    <div class="p-3 bg-slate-50 border rounded-lg space-y-2">
+                        <span class="font-bold text-slate-700 block">Compteurs de Fluides Associés</span>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div><label class="block mb-1 text-[10px]">⚡ Électricité (Réf)</label><input type="text" id="patElecMeter" placeholder="ELE-99823" class="w-full border rounded p-1.5"></div>
+                            <div><label class="block mb-1 text-[10px]">💧 Eau (Réf)</label><input type="text" id="patWaterMeter" placeholder="EAU-1029" class="w-full border rounded p-1.5"></div>
+                            <div><label class="block mb-1 text-[10px]">🔥 Gaz (Réf)</label><input type="text" id="patGasMeter" placeholder="GAZ-4410" class="w-full border rounded p-1.5"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Sécurité -->
+                <div id="patSection-securite" class="hidden space-y-3">
+                    <div><label class="font-semibold block mb-1">Contrôles Règlementaires (Incendie, PMR, Élec)</label><textarea id="patControles" rows="2" placeholder="Incendie ERP: Valide 2026 | PMR: Conforme" class="w-full border rounded p-2"></textarea></div>
+                    <div><label class="font-semibold block mb-1">Contrats d'Entretien & Prestataires</label><textarea id="patContrats" rows="2" placeholder="Dalkia (Chauffage) - Fin contrat 2027" class="w-full border rounded p-2"></textarea></div>
+                    <div><label class="font-semibold block mb-1">Notes d'Accès / Consignes de Sécurité</label><textarea id="patNotes" rows="2" placeholder="Clé passe P1 requise pour la cave" class="w-full border rounded p-2"></textarea></div>
+                </div>
+
+                <!-- Section 4: Documents -->
+                <div id="patSection-documents" class="hidden space-y-3">
+                    <div><label class="font-semibold block mb-1">Documents Numériques & Liens (Noms de fichiers / URLs)</label><textarea id="patDocuments" rows="3" placeholder="Plan_Maternelle.pdf, Attestation_Assurance_2026.pdf" class="w-full border rounded p-2"></textarea></div>
+                </div>
+
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closePatrimoineModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer le Bien</button></div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL 5: RELEVÉ DE COMPTEUR -->
+    <!-- MODALE 5: RELEVÉ DE COMPTEUR (PAGE SÉPARÉE) -->
     <div id="releveModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl p-6 space-y-4">
             <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800 text-sm">📊 Nouveau Relevé de Compteur</h3><button onclick="closeReleveModal()" class="text-xl font-bold">&times;</button></div>
             <form onsubmit="handleSaveReleve(event)" class="space-y-3 text-xs">
-                <div><label class="font-semibold block mb-1">Bâtiment / Lieu</label><select id="releveLieuSelect" class="w-full border rounded p-2"></select></div>
-                <div><label class="font-semibold block mb-1">Type de Fluide</label><select id="releveTypeSelect" class="w-full border rounded p-2"><option value="Eau">💧 Eau (m³)</option><option value="Électricité">⚡ Électricité (kWh)</option></select></div>
+                <div><label class="font-semibold block mb-1">Bâtiment / Bien du Patrimoine</label><select id="relevePatrimoineSelect" class="w-full border rounded p-2"></select></div>
+                <div><label class="font-semibold block mb-1">Type de Fluide</label><select id="releveTypeSelect" class="w-full border rounded p-2"><option value="Eau">💧 Eau (m³)</option><option value="Électricité">⚡ Électricité (kWh)</option><option value="Gaz">🔥 Gaz (m³ / kWh)</option></select></div>
                 <div><label class="font-semibold block mb-1">Index Relevé</label><input type="number" step="0.1" id="releveValueInput" required placeholder="ex: 1285.2" class="w-full border rounded p-2"></div>
                 <div><label class="font-semibold block mb-1">Date du relevé</label><input type="date" id="releveDateInput" required class="w-full border rounded p-2"></div>
-                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeReleveModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-emerald-600 text-white rounded font-semibold">Enregistrer Relevé</button></div>
+                <div><label class="font-semibold block mb-1">Remarque / Note</label><input type="text" id="releveRemarqueInput" placeholder="ex: Relevé mensuel standard" class="w-full border rounded p-2"></div>
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeReleveModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-cyan-600 text-white rounded font-semibold">Enregistrer Relevé</button></div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL 6: UTILISATEUR & AGENT UNIFIÉ -->
+    <!-- MODALE 6: UTILISATEUR & AGENT (MODIFIABLE & CRÉATION) -->
     <div id="userModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3"><h3 id="userModalTitle" class="font-bold text-slate-800 text-sm">👤 Compte Utilisateur / Agent ST</h3><button onclick="closeUserModal()" class="text-xl font-bold">&times;</button></div>
+            <div class="flex items-center justify-between border-b pb-3"><h3 id="userModalTitle" class="font-bold text-slate-800 text-sm">👤 Compte Utilisateur & Mot de Passe</h3><button onclick="closeUserModal()" class="text-xl font-bold">&times;</button></div>
             <form onsubmit="handleAddUser(event)" class="space-y-3 text-xs">
                 <input type="hidden" id="userIdInput" value="">
                 <div><label class="font-semibold block mb-1">Nom & Prénom</label><input type="text" id="userNameInput" required placeholder="Paul Martin" class="w-full border rounded p-2"></div>
-                <div><label class="font-semibold block mb-1">Email / Identifiant</label><input type="email" id="userEmailInput" required placeholder="p.martin@commune.fr" class="w-full border rounded p-2"></div>
                 <div class="grid grid-cols-2 gap-2">
-                    <div><label class="font-semibold block mb-1">Rôle</label><select id="userRoleSelect" onchange="toggleAgentFieldsInUserModal(this.value)" class="w-full border rounded p-2"><option value="demandeur">Demandeur</option><option value="agent" selected>Agent ST (Terrain)</option><option value="responsable">Responsable ST</option><option value="direction">Maire / DGS</option><option value="admin">Admin</option></select></div>
+                    <div><label class="font-semibold block mb-1">Identifiant Login</label><input type="text" id="userUsernameInput" required placeholder="p.martin" class="w-full border rounded p-2"></div>
+                    <div><label class="font-semibold block mb-1">Mot de Passe</label><input type="text" id="userPasswordInput" required value="demo123" class="w-full border rounded p-2"></div>
+                </div>
+                <div><label class="font-semibold block mb-1">Email</label><input type="email" id="userEmailInput" required placeholder="p.martin@commune.fr" class="w-full border rounded p-2"></div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label class="font-semibold block mb-1">Rôle Système</label><select id="userRoleSelect" onchange="toggleAgentFieldsInUserModal(this.value)" class="w-full border rounded p-2"><option value="demandeur">Demandeur</option><option value="agent" selected>Agent ST (Terrain)</option><option value="responsable">Responsable ST</option><option value="direction">Maire / DGS</option><option value="admin">⚡ Administrateur</option></select></div>
                     <div><label class="font-semibold block mb-1">Commune</label><select id="userCommuneSelect" class="w-full border rounded p-2"></select></div>
                 </div>
-                <!-- Agent specific fields -->
+                <!-- Champs spécifiques agents -->
                 <div id="agentFieldsContainer" class="p-3 bg-slate-50 border rounded space-y-2">
                     <div><label class="font-semibold block mb-1">Spécialité / Qualifications</label><input type="text" id="userSkillInput" placeholder="ex: Plomberie / CACES Nacelle" class="w-full border rounded p-1.5"></div>
                     <div class="grid grid-cols-2 gap-2">
@@ -482,7 +600,34 @@
                         <div><label class="font-semibold block mb-1">Avatar Emoji</label><input type="text" id="userAvatarInput" value="👨‍🔧" class="w-full border rounded p-1.5 text-center"></div>
                     </div>
                 </div>
-                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeUserModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeUserModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer le compte</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODALE 7: CATEGORIE -->
+    <div id="categoryModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-xs w-full shadow-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800 text-sm">🏷️ Catégorie</h3><button onclick="closeCategoryModal()" class="text-xl font-bold">&times;</button></div>
+            <form onsubmit="handleSaveCategory(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="catIdInput" value="">
+                <div><label class="font-semibold block mb-1">Nom de la catégorie</label><input type="text" id="catNameInput" required placeholder="ex: Espaces Verts" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Émoji</label><input type="text" id="catEmojiInput" value="🌳" class="w-full border rounded p-2 text-center text-lg"></div>
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeCategoryModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODALE 8: COMMUNE -->
+    <div id="communeModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-xs w-full shadow-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800 text-sm">🏛️ Commune Membre</h3><button onclick="closeCommuneModal()" class="text-xl font-bold">&times;</button></div>
+            <form onsubmit="handleSaveCommune(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="comIdInput" value="">
+                <div><label class="font-semibold block mb-1">Nom de la commune</label><input type="text" id="comNameInput" required placeholder="ex: Gimont" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Responsable Technique</label><input type="text" id="comRespInput" placeholder="ex: Jean Dupont" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Téléphone Mairie / ST</label><input type="text" id="comPhoneInput" placeholder="ex: 05 62 67 70 02" class="w-full border rounded p-2"></div>
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeCommuneModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
             </form>
         </div>
     </div>
@@ -493,26 +638,26 @@
     <script>
         let currentUser = null;
         let currentRole = 'responsable';
-        let currentCommuneFilter = 'Saint-Aurin';
+        let currentCommuneFilter = 'Gimont';
         let activeTab = 'interventions';
         let activeTicketId = null;
-        let activeLieuId = 1;
-        let lieuChartInstance = null;
+        let activePatrimoineId = 1;
+        let releveChartInstance = null;
 
         const roleData = {
             demandeur: { title: "Espace Demandeur / Citoyen", desc: "Saisie rapide de nouvelles demandes et suivi direct des travaux.", icon: "👤" },
             agent: { title: "Espace Agent du Service Technique", desc: "Consultation des fiches de travail, relevé des compteurs et suivi de chantier.", icon: "👨‍🔧" },
-            responsable: { title: "Espace Responsable Service Technique", desc: "Validation, affectation aux agents, planification et gestion des bâtiments.", icon: "👔" },
-            direction: { title: "Espace Direction (Maire / DGS)", desc: "Vue synthétique, suivi budgétaire, statistiques et consommations d'eau/élec.", icon: "🏛️" },
-            admin: { title: "Espace Administrateur Système", desc: "Gestion globale des accès, référentiels, communes et comptes utilisateurs.", icon: "⚡" }
+            responsable: { title: "Espace Responsable Service Technique (Gimont)", desc: "Validation, affectation aux agents, planification et gestion du patrimoine.", icon: "👔" },
+            direction: { title: "Espace Direction (Maire / DGS)", desc: "Vue synthétique, suivi budgétaire, statistiques et consommations.", icon: "🏛️" },
+            admin: { title: "Espace Administrateur Système", desc: "Gestion globale des accès, référentiels, patrimoine, communes et comptes utilisateurs.", icon: "⚡" }
         };
 
         const rolePermissions = {
-            demandeur: { interventions: true, lieux: false, mutualisation: false, equipe: false, statistiques: false, parametres: false },
-            agent: { interventions: true, lieux: true, mutualisation: true, equipe: true, statistiques: false, parametres: false },
-            responsable: { interventions: true, lieux: true, mutualisation: true, equipe: true, statistiques: true, parametres: true },
-            direction: { interventions: true, lieux: true, mutualisation: true, equipe: true, statistiques: true, parametres: false },
-            admin: { interventions: true, lieux: true, mutualisation: true, equipe: true, statistiques: true, parametres: true }
+            demandeur: { interventions: true, patrimoine: false, releves: false, mutualisation: false, equipe: false, statistiques: false, parametres: false },
+            agent: { interventions: true, patrimoine: true, releves: true, mutualisation: true, equipe: true, statistiques: false, parametres: false },
+            responsable: { interventions: true, patrimoine: true, releves: true, mutualisation: true, equipe: true, statistiques: true, parametres: true },
+            direction: { interventions: true, patrimoine: true, releves: true, mutualisation: true, equipe: true, statistiques: true, parametres: false },
+            admin: { interventions: true, patrimoine: true, releves: true, mutualisation: true, equipe: true, statistiques: true, parametres: true }
         };
 
         let categoriesList = [
@@ -524,52 +669,53 @@
             { id: 6, name: "Propreté & Salubrité", emoji: "🧹" }
         ];
 
-        let locationsList = [
-            { id: 1, commune: "Saint-Aurin", name: "École Maternelle Les Lutins", address: "12 Rue des Écoles", category: "Bâtiment", elecMeter: "ELE-99823", waterMeter: "EAU-1029", notes: "Accès portillon sud" },
-            { id: 2, commune: "Saint-Aurin", name: "Mairie Centrale & Place", address: "1 Place de la République", category: "Administration", elecMeter: "ELE-10029", waterMeter: "EAU-3301", notes: "Compteur eau cave" },
-            { id: 3, commune: "Saint-Aurin", name: "Gymnase Municipal", address: "Avenue du Sport", category: "Sport", elecMeter: "ELE-44910", waterMeter: "EAU-8821", notes: "Clef passe P1" }
+        let patrimoineList = [
+            { id: 1, commune: "Gimont", name: "École Maternelle Saint-Éloi", type_bien: "Bâtiment", num_inventaire: "PAT-2024-001", address: "Rue des Écoles", ref_cadastrale: "AC-104", statut_propriete: "Domaine public communal", valeur_acquisition: 1250000, date_achat: "2005-06-15", subventions: "DETR 2005 (30%)", assurance_ref: "POL-99218-AXA", assurance_montant: 1800, surface_sol: 850, surface_utile: 620, nb_pieces: 8, num_serie: "", etat_general: "Bon état général", diagnostics: "DPE: C | Amiante: Réalisé 2021", elecMeter: "ELE-99823", waterMeter: "EAU-1029", gasMeter: "GAZ-4410", controles_reglementaires: "Incendie ERP: Valide 2026", contrats_entretien: "Dalkia (Chauffage) - Fin 2027", notes: "Accès par le portillon sud", documents: "Plan_Maternelle.pdf" },
+            { id: 2, commune: "Gimont", name: "Halle Centrale & Mairie", type_bien: "Bâtiment", num_inventaire: "PAT-2024-002", address: "Place de la Halle", ref_cadastrale: "AB-012", statut_propriete: "Domaine public communal", valeur_acquisition: 3400000, date_achat: "1990-01-01", subventions: "Région Occitanie", assurance_ref: "POL-99218-AXA", assurance_montant: 3200, surface_sol: 1400, surface_utile: 1100, nb_pieces: 14, num_serie: "", etat_general: "Excellent - Rénové 2022", diagnostics: "DPE: B | Amiante: Néant", elecMeter: "ELE-10029", waterMeter: "EAU-3301", gasMeter: "", controles_reglementaires: "Incendie: Contrôle annuel Juin", contrats_entretien: "Apave - SSI & Électricité", notes: "Compteur eau sous la halle", documents: "Notice_Securite.pdf" },
+            { id: 3, commune: "Gimont", name: "Gymnase & Complexe Sportif", type_bien: "Bâtiment", num_inventaire: "PAT-2024-003", address: "Avenue Sadi Carnot", ref_cadastrale: "AD-088", statut_propriete: "Domaine privé communal", valeur_acquisition: 2100000, date_achat: "2012-09-20", subventions: "CNDS / FEDER", assurance_ref: "POL-99218-AXA", assurance_montant: 2500, surface_sol: 2200, surface_utile: 1850, nb_pieces: 6, num_serie: "", etat_general: "Moyen - Toiture à réviser", diagnostics: "DPE: D", elecMeter: "ELE-44910", waterMeter: "EAU-8821", gasMeter: "GAZ-8812", controles_reglementaires: "Ascenseur: Schindler OK", contrats_entretien: "ENGIE / Schindler", notes: "Clé passe P1 requise", documents: "DPE_Gymnase.pdf" }
         ];
 
         let communesList = [
-            { id: 1, name: "Saint-Aurin", respTech: "Jean Dupont", phone: "05 62 00 11 22" },
-            { id: 2, name: "Val-de-Marse", respTech: "Marc Bernard", phone: "05 62 11 22 33" },
-            { id: 3, name: "Beaulieu-les-Pins", respTech: "Alain Mercier", phone: "05 62 22 33 44" }
+            { id: 1, name: "Gimont", respTech: "Jean Dupont", phone: "05 62 67 70 02" },
+            { id: 2, name: "Aubiet", respTech: "Marc Bernard", phone: "05 62 65 90 01" },
+            { id: 3, name: "Juilles", respTech: "Alain Mercier", phone: "05 62 65 91 10" }
         ];
 
         let usersList = [
-            { id: 1, name: "Jean Dupont", email: "j.dupont@st-aurin.fr", role: "responsable", commune: "Saint-Aurin", skill: "Gestion & Plomberie", status: "Disponible", avatar: "👨‍💼" },
-            { id: 2, name: "Paul Martin", email: "p.martin@st-aurin.fr", role: "agent", commune: "Saint-Aurin", skill: "Plomberie / CACES Nacelle", status: "Disponible", avatar: "👨‍🔧" },
-            { id: 3, name: "Marc Lambert", email: "m.lambert@st-aurin.fr", role: "agent", commune: "Saint-Aurin", skill: "Électricien / Habilitation BR", status: "En mission", avatar: "⚡" },
-            { id: 4, name: "Marie Curie", email: "m.curie@val-demarse.fr", role: "direction", commune: "Val-de-Marse", skill: "DGS", status: "Disponible", avatar: "🏛️" },
-            { id: 5, name: "Administrateur", email: "admin@citgest.fr", role: "admin", commune: "Saint-Aurin", skill: "Admin Système", status: "Disponible", avatar: "⚡" }
+            { id: 1, username: "admin", password: "admin", name: "Administrateur Général", email: "admin@citgest.fr", role: "admin", commune: "Gimont", skill: "Admin Système & DGS", status: "Disponible", avatar: "⚡" },
+            { id: 2, username: "j.dupont", password: "demo123", name: "Jean Dupont", email: "j.dupont@gimont.fr", role: "responsable", commune: "Gimont", skill: "Responsable ST & Plomberie", status: "Disponible", avatar: "👨‍💼" },
+            { id: 3, username: "p.martin", password: "demo123", name: "Paul Martin", email: "p.martin@gimont.fr", role: "agent", commune: "Gimont", skill: "Plomberie / CACES Nacelle", status: "Disponible", avatar: "👨‍🔧" },
+            { id: 4, username: "m.lambert", password: "demo123", name: "Marc Lambert", email: "m.lambert@gimont.fr", role: "agent", commune: "Gimont", skill: "Électricien / Habilitation BR", status: "En mission", avatar: "⚡" },
+            { id: 5, username: "m.curie", password: "demo123", name: "Marie Curie", email: "m.curie@aubiet.fr", role: "direction", commune: "Aubiet", skill: "Maire / Direction", status: "Disponible", avatar: "🏛️" }
         ];
 
         let equipmentList = [
-            { id: "EQ-1", name: "Nacelle Élévatrice 18M", owner: "Saint-Aurin", status: "Libre", desc: "Élagage et éclairage public.", icon: "🏗️" },
-            { id: "EQ-2", name: "Broyeur de branches (80 HP)", owner: "Val-de-Marse", status: "En utilisation", desc: "Broyeur de branches tracté.", icon: "🪵" }
+            { id: "EQ-1", name: "Nacelle Élévatrice 18M", owner: "Gimont", status: "Libre", desc: "Élagage et éclairage public.", icon: "🏗️" },
+            { id: "EQ-2", name: "Broyeur de branches (80 HP)", owner: "Aubiet", status: "En utilisation", desc: "Broyeur de branches tracté.", icon: "🪵" }
         ];
 
         let relevesList = [
-            { id: 1, lieu_id: 1, type: "Eau", valeur: 1240.5, dateReleve: "2026-08-01", agentName: "Paul Martin" },
-            { id: 2, lieu_id: 1, type: "Eau", valeur: 1285.2, dateReleve: "2026-09-01", agentName: "Paul Martin" },
-            { id: 3, lieu_id: 1, type: "Électricité", valeur: 34100, dateReleve: "2026-08-01", agentName: "Marc Lambert" },
-            { id: 4, lieu_id: 1, type: "Électricité", valeur: 34820, dateReleve: "2026-09-01", agentName: "Marc Lambert" }
+            { id: 1, patrimoine_id: 1, type: "Eau", valeur: 1240.5, dateReleve: "2026-08-01", agentName: "Paul Martin", remarque: "Normal" },
+            { id: 2, patrimoine_id: 1, type: "Eau", valeur: 1285.2, dateReleve: "2026-09-01", agentName: "Paul Martin", remarque: "Consommation stable" },
+            { id: 3, patrimoine_id: 1, type: "Électricité", valeur: 34100, dateReleve: "2026-08-01", agentName: "Marc Lambert", remarque: "Période été" },
+            { id: 4, patrimoine_id: 1, type: "Électricité", valeur: 34820, dateReleve: "2026-09-01", agentName: "Marc Lambert", remarque: "Relevé standard" }
         ];
 
         let tickets = [
-            { id: "INT-101", commune: "Saint-Aurin", category: "Bâtiments & Écoles", title: "Fuite d'eau lavabo école", location: "École Maternelle Les Lutins", priority: "URGENT", status: "EN_COURS", requester: "Mme Dubois", contact: "06 12 34 56 78", description: "Robinet fuit abondamment.", dateCreated: "2026-09-08 08:30", assignedAgentId: 2, comments: [{ author: "Mme Dubois", text: "Signalé à l'ouverture", date: "08:30" }] },
-            { id: "INT-102", commune: "Saint-Aurin", category: "Voirie & Signalisat.", title: "Nid-de-poule rue du Stade", location: "Rue du Stade", priority: "MOYEN", status: "NOUVELLE", requester: "Mairie", contact: "05 62 00 11 22", description: "Trou de 15cm sur la chaussée.", dateCreated: "2026-09-08 09:10", assignedAgentId: null, comments: [] }
+            { id: "INT-101", commune: "Gimont", category: "Bâtiments & Écoles", title: "Fuite d'eau lavabo école Saint-Éloi", location: "École Maternelle Saint-Éloi", priority: "URGENT", status: "EN_COURS", requester: "Mme Dubois", contact: "06 12 34 56 78", description: "Robinet fuit abondamment dans le bloc sanitaire.", dateCreated: "2026-09-08 08:30", assignedAgentId: 3, comments: [{ author: "Mme Dubois", text: "Signalé à l'ouverture de l'école.", date: "08:30" }] },
+            { id: "INT-102", commune: "Gimont", category: "Voirie & Signalisat.", title: "Nid-de-poule Avenue Sadi Carnot", location: "Avenue Sadi Carnot", priority: "MOYEN", status: "NOUVELLE", requester: "Mairie de Gimont", contact: "05 62 67 70 02", description: "Trou de 15cm sur la chaussée.", dateCreated: "2026-09-08 09:10", assignedAgentId: null, comments: [] }
         ];
 
         window.onload = function() {
             updateCommuneDropdowns();
             updateCategoryDropdowns();
-            updateModalLocationDropdown();
+            updateModalPatrimoineDropdown();
             quickSwitchUserRole(currentRole);
             renderTickets();
+            renderPatrimoineView();
+            renderRelevesView();
             renderAgentsAndUsers();
             renderEquipment();
-            renderLocationsView();
             renderParamTables();
             initCharts();
             tryConnectBackendAPI();
@@ -582,7 +728,7 @@
                     if (data && data.success) {
                         if (data.tickets) tickets = data.tickets;
                         if (data.categories) categoriesList = data.categories;
-                        if (data.locations) locationsList = data.locations;
+                        if (data.patrimoine) patrimoineList = data.patrimoine;
                         if (data.communes) communesList = data.communes;
                         if (data.users) usersList = data.users;
                         if (data.equipment) equipmentList = data.equipment;
@@ -591,9 +737,10 @@
                         updateCommuneDropdowns();
                         updateCategoryDropdowns();
                         renderTickets();
+                        renderPatrimoineView();
+                        renderRelevesView();
                         renderAgentsAndUsers();
                         renderEquipment();
-                        renderLocationsView();
                         renderParamTables();
                         showToast("Base SQLite synchronisée", "success");
                     }
@@ -603,13 +750,14 @@
 
         function switchTab(tabId) {
             activeTab = tabId;
-            ['interventions', 'lieux', 'mutualisation', 'equipe', 'statistiques', 'parametres'].forEach(t => {
+            ['interventions', 'patrimoine', 'releves', 'mutualisation', 'equipe', 'statistiques', 'parametres'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
                 const view = document.getElementById(`view-${t}`);
                 if (btn) btn.className = `tab-btn pb-3 px-1 flex items-center gap-1.5 whitespace-nowrap ${t === tabId ? 'text-brand-600 border-b-2 border-brand-600 font-semibold' : 'text-slate-500 border-b-2 border-transparent'}`;
                 if (view) view.classList.toggle('hidden', t !== tabId);
             });
-            if (tabId === 'lieux') renderLocationsView();
+            if (tabId === 'patrimoine') renderPatrimoineView();
+            if (tabId === 'releves') renderRelevesView();
         }
 
         function quickSwitchUserRole(role) {
@@ -619,7 +767,7 @@
             document.getElementById('roleBannerDesc').innerText = info.desc;
             document.getElementById('roleBannerIcon').innerText = info.icon;
             
-            // Show Admin Simulator dropdown if role is admin
+            // Masquer ou afficher le sélecteur Admin pour les autres rôles
             const adminSim = document.getElementById('adminRoleSimulator');
             if (adminSim) adminSim.classList.toggle('hidden', currentRole !== 'admin' && (!currentUser || currentUser.role !== 'admin'));
 
@@ -635,6 +783,7 @@
                     <div class="flex items-center gap-2 bg-slate-800 border border-slate-700 px-2.5 py-1 rounded-lg text-xs">
                         <span class="text-sm">${currentUser.avatar || '👤'}</span>
                         <span class="font-semibold text-white hidden sm:inline">${currentUser.name}</span>
+                        <span class="bg-brand-500/40 text-brand-200 text-[10px] px-1.5 py-0.5 rounded">${currentUser.role}</span>
                         <button onclick="logoutUser()" class="text-xs text-rose-400 hover:underline ml-1">Quitter</button>
                     </div>
                 `;
@@ -647,7 +796,7 @@
 
         function applyRolePermissions() {
             const perms = rolePermissions[currentRole] || rolePermissions.responsable;
-            ['interventions', 'lieux', 'mutualisation', 'equipe', 'statistiques', 'parametres'].forEach(tab => {
+            ['interventions', 'patrimoine', 'releves', 'mutualisation', 'equipe', 'statistiques', 'parametres'].forEach(tab => {
                 const tabBtn = document.getElementById(`tab-${tab}`);
                 if (tabBtn) tabBtn.classList.toggle('hidden', !perms[tab]);
             });
@@ -656,20 +805,26 @@
 
         function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
         function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
-        function loginAs(email) {
-            const u = usersList.find(x => x.email === email);
+
+        function loginWithCredentials(username, pass) {
+            const u = usersList.find(x => (x.username === username || x.email === username) && x.password === pass);
             if (u) {
                 currentUser = u;
                 quickSwitchUserRole(u.role);
                 closeLoginModal();
-                showToast(`Connecté : ${u.name}`, "success");
+                showToast(`Bienvenue ${u.name} !`, "success");
+            } else {
+                showToast("Identifiants incorrects", "error");
             }
         }
+
         function handleUserLogin(e) {
             e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            loginAs(email);
+            const username = document.getElementById('loginUsername').value;
+            const pass = document.getElementById('loginPass').value;
+            loginWithCredentials(username, pass);
         }
+
         function logoutUser() {
             currentUser = null;
             quickSwitchUserRole('demandeur');
@@ -679,17 +834,18 @@
         function changeCommune(val) {
             currentCommuneFilter = val;
             applyFilters();
-            renderLocationsView();
+            renderPatrimoineView();
+            renderRelevesView();
         }
 
         function updateCommuneDropdowns() {
-            ['communeSelect', 'modalCommune', 'locCommuneSelect', 'userCommuneSelect'].forEach(id => {
+            ['communeSelect', 'modalCommune', 'patCommuneSelect', 'userCommuneSelect', 'comNameInput'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
                     if (id === 'communeSelect') {
                         el.innerHTML = communesList.map(c => `<option value="${c.name}">Commune : ${c.name}</option>`).join('') + `<option value="ALL">🌐 Vue Communauté de Communes</option>`;
                         el.value = currentCommuneFilter;
-                    } else {
+                    } else if (el.tagName === 'SELECT') {
                         el.innerHTML = communesList.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
                     }
                 }
@@ -703,15 +859,15 @@
             if (modalCatSelect) modalCatSelect.innerHTML = categoriesList.map(c => `<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('');
         }
 
-        function updateModalLocationDropdown() {
+        function updateModalPatrimoineDropdown() {
             const commSelect = document.getElementById('modalCommune');
-            const locSelect = document.getElementById('modalLocationSelect');
-            if (!commSelect || !locSelect) return;
-            const filtered = locationsList.filter(l => l.commune === commSelect.value);
-            locSelect.innerHTML = filtered.map(l => `<option value="${l.name}">${l.name}</option>`).join('') + `<option value="CUSTOM">➕ Autre lieu...</option>`;
+            const patSelect = document.getElementById('modalPatrimoineSelect');
+            if (!commSelect || !patSelect) return;
+            const filtered = patrimoineList.filter(p => p.commune === commSelect.value);
+            patSelect.innerHTML = filtered.map(p => `<option value="${p.name}">${p.name}</option>`).join('') + `<option value="CUSTOM">➕ Autre lieu...</option>`;
         }
 
-        function handleLocationSelectChange(val) {
+        function handlePatrimoineSelectChange(val) {
             const input = document.getElementById('modalLocationCustom');
             if (input) input.classList.toggle('hidden', val !== 'CUSTOM');
         }
@@ -767,7 +923,7 @@
 
         function handleCreateTicket(e) {
             e.preventDefault();
-            const locVal = document.getElementById('modalLocationSelect').value;
+            const locVal = document.getElementById('modalPatrimoineSelect').value;
             const customLoc = document.getElementById('modalLocationCustom').value;
             const newTicket = {
                 id: `INT-${Math.floor(100 + Math.random() * 900)}`,
@@ -842,82 +998,216 @@
             }
         }
 
-        // UNIFIED USERS & AGENTS RENDER
-        function renderAgentsAndUsers() {
-            const grid = document.getElementById('agentsGrid');
+        function renderPatrimoineView() {
+            const grid = document.getElementById('patrimoineGrid');
             if (!grid) return;
-            grid.innerHTML = usersList.map(u => `
-                <div class="bg-white p-4 border rounded-xl shadow-xs flex items-start gap-3">
-                    <span class="text-3xl">${u.avatar || (u.role === 'agent' ? '👨‍🔧' : '👤')}</span>
-                    <div class="flex-1">
+            const filtered = patrimoineList.filter(p => currentCommuneFilter === 'ALL' || p.commune === currentCommuneFilter);
+
+            grid.innerHTML = filtered.map(p => `
+                <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-3 flex flex-col justify-between">
+                    <div class="space-y-2">
                         <div class="flex justify-between items-start">
-                            <h4 class="font-bold text-sm text-slate-800">${u.name}</h4>
-                            <span class="text-[10px] bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-mono">${u.role}</span>
+                            <span class="bg-emerald-50 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-200">${p.type_bien || 'Bâtiment'}</span>
+                            <span class="font-mono text-[10px] text-slate-400">${p.num_inventaire || 'PAT-00'}</span>
                         </div>
-                        <p class="text-xs text-brand-600 font-medium">${u.skill || 'Utilisateur Système'}</p>
-                        <p class="text-[10px] text-slate-400 mt-1">🏛️ ${u.commune} | ✉️ ${u.email}</p>
+                        <h4 class="font-bold text-slate-800 text-base">${p.name}</h4>
+                        <p class="text-xs text-slate-500">📍 ${p.address || p.commune} | Cadastre: ${p.ref_cadastrale || 'N/A'}</p>
+                        
+                        <div class="p-2.5 bg-slate-50 rounded-lg text-xs space-y-1">
+                            <p><strong>Statut:</strong> ${p.statut_propriete || 'Domaine communal'}</p>
+                            <p><strong>Surface:</strong> ${p.surface_sol || '0'} m² (${p.surface_utile || '0'} m² utile)</p>
+                            <p><strong>Diagnostics:</strong> ${p.diagnostics || 'DPE Conforme'}</p>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t flex justify-between items-center text-xs">
+                        <div class="flex gap-2 text-[10px] text-slate-500">
+                            <span>⚡ ${p.elecMeter || '-'}</span>
+                            <span>💧 ${p.waterMeter || '-'}</span>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="editPatrimoine(${p.id})" class="px-2 py-1 bg-brand-50 hover:bg-brand-100 text-brand-700 rounded font-semibold text-[11px]">✏️ Éditer</button>
+                            <button onclick="deletePatrimoine(${p.id})" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded font-semibold text-[11px]">🗑️</button>
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        function renderEquipment() {
-            document.getElementById('equipmentGrid').innerHTML = equipmentList.map(e => `<div class="bg-white p-4 border rounded-xl shadow-xs"><span class="text-2xl">${e.icon}</span><h4 class="font-bold text-sm mt-1">${e.name}</h4><p class="text-xs text-slate-500">${e.desc}</p><span class="inline-block mt-2 text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">${e.owner}</span></div>`).join('');
-        }
-
-        // LOCATIONS & METER READINGS VIEW LOGIC
-        function renderLocationsView() {
-            const container = document.getElementById('locationsListContainer');
-            if (!container) return;
-            const filteredLocs = locationsList.filter(l => currentCommuneFilter === 'ALL' || l.commune === currentCommuneFilter);
+        function openPatrimoineModal() {
+            updateCommuneDropdowns();
+            document.getElementById('patIdInput').value = '';
+            document.getElementById('patNameInput').value = '';
+            document.getElementById('patNumInventaire').value = '';
+            document.getElementById('patAddressInput').value = '';
+            document.getElementById('patRefCadastrale').value = '';
+            document.getElementById('patStatutPropriete').value = 'Domaine public communal';
+            document.getElementById('patValeurAcquisition').value = '';
+            document.getElementById('patDateAchat').value = '';
+            document.getElementById('patAssuranceMontant').value = '';
+            document.getElementById('patAssuranceRef').value = '';
+            document.getElementById('patSubventions').value = '';
+            document.getElementById('patSurfaceSol').value = '';
+            document.getElementById('patSurfaceUtile').value = '';
+            document.getElementById('patNbPieces').value = '';
+            document.getElementById('patNumSerie').value = '';
+            document.getElementById('patEtatGeneral').value = 'Bon état général';
+            document.getElementById('patDiagnostics').value = '';
+            document.getElementById('patElecMeter').value = '';
+            document.getElementById('patWaterMeter').value = '';
+            document.getElementById('patGasMeter').value = '';
+            document.getElementById('patControles').value = '';
+            document.getElementById('patContrats').value = '';
+            document.getElementById('patNotes').value = '';
+            document.getElementById('patDocuments').value = '';
             
-            container.innerHTML = filteredLocs.map(l => `
-                <div onclick="selectActiveLieu(${l.id})" class="bg-white p-4 rounded-xl border ${l.id === activeLieuId ? 'border-brand-500 ring-2 ring-brand-100' : 'border-slate-200'} shadow-sm cursor-pointer hover:border-brand-300 transition-all">
+            switchPatrimoineTab('juridique');
+            document.getElementById('patrimoineModal').classList.remove('hidden');
+        }
+
+        function closePatrimoineModal() { document.getElementById('patrimoineModal').classList.add('hidden'); }
+
+        function switchPatrimoineTab(sub) {
+            ['juridique', 'technique', 'securite', 'documents'].forEach(s => {
+                const sec = document.getElementById(`patSection-${s}`);
+                const btn = document.getElementById(`patTabBtn-${s}`);
+                if (sec) sec.classList.toggle('hidden', s !== sub);
+                if (btn) btn.className = `pat-tab-btn flex-1 py-1.5 rounded ${s === sub ? 'bg-white shadow-xs text-brand-600 font-bold' : 'text-slate-600'}`;
+            });
+        }
+
+        function editPatrimoine(id) {
+            const p = patrimoineList.find(x => x.id === id);
+            if (!p) return;
+            openPatrimoineModal();
+            document.getElementById('patIdInput').value = p.id;
+            document.getElementById('patCommuneSelect').value = p.commune;
+            document.getElementById('patTypeSelect').value = p.type_bien || 'Bâtiment';
+            document.getElementById('patNameInput').value = p.name;
+            document.getElementById('patNumInventaire').value = p.num_inventaire || '';
+            document.getElementById('patAddressInput').value = p.address || '';
+            document.getElementById('patRefCadastrale').value = p.ref_cadastrale || '';
+            document.getElementById('patStatutPropriete').value = p.statut_propriete || '';
+            document.getElementById('patValeurAcquisition').value = p.valeur_acquisition || '';
+            document.getElementById('patDateAchat').value = p.date_achat || '';
+            document.getElementById('patAssuranceMontant').value = p.assurance_montant || '';
+            document.getElementById('patAssuranceRef').value = p.assurance_ref || '';
+            document.getElementById('patSubventions').value = p.subventions || '';
+            document.getElementById('patSurfaceSol').value = p.surface_sol || '';
+            document.getElementById('patSurfaceUtile').value = p.surface_utile || '';
+            document.getElementById('patNbPieces').value = p.nb_pieces || '';
+            document.getElementById('patNumSerie').value = p.num_serie || '';
+            document.getElementById('patEtatGeneral').value = p.etat_general || '';
+            document.getElementById('patDiagnostics').value = p.diagnostics || '';
+            document.getElementById('patElecMeter').value = p.elecMeter || '';
+            document.getElementById('patWaterMeter').value = p.waterMeter || '';
+            document.getElementById('patGasMeter').value = p.gasMeter || '';
+            document.getElementById('patControles').value = p.controles_reglementaires || '';
+            document.getElementById('patContrats').value = p.contrats_entretien || '';
+            document.getElementById('patNotes').value = p.notes || '';
+            document.getElementById('patDocuments').value = p.documents || '';
+        }
+
+        function handleSavePatrimoine(e) {
+            e.preventDefault();
+            const id = document.getElementById('patIdInput').value;
+            const item = {
+                id: id ? parseInt(id) : Date.now(),
+                commune: document.getElementById('patCommuneSelect').value,
+                type_bien: document.getElementById('patTypeSelect').value,
+                name: document.getElementById('patNameInput').value,
+                num_inventaire: document.getElementById('patNumInventaire').value,
+                address: document.getElementById('patAddressInput').value,
+                ref_cadastrale: document.getElementById('patRefCadastrale').value,
+                statut_propriete: document.getElementById('patStatutPropriete').value,
+                valeur_acquisition: parseFloat(document.getElementById('patValeurAcquisition').value) || 0,
+                date_achat: document.getElementById('patDateAchat').value,
+                assurance_montant: parseFloat(document.getElementById('patAssuranceMontant').value) || 0,
+                assurance_ref: document.getElementById('patAssuranceRef').value,
+                subventions: document.getElementById('patSubventions').value,
+                surface_sol: parseFloat(document.getElementById('patSurfaceSol').value) || 0,
+                surface_utile: parseFloat(document.getElementById('patSurfaceUtile').value) || 0,
+                nb_pieces: parseInt(document.getElementById('patNbPieces').value) || 0,
+                num_serie: document.getElementById('patNumSerie').value,
+                etat_general: document.getElementById('patEtatGeneral').value,
+                diagnostics: document.getElementById('patDiagnostics').value,
+                elecMeter: document.getElementById('patElecMeter').value,
+                waterMeter: document.getElementById('patWaterMeter').value,
+                gasMeter: document.getElementById('patGasMeter').value,
+                controles_reglementaires: document.getElementById('patControles').value,
+                contrats_entretien: document.getElementById('patContrats').value,
+                notes: document.getElementById('patNotes').value,
+                documents: document.getElementById('patDocuments').value
+            };
+
+            if (id) {
+                const idx = patrimoineList.findIndex(x => x.id == id);
+                if (idx !== -1) patrimoineList[idx] = item;
+            } else {
+                patrimoineList.push(item);
+            }
+
+            fetch('api.php?action=save_patrimoine', { method: 'POST', body: JSON.stringify(item) }).catch(() => {});
+            closePatrimoineModal();
+            renderPatrimoineView();
+            updateModalPatrimoineDropdown();
+            showToast("Fiche Patrimoine enregistrée !", "success");
+        }
+
+        function deletePatrimoine(id) {
+            patrimoineList = patrimoineList.filter(p => p.id !== id);
+            fetch(`api.php?action=delete_patrimoine&id=${id}`).catch(() => {});
+            renderPatrimoineView();
+            updateModalPatrimoineDropdown();
+            showToast("Bien supprimé du patrimoine", "info");
+        }
+
+        function renderRelevesView() {
+            const list = document.getElementById('relevesPatrimoineList');
+            if (!list) return;
+            const filtered = patrimoineList.filter(p => currentCommuneFilter === 'ALL' || p.commune === currentCommuneFilter);
+
+            list.innerHTML = filtered.map(p => `
+                <div onclick="selectActivePatrimoineForReleve(${p.id})" class="p-3 rounded-lg border ${p.id === activePatrimoineId ? 'border-cyan-500 bg-cyan-50/50 font-semibold' : 'border-slate-200 bg-white'} cursor-pointer hover:border-cyan-300 transition-all text-xs">
                     <div class="flex justify-between items-start">
-                        <h4 class="font-bold text-sm text-slate-800">${l.name}</h4>
-                        <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${l.category || 'Site'}</span>
-                    </div>
-                    <p class="text-xs text-slate-500 mt-1">📍 ${l.address || l.commune}</p>
-                    <div class="mt-2 text-[10px] text-slate-400 flex gap-2">
-                        <span>⚡ ${l.elecMeter || 'N/A'}</span>
-                        <span>💧 ${l.waterMeter || 'N/A'}</span>
+                        <span>${p.name}</span>
+                        <span class="text-[10px] text-slate-400 font-mono">${p.commune}</span>
                     </div>
                 </div>
             `).join('');
 
-            selectActiveLieu(activeLieuId);
+            selectActivePatrimoineForReleve(activePatrimoineId);
         }
 
-        function selectActiveLieu(id) {
-            activeLieuId = id;
-            const lieu = locationsList.find(l => l.id === id) || locationsList[0];
-            if (!lieu) return;
+        function selectActivePatrimoineForReleve(id) {
+            activePatrimoineId = id;
+            const item = patrimoineList.find(p => p.id === id) || patrimoineList[0];
+            if (!item) return;
 
-            document.getElementById('activeLieuTitle').innerText = lieu.name;
-            document.getElementById('activeLieuAddress').innerText = `${lieu.address || ''} - ${lieu.commune}`;
-            document.getElementById('activeLieuCategory').innerText = lieu.category || 'Bâtiment';
-            document.getElementById('activeLieuElecMeter').innerText = lieu.elecMeter || 'Non équipé';
-            document.getElementById('activeLieuWaterMeter').innerText = lieu.waterMeter || 'Non équipé';
+            document.getElementById('activeReleveTitle').innerText = item.name;
+            document.getElementById('activeReleveSub').innerText = `${item.commune} - N° Inventaire: ${item.num_inventaire || 'PAT-00'}`;
+            document.getElementById('activeElecMeter').innerText = item.elecMeter || 'N/A';
+            document.getElementById('activeWaterMeter').innerText = item.waterMeter || 'N/A';
+            document.getElementById('activeGasMeter').innerText = item.gasMeter || 'N/A';
 
-            // Filter meter readings for active location
-            const readings = relevesList.filter(r => r.lieu_id === lieu.id);
-            document.getElementById('lieuReadingsTableBody').innerHTML = readings.map(r => `
+            const readings = relevesList.filter(r => r.patrimoine_id === item.id);
+            document.getElementById('relevesTableBody').innerHTML = readings.map(r => `
                 <tr>
-                    <td class="p-2 font-mono">${r.dateReleve}</td>
-                    <td class="p-2 font-semibold">${r.type === 'Eau' ? '💧 Eau' : '⚡ Électricité'}</td>
-                    <td class="p-2 font-mono font-bold">${r.valeur} ${r.type === 'Eau' ? 'm³' : 'kWh'}</td>
-                    <td class="p-2 text-slate-500">${r.agentName || 'Agent'}</td>
-                    <td class="p-2 text-right"><button onclick="deleteReleve(${r.id})" class="text-rose-600 font-bold hover:underline">Supprimer</button></td>
+                    <td class="p-2.5 font-mono">${r.dateReleve}</td>
+                    <td class="p-2.5 font-semibold">${r.type === 'Eau' ? '💧 Eau' : (r.type === 'Électricité' ? '⚡ Élec' : '🔥 Gaz')}</td>
+                    <td class="p-2.5 font-mono font-bold text-slate-800">${r.valeur}</td>
+                    <td class="p-2.5 text-slate-500">${r.agentName || 'Agent'}</td>
+                    <td class="p-2.5 text-right"><button onclick="deleteReleve(${r.id})" class="text-rose-600 font-bold hover:underline">Supprimer</button></td>
                 </tr>
-            `).join('') || `<tr><td colspan="5" class="p-4 text-center text-slate-400">Aucun relevé enregistré pour ce bâtiment.</td></tr>`;
+            `).join('') || `<tr><td colspan="5" class="p-4 text-center text-slate-400">Aucun relevé pour ce bâtiment.</td></tr>`;
 
-            updateLieuChart(readings);
+            updateReleveChart(readings);
         }
 
-        function updateLieuChart(readings) {
-            const ctx = document.getElementById('lieuConsumptionChart');
+        function updateReleveChart(readings) {
+            const ctx = document.getElementById('relevesConsumptionChart');
             if (!ctx) return;
-            if (lieuChartInstance) lieuChartInstance.destroy();
+            if (releveChartInstance) releveChartInstance.destroy();
 
             const dates = Array.from(new Set(readings.map(r => r.dateReleve))).sort();
             const waterData = dates.map(d => {
@@ -929,7 +1219,7 @@
                 return item ? item.valeur : null;
             });
 
-            lieuChartInstance = new Chart(ctx.getContext('2d'), {
+            releveChartInstance = new Chart(ctx.getContext('2d'), {
                 type: 'line',
                 data: {
                     labels: dates,
@@ -943,8 +1233,8 @@
         }
 
         function openReleveModal() {
-            const sel = document.getElementById('releveLieuSelect');
-            sel.innerHTML = locationsList.map(l => `<option value="${l.id}">${l.name} (${l.commune})</option>`).join('');
+            const sel = document.getElementById('relevePatrimoineSelect');
+            sel.innerHTML = patrimoineList.map(p => `<option value="${p.id}">${p.name} (${p.commune})</option>`).join('');
             document.getElementById('releveDateInput').value = new Date().toISOString().substring(0, 10);
             document.getElementById('releveModal').classList.remove('hidden');
         }
@@ -954,22 +1244,64 @@
             e.preventDefault();
             const newR = {
                 id: Date.now(),
-                lieu_id: parseInt(document.getElementById('releveLieuSelect').value),
+                patrimoine_id: parseInt(document.getElementById('relevePatrimoineSelect').value),
                 type: document.getElementById('releveTypeSelect').value,
                 valeur: parseFloat(document.getElementById('releveValueInput').value),
                 dateReleve: document.getElementById('releveDateInput').value,
-                agentName: currentUser ? currentUser.name : 'Agent ST'
+                agentName: currentUser ? currentUser.name : 'Agent ST',
+                remarque: document.getElementById('releveRemarqueInput').value || ''
             };
             relevesList.push(newR);
+            fetch('api.php?action=save_releve', { method: 'POST', body: JSON.stringify(newR) }).catch(() => {});
             closeReleveModal();
-            renderLocationsView();
+            renderRelevesView();
             showToast("Relevé de compteur enregistré !", "success");
         }
 
         function deleteReleve(id) {
             relevesList = relevesList.filter(r => r.id !== id);
-            renderLocationsView();
+            fetch(`api.php?action=delete_releve&id=${id}`).catch(() => {});
+            renderRelevesView();
             showToast("Relevé supprimé", "info");
+        }
+
+        function renderAgentsAndUsers() {
+            const grid = document.getElementById('agentsGrid');
+            if (!grid) return;
+            grid.innerHTML = usersList.map(u => `
+                <div class="bg-white p-4 border rounded-xl shadow-xs flex items-start gap-3">
+                    <span class="text-3xl">${u.avatar || (u.role === 'agent' ? '👨‍🔧' : '👤')}</span>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-sm text-slate-800">${u.name}</h4>
+                            <span class="text-[10px] bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-mono">${u.role}</span>
+                        </div>
+                        <p class="text-xs text-brand-600 font-medium">${u.skill || 'Utilisateur Système'}</p>
+                        <p class="text-[10px] text-slate-400 mt-1">🏛️ ${u.commune} | 👤 Login: ${u.username || u.email}</p>
+                        <div class="mt-2 flex gap-1 justify-end">
+                            <button onclick="editUser(${u.id})" class="text-brand-600 font-bold hover:underline text-[11px]">✏️ Modifier</button>
+                            <button onclick="deleteUser(${u.id})" class="text-rose-600 font-bold hover:underline text-[11px] ml-2">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderEquipment() {
+            document.getElementById('equipmentGrid').innerHTML = equipmentList.map(e => `
+                <div class="bg-white p-4 border rounded-xl shadow-xs">
+                    <span class="text-2xl">${e.icon}</span>
+                    <h4 class="font-bold text-sm mt-1">${e.name}</h4>
+                    <p class="text-xs text-slate-500">${e.desc}</p>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">${e.owner}</span>
+                        <div class="flex gap-2">
+                            <button onclick="editEquipment('${e.id}')" class="text-brand-600 font-bold text-xs hover:underline">✏️</button>
+                            <button onclick="deleteEquipment('${e.id}')" class="text-rose-600 font-bold text-xs hover:underline">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
         function switchParamSubTab(sub) {
@@ -981,68 +1313,60 @@
 
         function renderParamTables() {
             document.getElementById('tableCategoriesBody').innerHTML = categoriesList.map(c => `
-                <tr><td class="p-2">${c.emoji}</td><td class="p-2 font-semibold">${c.name}</td></tr>
+                <tr>
+                    <td class="p-2.5 text-lg">${c.emoji}</td>
+                    <td class="p-2.5 font-semibold text-slate-800">${c.name}</td>
+                    <td class="p-2.5 text-right">
+                        <button onclick="editCategory(${c.id})" class="text-brand-600 font-bold hover:underline mr-2">✏️</button>
+                        <button onclick="deleteCategory(${c.id})" class="text-rose-600 font-bold hover:underline">🗑️</button>
+                    </td>
+                </tr>
             `).join('');
 
             document.getElementById('tableUsersBody').innerHTML = usersList.map(u => `
                 <tr>
-                    <td class="p-2 font-semibold">${u.avatar || '👤'} ${u.name}</td>
-                    <td class="p-2 text-slate-500">${u.email}</td>
-                    <td class="p-2"><span class="bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded text-[10px]">${u.role}</span></td>
-                    <td class="p-2 text-slate-500">${u.commune}</td>
-                    <td class="p-2 text-right"><button onclick="editUser(${u.id})" class="text-brand-600 font-bold hover:underline">Éditer</button></td>
+                    <td class="p-2.5 font-semibold">${u.avatar || '👤'} ${u.name}</td>
+                    <td class="p-2.5 font-mono text-slate-600">${u.username || 'login'}</td>
+                    <td class="p-2.5 text-slate-500">${u.email}</td>
+                    <td class="p-2.5"><span class="bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded text-[10px]">${u.role}</span></td>
+                    <td class="p-2.5 text-slate-500">${u.commune}</td>
+                    <td class="p-2.5 text-right">
+                        <button onclick="editUser(${u.id})" class="text-brand-600 font-bold hover:underline mr-2">✏️</button>
+                        <button onclick="deleteUser(${u.id})" class="text-rose-600 font-bold hover:underline">🗑️</button>
+                    </td>
                 </tr>
             `).join('');
 
             document.getElementById('tableEquipmentBody').innerHTML = equipmentList.map(e => `
-                <tr><td class="p-2 font-semibold">${e.icon} ${e.name}</td><td class="p-2">${e.owner}</td></tr>
+                <tr>
+                    <td class="p-2.5 font-semibold">${e.icon} ${e.name}</td>
+                    <td class="p-2.5 text-slate-500">${e.owner}</td>
+                    <td class="p-2.5 text-right">
+                        <button onclick="editEquipment('${e.id}')" class="text-brand-600 font-bold hover:underline mr-2">✏️</button>
+                        <button onclick="deleteEquipment('${e.id}')" class="text-rose-600 font-bold hover:underline">🗑️</button>
+                    </td>
+                </tr>
             `).join('');
 
             document.getElementById('tableCommunesBody').innerHTML = communesList.map(c => `
-                <tr><td class="p-2 font-semibold">${c.name}</td><td class="p-2">👤 ${c.respTech || 'N/A'}</td><td class="p-2">📞 ${c.phone || 'N/A'}</td></tr>
+                <tr>
+                    <td class="p-2.5 font-semibold text-slate-800">${c.name}</td>
+                    <td class="p-2.5">👤 ${c.respTech || 'N/A'}</td>
+                    <td class="p-2.5">📞 ${c.phone || 'N/A'}</td>
+                    <td class="p-2.5 text-right">
+                        <button onclick="editCommune(${c.id})" class="text-brand-600 font-bold hover:underline mr-2">✏️</button>
+                        <button onclick="deleteCommune(${c.id})" class="text-rose-600 font-bold hover:underline">🗑️</button>
+                    </td>
+                </tr>
             `).join('');
-        }
-
-        function openLocationModal() {
-            updateCommuneDropdowns();
-            document.getElementById('locIdInput').value = '';
-            document.getElementById('locNameInput').value = '';
-            document.getElementById('locAddressInput').value = '';
-            document.getElementById('locElecInput').value = '';
-            document.getElementById('locWaterInput').value = '';
-            document.getElementById('locNotesInput').value = '';
-            document.getElementById('locationModal').classList.remove('hidden');
-        }
-        function closeLocationModal() { document.getElementById('locationModal').classList.add('hidden'); }
-
-        function handleAddLocation(e) {
-            e.preventDefault();
-            const id = document.getElementById('locIdInput').value;
-            const newLoc = {
-                id: id ? parseInt(id) : Date.now(),
-                commune: document.getElementById('locCommuneSelect').value,
-                name: document.getElementById('locNameInput').value,
-                address: document.getElementById('locAddressInput').value,
-                category: 'Bâtiment',
-                elecMeter: document.getElementById('locElecInput').value,
-                waterMeter: document.getElementById('locWaterInput').value,
-                notes: document.getElementById('locNotesInput').value
-            };
-            if (id) {
-                const idx = locationsList.findIndex(l => l.id == id);
-                if (idx !== -1) locationsList[idx] = newLoc;
-            } else {
-                locationsList.push(newLoc);
-            }
-            closeLocationModal();
-            renderLocationsView();
-            showToast("Fiche lieu mise à jour !", "success");
         }
 
         function openUserModal() {
             updateCommuneDropdowns();
             document.getElementById('userIdInput').value = '';
             document.getElementById('userNameInput').value = '';
+            document.getElementById('userUsernameInput').value = '';
+            document.getElementById('userPasswordInput').value = 'demo123';
             document.getElementById('userEmailInput').value = '';
             document.getElementById('userSkillInput').value = '';
             document.getElementById('userModal').classList.remove('hidden');
@@ -1052,27 +1376,31 @@
         function handleAddUser(e) {
             e.preventDefault();
             const id = document.getElementById('userIdInput').value;
-            const role = document.getElementById('userRoleSelect').value;
             const newUser = {
                 id: id ? parseInt(id) : Date.now(),
                 name: document.getElementById('userNameInput').value,
+                username: document.getElementById('userUsernameInput').value,
+                password: document.getElementById('userPasswordInput').value,
                 email: document.getElementById('userEmailInput').value,
-                role: role,
+                role: document.getElementById('userRoleSelect').value,
                 commune: document.getElementById('userCommuneSelect').value,
                 skill: document.getElementById('userSkillInput').value || 'Agent Technique',
                 status: document.getElementById('userStatusSelect').value,
                 avatar: document.getElementById('userAvatarInput').value || '👤'
             };
+
             if (id) {
                 const idx = usersList.findIndex(u => u.id == id);
                 if (idx !== -1) usersList[idx] = newUser;
             } else {
                 usersList.push(newUser);
             }
+
+            fetch('api.php?action=save_user', { method: 'POST', body: JSON.stringify(newUser) }).catch(() => {});
             closeUserModal();
             renderAgentsAndUsers();
             renderParamTables();
-            showToast("Compte utilisateur/agent enregistré !", "success");
+            showToast("Compte utilisateur / agent enregistré !", "success");
         }
 
         function editUser(id) {
@@ -1081,12 +1409,102 @@
             openUserModal();
             document.getElementById('userIdInput').value = u.id;
             document.getElementById('userNameInput').value = u.name;
+            document.getElementById('userUsernameInput').value = u.username || '';
+            document.getElementById('userPasswordInput').value = u.password || '';
             document.getElementById('userEmailInput').value = u.email;
             document.getElementById('userRoleSelect').value = u.role;
             document.getElementById('userCommuneSelect').value = u.commune;
             document.getElementById('userSkillInput').value = u.skill || '';
             document.getElementById('userStatusSelect').value = u.status || 'Disponible';
             document.getElementById('userAvatarInput').value = u.avatar || '👤';
+        }
+
+        function deleteUser(id) {
+            usersList = usersList.filter(u => u.id !== id);
+            fetch(`api.php?action=delete_user&id=${id}`).catch(() => {});
+            renderAgentsAndUsers();
+            renderParamTables();
+            showToast("Utilisateur supprimé", "info");
+        }
+
+        function openCategoryModal() { document.getElementById('categoryModal').classList.remove('hidden'); }
+        function closeCategoryModal() { document.getElementById('categoryModal').classList.add('hidden'); }
+
+        function handleSaveCategory(e) {
+            e.preventDefault();
+            const id = document.getElementById('catIdInput').value;
+            const item = {
+                id: id ? parseInt(id) : Date.now(),
+                name: document.getElementById('catNameInput').value,
+                emoji: document.getElementById('catEmojiInput').value
+            };
+            if (id) {
+                const idx = categoriesList.findIndex(c => c.id == id);
+                if (idx !== -1) categoriesList[idx] = item;
+            } else {
+                categoriesList.push(item);
+            }
+            closeCategoryModal();
+            updateCategoryDropdowns();
+            renderParamTables();
+            showToast("Catégorie mise à jour !", "success");
+        }
+
+        function editCategory(id) {
+            const c = categoriesList.find(x => x.id === id);
+            if (!c) return;
+            document.getElementById('catIdInput').value = c.id;
+            document.getElementById('catNameInput').value = c.name;
+            document.getElementById('catEmojiInput').value = c.emoji;
+            openCategoryModal();
+        }
+
+        function deleteCategory(id) {
+            categoriesList = categoriesList.filter(c => c.id !== id);
+            updateCategoryDropdowns();
+            renderParamTables();
+            showToast("Catégorie supprimée", "info");
+        }
+
+        function openCommuneModal() { document.getElementById('communeModal').classList.remove('hidden'); }
+        function closeCommuneModal() { document.getElementById('communeModal').classList.add('hidden'); }
+
+        function handleSaveCommune(e) {
+            e.preventDefault();
+            const id = document.getElementById('comIdInput').value;
+            const item = {
+                id: id ? parseInt(id) : Date.now(),
+                name: document.getElementById('comNameInput').value,
+                respTech: document.getElementById('comRespInput').value,
+                phone: document.getElementById('comPhoneInput').value
+            };
+            if (id) {
+                const idx = communesList.findIndex(c => c.id == id);
+                if (idx !== -1) communesList[idx] = item;
+            } else {
+                communesList.push(item);
+            }
+            closeCommuneModal();
+            updateCommuneDropdowns();
+            renderParamTables();
+            showToast("Commune mise à jour !", "success");
+        }
+
+        function editCommune(id) {
+            const c = communesList.find(x => x.id === id);
+            if (!c) return;
+            document.getElementById('comIdInput').value = c.id;
+            document.getElementById('comNameInput').value = c.name;
+            document.getElementById('comRespInput').value = c.respTech || '';
+            document.getElementById('comPhoneInput').value = c.phone || '';
+            openCommuneModal();
+        }
+
+        function deleteCommune(id) {
+            communesList = communesList.filter(c => c.id !== id);
+            updateCommuneDropdowns();
+            renderParamTables();
+            showToast("Commune supprimée", "info");
         }
 
         function toggleAgentFieldsInUserModal(role) {
