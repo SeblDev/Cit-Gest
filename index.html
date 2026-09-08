@@ -25,7 +25,6 @@
 </head>
 <body class="h-full font-sans text-slate-100 flex flex-col antialiased bg-slate-900 selection:bg-brand-500 selection:text-white">
 
-    <!-- HEADER / BARRE SUPÉRIEURE -->
     <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 text-white sticky top-0 z-30 shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -52,7 +51,7 @@
 
                 <!-- Bouton Connexion Agents / Mairie -->
                 <div>
-                    <button onclick="openLoginModal()" class="bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs sm:text-sm px-4 py-2 rounded-xl transition-all shadow-md flex items-center gap-2 border border-brand-400/30">
+                    <button onclick="openLoginModal()" class="bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs sm:text-sm px-4 py-2 rounded-xl transition-all shadow-md flex items-center gap-2 border border-brand-400/30 cursor-pointer">
                         <span>🔑 Connexion Agents / Mairie</span>
                     </button>
                 </div>
@@ -60,7 +59,6 @@
         </div>
     </header>
 
-    <!-- MAIN CONTAINER HERO -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col justify-center items-center">
         
         <div class="text-center max-w-3xl space-y-6">
@@ -85,18 +83,17 @@
 
             <!-- BOUTONS D'ACTION PRINCIPAUX -->
             <div class="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
-                <button onclick="openNewTicketModal()" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-base px-8 py-4 rounded-2xl shadow-xl transform active:scale-95 transition-all flex items-center justify-center gap-3">
+                <button onclick="openNewTicketModal()" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-base px-8 py-4 rounded-2xl shadow-xl transform active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer">
                     <span class="text-2xl">📢</span>
                     <span>Signaler un problème / Demande</span>
                 </button>
                 
-                <button onclick="openLoginModal()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-semibold text-base px-8 py-4 rounded-2xl transition-all flex items-center justify-center gap-2">
+                <button onclick="openLoginModal()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-semibold text-base px-8 py-4 rounded-2xl transition-all flex items-center justify-center gap-2 cursor-pointer">
                     <span>🔑 Espace Personnel & Agents</span>
                 </button>
             </div>
         </div>
 
-        <!-- STATS & INFORMATIONS RAPIDES -->
         <div class="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-4xl">
             <div class="bg-slate-800/80 border border-slate-700/60 p-5 rounded-2xl text-center space-y-1 backdrop-blur-xs">
                 <div class="text-3xl">⚡</div>
@@ -122,12 +119,11 @@
         <p>Cit-Gest © 2026 - Commune de Gimont & Communauté de Communes Portes du Gers</p>
     </footer>
 
-    <!-- MODALE 1: SIGNALEMENT DE DEMANDE (PUBLIC / CITOYEN) -->
     <div id="newTicketModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 space-y-4 text-slate-800">
             <div class="flex items-center justify-between border-b pb-3">
                 <h3 class="font-bold text-slate-900 text-base">📢 Nouvelle Demande d'Intervention</h3>
-                <button onclick="closeNewTicketModal()" class="text-2xl font-bold text-slate-400 hover:text-slate-700">&times;</button>
+                <button onclick="closeNewTicketModal()" class="text-2xl font-bold text-slate-400 hover:text-slate-700 cursor-pointer">&times;</button>
             </div>
             <form onsubmit="handleCreateTicket(event)" class="space-y-3 text-xs">
                 <div class="grid grid-cols-2 gap-3">
@@ -189,19 +185,18 @@
                 </div>
 
                 <div class="pt-4 border-t flex justify-end gap-2">
-                    <button type="button" onclick="closeNewTicketModal()" class="px-4 py-2 border rounded-xl font-medium hover:bg-slate-50">Annuler</button>
-                    <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold shadow">Transmettre le signalement</button>
+                    <button type="button" onclick="closeNewTicketModal()" class="px-4 py-2 border rounded-xl font-medium hover:bg-slate-50 cursor-pointer">Annuler</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold shadow cursor-pointer">Transmettre le signalement</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODALE 2: LOGIN / AUTHENTIFICATION -->
     <div id="loginModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl p-6 space-y-4 text-slate-800">
             <div class="flex items-center justify-between border-b pb-3">
                 <h3 class="font-bold text-slate-900 text-base">🔑 Connexion Espace Agent / Mairie</h3>
-                <button onclick="closeLoginModal()" class="text-xl font-bold text-slate-400 hover:text-slate-700">&times;</button>
+                <button onclick="closeLoginModal()" class="text-xl font-bold text-slate-400 hover:text-slate-700 cursor-pointer">&times;</button>
             </div>
             
             <form onsubmit="handleUserLogin(event)" class="space-y-3 text-xs">
@@ -213,7 +208,7 @@
                     <label class="font-semibold block mb-1">Mot de passe</label>
                     <input type="password" id="loginPass" required value="admin" class="w-full border rounded-lg p-2.5">
                 </div>
-                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white py-2.5 rounded-xl font-bold text-xs shadow-md transition-all">
+                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white py-2.5 rounded-xl font-bold text-xs shadow-md transition-all cursor-pointer">
                     Se Connecter & Accéder à l'Espace
                 </button>
             </form>
@@ -221,16 +216,16 @@
             <div class="border-t pt-3 text-center text-xs text-slate-500 space-y-2">
                 <p class="font-semibold text-slate-700">Comptes de démonstration :</p>
                 <div class="grid grid-cols-2 gap-1.5">
-                    <button onclick="loginWithCredentials('admin', 'admin')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 p-2 rounded-lg font-bold text-[11px] transition-colors">⚡ Admin (admin/admin)</button>
-                    <button onclick="loginWithCredentials('j.dupont', 'demo123')" class="bg-slate-100 hover:bg-slate-200 p-2 rounded-lg font-medium text-[11px] transition-colors">👔 Resp. Dupont</button>
-                    <button onclick="loginWithCredentials('p.martin', 'demo123')" class="bg-slate-100 hover:bg-slate-200 p-2 rounded-lg font-medium text-[11px] transition-colors">👨‍🔧 Agent Paul</button>
-                    <button onclick="loginWithCredentials('m.curie', 'demo123')" class="bg-slate-100 hover:bg-slate-200 p-2 rounded-lg font-medium text-[11px] transition-colors">🏛️ Maire Curie</button>
+                    <button onclick="loginWithCredentials('admin', 'admin')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 p-2 rounded-lg font-bold text-[11px] transition-colors cursor-pointer">⚡ Admin (admin/admin)</button>
+                    <button onclick="loginWithCredentials('j.dupont', 'demo123')" class="bg-slate-100 hover:bg-slate-200 p-2 rounded-lg font-medium text-[11px] transition-colors cursor-pointer">👔 Resp. Dupont</button>
+                    <button onclick="loginWithCredentials('p.martin', 'demo123')" class="bg-slate-100 hover:bg-slate-200 p-2 rounded-lg font-medium text-[11px] transition-colors cursor-pointer">👨‍🔧 Agent Paul</button>
+                    <button onclick="loginWithCredentials('m.curie', 'demo123')" class="bg-slate-100 hover:bg-slate-200 p-2 rounded-lg font-medium text-[11px] transition-colors cursor-pointer">🏛️ Maire Curie</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notifications -->
+    <!-- Toast Notifications Container -->
     <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
 
     <script>
@@ -281,7 +276,7 @@
 
             fetch('api.php?action=save_ticket', { method: 'POST', body: JSON.stringify(newTicket) })
                 .then(() => showToast("Signalement transmis avec succès !", "success"))
-                .catch(() => showToast("Signalement enregistré en local !", "success"));
+                .catch(() => showToast("Signalement enregistré !", "success"));
 
             closeNewTicketModal();
         }
@@ -293,7 +288,7 @@
                 showToast(`Connexion réussie : ${user.name}`, "success");
                 setTimeout(() => {
                     window.location.href = 'cit_gest_application_web.html';
-                }, 500);
+                }, 400);
             } else {
                 showToast("Identifiants incorrects", "error");
             }

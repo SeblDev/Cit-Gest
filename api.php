@@ -1,7 +1,7 @@
 <?php
 /**
  * Cit-Gest - API Backend PHP & Base SQLite v4.2
- * Gestion des interventions, patrimoine municipal (4 piliers), relevés de compteurs, utilisateurs et paramètres.
+ * STREAMING_CHUNK:Initializing PHP headers and SQLite database connection...
  */
 
 header('Content-Type: application/json; charset=utf-8');
@@ -144,6 +144,9 @@ try {
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
 
+/**
+ * STREAMING_CHUNK:Defining database tables creation helper function...
+ */
 function initDatabase($pdo) {
     $pdo->exec("CREATE TABLE IF NOT EXISTS communes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -242,7 +245,7 @@ function initDatabase($pdo) {
         dateCreated TEXT
     )");
 
-    // Initialisation des données de démonstration si la base est vide
+    // Seeding initial context
     $stmt = $pdo->query("SELECT COUNT(*) FROM communes");
     if ($stmt->fetchColumn() == 0) {
         $pdo->exec("INSERT INTO communes (name, respTech, phone) VALUES 
@@ -283,6 +286,9 @@ function initDatabase($pdo) {
     }
 }
 
+/**
+ * STREAMING_CHUNK:Defining CRUD data queries helper functions...
+ */
 function isValidTable($table) {
     return in_array($table, ['communes', 'categories', 'patrimoine', 'utilisateurs', 'equipements', 'tickets', 'releves_consommation']);
 }
