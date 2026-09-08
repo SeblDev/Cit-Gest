@@ -350,6 +350,47 @@
         let activeTab = 'interventions';
         let activeTicketId = null;
 
+        const roleData = {
+            demandeur: {
+                title: "Espace Demandeur / Service Interne",
+                desc: "Saisie rapide de nouvelles demandes et suivi en direct de vos signalements.",
+                badge: "Demandeur",
+                icon: "👤"
+            },
+            agent: {
+                title: "Espace Agent du Service Technique",
+                desc: "Consultation des fiches de travail, mise à jour des statuts et rapports de terrain.",
+                badge: "Agent ST",
+                icon: "👨‍🔧"
+            },
+            responsable: {
+                title: "Espace Responsable du Service Technique",
+                desc: "Validation, affectation aux agents, planification et suivi direct du matériel.",
+                badge: "Responsable ST",
+                icon: "👔"
+            },
+            direction: {
+                title: "Espace Direction (Maire / DGS)",
+                desc: "Vue synthétique globale, suivi budgétaire, statistiques et mutualisation intercommunale.",
+                badge: "Maire / DGS",
+                icon: "🏛️"
+            },
+            admin: {
+                title: "Espace Administrateur Système",
+                desc: "Gestion globale des droits, référentiels, comptes utilisateurs, communes et données.",
+                badge: "Admin",
+                icon: "⚡"
+            }
+        };
+
+        const rolePermissions = {
+            demandeur: { interventions: true, mutualisation: false, equipe: false, statistiques: false, parametres: false },
+            agent: { interventions: true, mutualisation: true, equipe: true, statistiques: false, parametres: false },
+            responsable: { interventions: true, mutualisation: true, equipe: true, statistiques: true, parametres: true },
+            direction: { interventions: true, mutualisation: true, equipe: true, statistiques: true, parametres: false },
+            admin: { interventions: true, mutualisation: true, equipe: true, statistiques: true, parametres: true }
+        };
+
         let categoriesList = [
             { id: 1, name: "Voirie & Signalisat.", emoji: "🛣️" },
             { id: 2, name: "Bâtiments & Écoles", emoji: "🏫" },
@@ -393,6 +434,7 @@
             updateCommuneDropdowns();
             updateCategoryDropdowns();
             updateModalLocationDropdown();
+            quickSwitchUserRole(currentRole);
             renderTickets();
             renderAgents();
             renderEquipment();
@@ -438,8 +480,66 @@
         }
 
         function quickSwitchUserRole(role) {
+            if (!roleData[role]) role = 'responsable';
             currentRole = role;
-            showToast(`Rôle activé : ${role.toUpperCase()}`, 'info');
+
+            // 1. Mettre à jour l'apparence des boutons de rôle
+            ['demandeur', 'agent', 'responsable', 'direction', 'admin'].forEach(r => {
+                const btn = document.getElementById(`btn-role-${r}`);
+                if (btn) {
+                    if (r === role) {
+                        btn.className = "role-btn px-2.5 py-1 rounded-lg transition-all font-medium bg-brand-600 text-white shadow";
+                    } else {
+                        btn.className = "role-btn px-2.5 py-1 rounded-lg transition-all font-medium text-slate-300 hover:text-white";
+                    }
+                }
+            });
+
+            // 2. Mettre à jour le bandeau d'information du rôle
+            const info = roleData[role];
+            const titleEl = document.getElementById('roleBannerTitle');
+            const descEl = document.getElementById('roleBannerDesc');
+            if (titleEl) titleEl.innerText = info.title;
+            if (descEl) descEl.innerText = info.desc;
+
+            // 3. Mettre à jour le widget de profil dans l'en-tête
+            updateUserWidget();
+
+            // 4. Mettre à jour la visibilité des onglets selon les autorisations du rôle
+            applyRolePermissions();
+
+            showToast(`Profil activé : ${info.badge}`, 'info');
+        }
+
+        function updateUserWidget() {
+            const widget = document.getElementById('userAuthProfileWidget');
+            if (!widget) return;
+            const info = roleData[currentRole] || roleData.responsable;
+            widget.innerHTML = `
+                <span class="text-sm">${info.icon}</span>
+                <span class="font-semibold text-slate-200 hidden sm:inline">${info.badge}</span>
+                <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">Connecté</span>
+            `;
+        }
+
+        function applyRolePermissions() {
+            const perms = rolePermissions[currentRole] || rolePermissions.responsable;
+            ['interventions', 'mutualisation', 'equipe', 'statistiques', 'parametres'].forEach(tab => {
+                const tabBtn = document.getElementById(`tab-${tab}`);
+                const isAllowed = perms[tab];
+                if (tabBtn) {
+                    if (isAllowed) {
+                        tabBtn.classList.remove('hidden');
+                    } else {
+                        tabBtn.classList.add('hidden');
+                    }
+                }
+            });
+
+            // Si l'onglet actif n'est pas autorisé pour le rôle sélectionné, basculer vers 'interventions'
+            if (!perms[activeTab]) {
+                switchTab('interventions');
+            }
         }
 
         function changeCommune(val) {
@@ -624,6 +724,25 @@
             document.getElementById('tableCategoriesBody').innerHTML = categoriesList.map(c => `<tr><td class="p-2">${c.emoji}</td><td class="p-2 font-semibold">${c.name}</td></tr>`).join('');
             document.getElementById('tableLocationsBody').innerHTML = locationsList.map(l => `<tr><td class="p-2 font-semibold">${l.name}</td><td class="p-2">${l.commune}</td></tr>`).join('');
             document.getElementById('tableCommunesBody').innerHTML = communesList.map(c => `<tr><td class="p-2 font-semibold">${c.name}</td><td class="p-2">${c.population} hab.</td></tr>`).join('');
+            
+            // Matrice des rôles et permissions
+            const roleLabels = { demandeur: "Demandeur", agent: "Agent ST", responsable: "Responsable ST", direction: "Maire / DGS", admin: "Administrateur" };
+            const tabsList = ["interventions", "mutualisation", "equipe", "statistiques", "parametres"];
+            const tableBody = document.getElementById('rolePermissionsTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = Object.keys(rolePermissions).map(rKey => `
+                    <tr>
+                        <td class="p-3 font-semibold text-slate-800">${roleLabels[rKey]}</td>
+                        ${tabsList.map(tKey => `
+                            <td class="p-3 text-center">
+                                <span class="${rolePermissions[rKey][tKey] ? 'text-emerald-600 bg-emerald-50' : 'text-slate-300 bg-slate-50'} text-xs font-bold px-2 py-1 rounded">
+                                    ${rolePermissions[rKey][tKey] ? '✓ Autorisique' : '✕ Masqué'}
+                                </span>
+                            </td>
+                        `).join('')}
+                    </tr>
+                `).join('');
+            }
         }
 
         function openCategoryModal() { showToast("Ouvre la modale catégorie", "info"); }
