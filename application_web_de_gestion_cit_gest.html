@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cit-Gest - Application Web de Gestion des Services Techniques</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js pour statistiques et graphiques de consommations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff', 100: '#e0effe', 500: '#2563eb', 600: '#1d4ed8', 700: '#1e40af', 800: '#1e3a8a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .no-print { display: block; }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; font-size: 11pt; }
+        }
+    </style>
+</head>
+<body class="h-full font-sans text-slate-800 flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- HEADER & BARRE SUPÉRIEURE -->
+    <header class="no-print bg-slate-900 text-white sticky top-0 z-30 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Libellé Commune -->
+                <div class="flex items-center gap-3">
+                    <div id="logoContainer" class="bg-white p-0.5 rounded-xl text-slate-800 font-bold text-xl flex items-center justify-center w-11 h-11 shadow-sm border border-slate-700/50 overflow-hidden shrink-0">
+                        <svg viewBox="0 0 200 200" class="w-full h-full rounded-lg">
+                            <circle cx="100" cy="100" r="96" fill="#0d828a"/>
+                            <path d="M 40 95 Q 60 92 78 95 L 82 72 Q 95 62 108 72 L 108 88 L 112 88 L 112 65 Q 115 62 118 65 L 118 88 L 122 88 L 124 95 Q 140 93 160 97" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                            <rect x="96" y="66" width="12" height="24" fill="#0d828a"/>
+                            <path d="M 94 66 L 102 58 L 110 66 Z" fill="#ffffff"/>
+                            <text x="100" y="115" font-family="'Brush Script MT', cursive, sans-serif" font-size="44" font-weight="bold" fill="#ffffff" text-anchor="middle" font-style="italic">Gimont</text>
+                            <text x="100" y="142" font-family="'Inter', sans-serif" font-size="16" font-weight="500" fill="#ffffff" text-anchor="middle" letter-spacing="0.5">Portes du Gers</text>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-lg tracking-tight">Cit-Gest</span>
+                            <span class="bg-brand-500/30 text-brand-200 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-medium border border-brand-400/30">v4.2</span>
+                        </div>
+                        <p class="text-xs text-slate-400 flex items-center gap-1">
+                            <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span id="currentCommuneLabel">Gimont (3 050 hab.)</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Actions Droite: Commune, Profil Utilisateur, Nouvelle Demande -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <select id="communeSelect" onchange="changeCommune(this.value)" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="Gimont">Commune : Gimont</option>
+                        <option value="Aubiet">Commune : Aubiet</option>
+                        <option value="Juilles">Commune : Juilles</option>
+                        <option value="ALL">🌐 Vue Communauté de Communes</option>
+                    </select>
+
+                    <!-- User Session Widget -->
+                    <div id="userAuthWidget" class="flex items-center gap-2"></div>
+
+                    <button onclick="openNewTicketModal()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs sm:text-sm font-semibold px-3 py-2 rounded-lg shadow-md transition-all flex items-center gap-1.5 transform active:scale-95">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                        <span>Nouvelle demande</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 flex flex-col w-full">
+        
+        <!-- Role Context Banner -->
+        <div id="roleContextBanner" class="no-print mb-5 bg-blue-900/40 border border-brand-500/30 text-white rounded-xl p-4 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-brand-500/20 text-brand-300 rounded-lg text-lg" id="roleBannerIcon">👔</div>
+                <div>
+                    <h2 id="roleBannerTitle" class="font-semibold text-sm sm:text-base text-blue-100">Espace Responsable du Service Technique</h2>
+                    <p id="roleBannerDesc" class="text-xs text-slate-300">Validation, affectation aux agents, planification et suivi direct du matériel.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+                <span id="backendStatusBadge" class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full font-medium flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> LAMP / SQLite Connecté
+                </span>
+            </div>
+        </div>
+
+        <!-- MAIN NAVIGATION TABS -->
+        <div class="no-print border-b border-slate-200 mb-6 flex space-x-2 sm:space-x-4 overflow-x-auto text-xs sm:text-sm font-medium">
+            <button onclick="switchTab('interventions')" id="tab-interventions" class="tab-btn pb-3 px-1 text-brand-600 border-b-2 border-brand-600 font-semibold flex items-center gap-1.5 whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 022 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <span>Demandes Interventions</span>
+                <span id="badgeOpenCount" class="bg-brand-100 text-brand-700 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+            </button>
+
+            <!-- ONGLET PATRIMOINE MUNICIPAL (4 PILIERS) -->
+            <button onclick="switchTab('patrimoine')" id="tab-patrimoine" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V10a2 2 0 012-2h2a2 2 0 012 2v11"/></svg>
+                <span>🏛️ Patrimoine Municipal</span>
+            </button>
+
+            <!-- ONGLET RELEVÉS DE COMPTEURS -->
+            <button onclick="switchTab('releves')" id="tab-releves" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
+                <svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>📊 Relevés & Consommations</span>
+            </button>
+
+            <button onclick="switchTab('mutualisation')" id="tab-mutualisation" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                <span>Mutualisation Matériel</span>
+            </button>
+
+            <button onclick="switchTab('equipe')" id="tab-equipe" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                <span>Équipe & Utilisateurs</span>
+            </button>
+
+            <button onclick="switchTab('statistiques')" id="tab-statistiques" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                <span>Statistiques</span>
+            </button>
+
+            <button onclick="switchTab('parametres')" id="tab-parametres" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap bg-amber-50/50 rounded-t-lg">
+                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span class="font-bold text-slate-800">⚙️ Paramétrage</span>
+            </button>
+        </div>
+
+        <!-- VUE 1: DEMANDES D'INTERVENTIONS -->
+        <div id="view-interventions" class="space-y-6">
+            <div class="no-print bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+                <div class="relative flex-1">
+                    <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Rechercher une demande, un lieu, un demandeur..." class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+                    <select id="filterCategory" onchange="applyFilters()" class="border border-slate-300 rounded-lg px-3 py-2 bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="ALL">Toutes catégories</option>
+                    </select>
+
+                    <select id="filterStatus" onchange="applyFilters()" class="border border-slate-300 rounded-lg px-3 py-2 bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="ALL">Tous les statuts</option>
+                        <option value="NOUVELLE">🆕 Nouvelle demande</option>
+                        <option value="VALIDEE">Planifiée / Validée</option>
+                        <option value="EN_COURS">⚡ En cours</option>
+                        <option value="ATTENTE_PIECE">⏸️ En attente matériel/pièces</option>
+                        <option value="TERMINEE">✅ Terminée</option>
+                    </select>
+
+                    <select id="filterPriority" onchange="applyFilters()" class="border border-slate-300 rounded-lg px-3 py-2 bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="ALL">Toutes urgences</option>
+                        <option value="URGENT">🚨 Urgente / Sécurité</option>
+                        <option value="MOYEN">🟠 Normale</option>
+                        <option value="BASSE">🟢 Basse / Planifiable</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="gridDisplayContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        </div>
+
+        <!-- VUE 2: PATRIMOINE MUNICIPAL (4 PILIERS) -->
+        <div id="view-patrimoine" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 border border-emerald-500/30 text-white rounded-xl p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="p-3 bg-emerald-500/20 rounded-xl text-2xl">🏛️</div>
+                    <div>
+                        <h3 class="font-bold text-base">Gestion Intégrale du Patrimoine Municipal</h3>
+                        <p class="text-xs text-emerald-200">Suivi des 4 piliers : Données juridiques & financières, Caractéristiques techniques, Contrôles réglementaires et Documents numériques.</p>
+                    </div>
+                </div>
+                <button onclick="openPatrimoineModal()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-lg transition-all shadow-md flex items-center gap-1.5 shrink-0">
+                    <span>+ Ajouter un bien au Patrimoine</span>
+                </button>
+            </div>
+
+            <div id="patrimoineGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        </div>
+
+        <!-- VUE 3: RELEVÉS & CONSOMMATIONS -->
+        <div id="view-releves" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-cyan-900 via-blue-900 to-slate-900 border border-cyan-500/30 text-white rounded-xl p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="p-3 bg-cyan-500/20 rounded-xl text-2xl">📊</div>
+                    <div>
+                        <h3 class="font-bold text-base">Module de Relevés de Compteurs & Sobriété Énergétique</h3>
+                        <p class="text-xs text-cyan-200">Enregistrement périodique des index d'eau, d'électricité et de gaz pour l'ensemble des bâtiments communaux.</p>
+                    </div>
+                </div>
+                <button onclick="openReleveModal()" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-lg transition-all shadow-md shrink-0">
+                    + Nouveau Relevé de Compteur
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-1 bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                    <h4 class="font-bold text-xs text-slate-800 uppercase tracking-wider">Sélectionner un Bâtiment</h4>
+                    <div id="relevesPatrimoineList" class="space-y-2 max-h-[500px] overflow-y-auto pr-1"></div>
+                </div>
+
+                <div class="lg:col-span-2 space-y-5">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                        <div class="flex justify-between items-center border-b pb-3">
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-base" id="activeReleveTitle">École Maternelle Saint-Éloi</h3>
+                                <p class="text-xs text-slate-500" id="activeReleveSub">Gimont - N° Inventaire: PAT-2024-001</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-3 text-xs">
+                            <div class="p-2.5 bg-blue-50 rounded-lg border border-blue-100">
+                                <span class="text-slate-500 block">⚡ Compteur Élec :</span>
+                                <span class="font-mono font-bold text-slate-800" id="activeElecMeter">ELE-99823</span>
+                            </div>
+                            <div class="p-2.5 bg-emerald-50 rounded-lg border border-emerald-100">
+                                <span class="text-slate-500 block">💧 Compteur Eau :</span>
+                                <span class="font-mono font-bold text-slate-800" id="activeWaterMeter">EAU-1029</span>
+                            </div>
+                            <div class="p-2.5 bg-amber-50 rounded-lg border border-amber-100">
+                                <span class="text-slate-500 block">🔥 Compteur Gaz :</span>
+                                <span class="font-mono font-bold text-slate-800" id="activeGasMeter">GAZ-4410</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="font-bold text-xs text-slate-700 mb-2">📈 Évolution des Consommations</h4>
+                            <div class="h-60"><canvas id="relevesConsumptionChart"></canvas></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                        <h4 class="font-bold text-xs text-slate-800">📋 Historique Chronologique des Relevés</h4>
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 font-semibold text-slate-600 border-b">
+                                <tr>
+                                    <th class="p-2.5">Date</th>
+                                    <th class="p-2.5">Fluide</th>
+                                    <th class="p-2.5">Index Relevé</th>
+                                    <th class="p-2.5">Agent / Releveur</th>
+                                    <th class="p-2.5 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="relevesTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VUE 4: MUTUALISATION MATÉRIEL -->
+        <div id="view-mutualisation" class="hidden space-y-6">
+            <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="p-3 bg-amber-200/80 rounded-lg text-xl">🚜</div>
+                    <div>
+                        <h3 class="font-bold text-base">Plateforme de Mutualisation des Équipements Lourds</h3>
+                        <p class="text-xs text-amber-800">Partagez vos engins spécifiques entre communes membres pour optimiser les coûts d'achat et d'entretien.</p>
+                    </div>
+                </div>
+            </div>
+            <div id="equipmentGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
+
+        <!-- VUE 5: ÉQUIPE & UTILISATEURS -->
+        <div id="view-equipe" class="hidden space-y-6">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-sm">Effectif des Agents & Utilisateurs Système</h3>
+                    <p class="text-xs text-slate-500">Les agents techniques sont des comptes utilisateurs rattachés au rôle "Agent ST" avec des qualifications terrain.</p>
+                </div>
+                <button onclick="openUserModal()" class="bg-brand-600 text-white px-3.5 py-2 rounded-lg text-xs font-semibold hover:bg-brand-700">+ Créer un utilisateur / agent</button>
+            </div>
+            <div id="agentsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
+
+        <!-- VUE 6: STATISTIQUES -->
+        <div id="view-statistiques" class="hidden space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs text-slate-500 font-medium">Total Interventions</div>
+                    <div class="text-2xl font-bold text-slate-900 mt-1" id="stat-total-interventions">142</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs text-slate-500 font-medium">Délai Moyen Prise en Charge</div>
+                    <div class="text-2xl font-bold text-brand-600 mt-1">1.8 jour</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs text-slate-500 font-medium">Taux de Résolution</div>
+                    <div class="text-2xl font-bold text-emerald-600 mt-1">94%</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs text-slate-500 font-medium">Satisfaction Usagers</div>
+                    <div class="text-2xl font-bold text-amber-500 mt-1">4.8 / 5</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VUE 7: PARAMÉTRAGE GLOBAL -->
+        <div id="view-parametres" class="hidden space-y-6">
+            <div class="bg-slate-100 p-1.5 rounded-xl border border-slate-200 flex flex-wrap gap-2 text-xs font-semibold">
+                <button onclick="switchParamSubTab('referentiels')" id="btn-param-referentiels" class="param-sub-btn px-4 py-2 rounded-lg bg-white text-brand-600 shadow-xs">🏷️ Catégories</button>
+                <button onclick="switchParamSubTab('utilisateurs')" id="btn-param-utilisateurs" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">👤 Comptes Utilisateurs & Agents</button>
+                <button onclick="switchParamSubTab('equipements')" id="btn-param-equipements" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">🚜 Équipements</button>
+                <button onclick="switchParamSubTab('communes')" id="btn-param-communes" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">🏛️ Communes</button>
+            </div>
+
+            <!-- Sous-vues -->
+            <div id="param-subview-referentiels" class="space-y-6">
+                <div class="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+                    <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Catégories d'Intervention</h4><button onclick="openCategoryModal()" class="bg-brand-600 text-white px-3 py-1.5 rounded text-xs font-semibold">+ Ajouter Catégorie</button></div>
+                    <table class="w-full text-left text-xs border-t"><tbody id="tableCategoriesBody" class="divide-y divide-slate-100"></tbody></table>
+                </div>
+            </div>
+
+            <div id="param-subview-utilisateurs" class="hidden bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+                <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Gestion des Comptes & Agents</h4><button onclick="openUserModal()" class="bg-brand-600 text-white px-3 py-1.5 rounded text-xs font-semibold">+ Créer Utilisateur</button></div>
+                <table class="w-full text-left text-xs border-t"><tbody id="tableUsersBody" class="divide-y divide-slate-100"></tbody></table>
+            </div>
+
+            <div id="param-subview-equipements" class="hidden bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+                <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Parc Équipements Mutualisés</h4><button onclick="openEquipmentModal()" class="bg-brand-600 text-white px-3 py-1.5 rounded text-xs font-semibold">+ Ajouter Équipement</button></div>
+                <table class="w-full text-left text-xs border-t"><tbody id="tableEquipmentBody" class="divide-y divide-slate-100"></tbody></table>
+            </div>
+
+            <div id="param-subview-communes" class="hidden bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+                <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Communes Membres de l'Intercommunalité</h4><button onclick="openCommuneModal()" class="bg-brand-600 text-white px-3 py-1.5 rounded text-xs font-semibold">+ Ajouter Commune</button></div>
+                <table class="w-full text-left text-xs border-t"><tbody id="tableCommunesBody" class="divide-y divide-slate-100"></tbody></table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODALE: NOUVELLE DEMANDE -->
+    <div id="newTicketModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800">🛠️ Nouvelle Demande d'Intervention</h3><button onclick="closeNewTicketModal()" class="text-2xl font-bold">&times;</button></div>
+            <form onsubmit="handleCreateTicket(event)" class="space-y-3 text-xs">
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="font-semibold block mb-1">Commune</label><select id="modalCommune" required class="w-full border rounded p-2"></select></div>
+                    <div><label class="font-semibold block mb-1">Catégorie</label><select id="modalCategory" required class="w-full border rounded p-2"></select></div>
+                </div>
+                <div><label class="font-semibold block mb-1">Intitulé court</label><input type="text" id="modalTitle" required placeholder="ex: Fuite d'eau lavabo école" class="w-full border rounded p-2"></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="font-semibold block mb-1">Lieu / Bâtiment</label><select id="modalPatrimoineSelect" class="w-full border rounded p-2"></select></div>
+                    <div><label class="font-semibold block mb-1">Urgence</label><select id="modalPriority" required class="w-full border rounded p-2"><option value="BASSE">🟢 Basse</option><option value="MOYEN" selected>🟠 Normale</option><option value="URGENT">🚨 Urgente</option></select></div>
+                </div>
+                <div><label class="font-semibold block mb-1">Description du problème</label><textarea id="modalDescription" rows="3" class="w-full border rounded p-2"></textarea></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="font-semibold block mb-1">Demandeur</label><input type="text" id="modalRequester" required value="Mairie / École / Usager" class="w-full border rounded p-2"></div>
+                    <div><label class="font-semibold block mb-1">Contact (Tél / Email)</label><input type="text" id="modalContact" placeholder="ex: 06 12 34 56 78" class="w-full border rounded p-2"></div>
+                </div>
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeNewTicketModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Envoyer la demande</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+    <script>
+        let currentUser = null;
+        let currentCommuneFilter = 'Gimont';
+        let activeTab = 'interventions';
+        let activePatrimoineId = 1;
+
+        let categoriesList = [
+            { id: 1, name: "Voirie & Signalisat.", emoji: "🛣️" },
+            { id: 2, name: "Bâtiments & Écoles", emoji: "🏫" },
+            { id: 3, name: "Espaces Verts", emoji: "🌳" },
+            { id: 4, name: "Éclairage / Élec", emoji: "💡" },
+            { id: 5, name: "Festivités & Matériel", emoji: "🎪" },
+            { id: 6, name: "Propreté & Salubrité", emoji: "🧹" }
+        ];
+
+        let patrimoineList = [
+            { id: 1, commune: "Gimont", name: "École Maternelle Saint-Éloi", type_bien: "Bâtiment", num_inventaire: "PAT-2024-001", address: "Rue des Écoles", ref_cadastrale: "AC-104", statut_propriete: "Domaine public communal", valeur_acquisition: 1250000, elecMeter: "ELE-99823", waterMeter: "EAU-1029", gasMeter: "GAZ-4410" },
+            { id: 2, commune: "Gimont", name: "Halle Centrale & Mairie", type_bien: "Bâtiment", num_inventaire: "PAT-2024-002", address: "Place de la Halle", ref_cadastrale: "AB-012", statut_propriete: "Domaine public communal", valeur_acquisition: 3400000, elecMeter: "ELE-10029", waterMeter: "EAU-3301", gasMeter: "" }
+        ];
+
+        let communesList = [
+            { id: 1, name: "Gimont", respTech: "Jean Dupont", phone: "05 62 67 70 02" },
+            { id: 2, name: "Aubiet", respTech: "Marc Bernard", phone: "05 62 65 90 01" },
+            { id: 3, name: "Juilles", respTech: "Alain Mercier", phone: "05 62 65 91 10" }
+        ];
+
+        let tickets = [
+            { id: "INT-101", commune: "Gimont", category: "Bâtiments & Écoles", title: "Fuite d'eau lavabo école Saint-Éloi", location: "École Maternelle Saint-Éloi", priority: "URGENT", status: "EN_COURS", requester: "Mme Dubois", contact: "06 12 34 56 78", description: "Robinet fuit abondamment dans le bloc sanitaire.", dateCreated: "2026-09-08 08:30" }
+        ];
+
+        window.onload = function() {
+            // Charger la session utilisateur depuis localStorage
+            const sessionData = localStorage.getItem('citgest_session_user');
+            if (sessionData) {
+                currentUser = JSON.parse(sessionData);
+            } else {
+                currentUser = { name: "Administrateur", role: "admin", avatar: "⚡" };
+            }
+
+            renderUserSessionWidget();
+            updateCommuneDropdowns();
+            renderTickets();
+            tryConnectBackendAPI();
+        };
+
+        function renderUserSessionWidget() {
+            const w = document.getElementById('userAuthWidget');
+            if (!w) return;
+            w.innerHTML = `
+                <div class="flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-xl text-xs">
+                    <span class="text-base">${currentUser.avatar || '👤'}</span>
+                    <div class="text-left hidden sm:block">
+                        <span class="font-bold text-white block leading-tight">${currentUser.name}</span>
+                        <span class="text-[10px] text-brand-300 font-semibold uppercase">${currentUser.role}</span>
+                    </div>
+                    <button onclick="logoutSession()" class="text-xs bg-slate-700 hover:bg-rose-600 text-white px-2 py-1 rounded-lg ml-2 transition-colors" title="Déconnexion">🚪</button>
+                </div>
+            `;
+        }
+
+        function logoutSession() {
+            localStorage.removeItem('citgest_session_user');
+            window.location.href = 'index.html';
+        }
+
+        function tryConnectBackendAPI() {
+            fetch('api.php?action=get_all')
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data.success) {
+                        if (data.tickets) tickets = data.tickets;
+                        if (data.categories) categoriesList = data.categories;
+                        if (data.patrimoine) patrimoineList = data.patrimoine;
+                        if (data.communes) communesList = data.communes;
+                        renderTickets();
+                    }
+                })
+                .catch(() => {});
+        }
+
+        function switchTab(tabId) {
+            activeTab = tabId;
+            ['interventions', 'patrimoine', 'releves', 'mutualisation', 'equipe', 'statistiques', 'parametres'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                const view = document.getElementById(`view-${t}`);
+                if (btn) btn.className = `tab-btn pb-3 px-1 flex items-center gap-1.5 whitespace-nowrap ${t === tabId ? 'text-brand-600 border-b-2 border-brand-600 font-semibold' : 'text-slate-500 border-b-2 border-transparent'}`;
+                if (view) view.classList.toggle('hidden', t !== tabId);
+            });
+        }
+
+        function changeCommune(val) {
+            currentCommuneFilter = val;
+            renderTickets();
+        }
+
+        function updateCommuneDropdowns() {
+            const el = document.getElementById('communeSelect');
+            if (el) {
+                el.innerHTML = communesList.map(c => `<option value="${c.name}">Commune : ${c.name}</option>`).join('') + `<option value="ALL">🌐 Vue Communauté de Communes</option>`;
+                el.value = currentCommuneFilter;
+            }
+        }
+
+        function renderTickets() {
+            const grid = document.getElementById('gridDisplayContainer');
+            if (!grid) return;
+            const list = tickets.filter(t => currentCommuneFilter === 'ALL' || t.commune === currentCommuneFilter);
+            document.getElementById('badgeOpenCount').innerText = list.filter(t => t.status !== 'TERMINEE').length;
+
+            grid.innerHTML = list.map(t => `
+                <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm space-y-3">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-mono text-slate-400">${t.id}</span>
+                        <span class="bg-brand-50 text-brand-700 px-2 py-0.5 rounded font-bold">${t.status}</span>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-sm">${t.title}</h3>
+                    <p class="text-xs text-slate-500">📍 ${t.location} (${t.commune})</p>
+                    <div class="pt-2 border-t flex justify-between items-center text-xs">
+                        <span class="text-slate-600">${t.requester}</span>
+                        <span class="text-brand-600 font-semibold">Détails →</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openNewTicketModal() { document.getElementById('newTicketModal').classList.remove('hidden'); }
+        function closeNewTicketModal() { document.getElementById('newTicketModal').classList.add('hidden'); }
+
+        function showToast(msg) {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = `bg-slate-800 text-white px-4 py-2 rounded shadow text-xs pointer-events-auto`;
+            t.innerText = msg;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
