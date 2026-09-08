@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cit-Gest - Service Technique & Mutualisation Intercommunale</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for visual reports -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#2563eb',
+                            600: '#1d4ed8',
+                            700: '#1e40af',
+                            800: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .print-only { display: none; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; font-size: 12pt; }
+        }
+    </style>
+</head>
+<body class="h-full font-sans text-slate-800 flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- TOP BAR / HEADER -->
+    <header class="no-print bg-slate-900 text-white sticky top-0 z-30 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Commune Info -->
+                <div class="flex items-center gap-3">
+                    <div id="logoContainer" class="bg-white p-1 rounded-xl text-slate-800 font-bold text-xl flex items-center justify-center w-11 h-11 shadow-sm border border-slate-700/50 overflow-hidden shrink-0">
+                        <img id="appLogoImg" src="" alt="Logo Commune" class="w-full h-full object-contain hidden" onerror="handleLogoError(this)">
+                        <span id="appLogoFallback" class="text-xl">🏛️</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-lg tracking-tight">Cit-Gest</span>
+                            <span class="bg-brand-500/30 text-brand-200 text-xs px-2 py-0.5 rounded-full font-medium border border-brand-400/30">v3.0 Interco</span>
+                        </div>
+                        <p class="text-xs text-slate-400 flex items-center gap-1">
+                            <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span id="currentCommuneLabel">Commune de Saint-Aurin (3 120 hab.)</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Simulation Role Switcher Bar -->
+                <div class="hidden md:flex items-center bg-slate-800/90 rounded-xl p-1 border border-slate-700/60 shadow-inner text-xs">
+                    <span class="text-slate-400 font-medium px-2 flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        Profil rapide :
+                    </span>
+                    <button onclick="quickSwitchUserRole('demandeur')" id="btn-role-demandeur" class="role-btn px-2.5 py-1 rounded-lg transition-all font-medium text-slate-300 hover:text-white">Demandeur</button>
+                    <button onclick="quickSwitchUserRole('agent')" id="btn-role-agent" class="role-btn px-2.5 py-1 rounded-lg transition-all font-medium text-slate-300 hover:text-white">Agent ST</button>
+                    <button onclick="quickSwitchUserRole('responsable')" id="btn-role-responsable" class="role-btn px-2.5 py-1 rounded-lg transition-all font-medium bg-brand-600 text-white shadow">Responsable</button>
+                    <button onclick="quickSwitchUserRole('direction')" id="btn-role-direction" class="role-btn px-2.5 py-1 rounded-lg transition-all font-medium text-slate-300 hover:text-white">Maire/DGS</button>
+                    <button onclick="quickSwitchUserRole('admin')" id="btn-role-admin" class="role-btn px-2.5 py-1 rounded-lg transition-all font-medium text-slate-300 hover:text-white">Admin</button>
+                </div>
+
+                <!-- Action Button, Auth & Interco selector -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <select id="communeSelect" onchange="changeCommune(this.value)" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="Saint-Aurin">Commune : Saint-Aurin</option>
+                        <option value="Val-de-Marse">Commune : Val-de-Marse</option>
+                        <option value="Beaulieu-les-Pins">Commune : Beaulieu-les-Pins</option>
+                        <option value="ALL">🌐 Vue Communauté de Communes</option>
+                    </select>
+
+                    <div id="userAuthProfileWidget" class="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white">
+                        <!-- Injected dynamically via JS -->
+                    </div>
+
+                    <button onclick="switchTab('parametres')" id="navHeaderParamBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold px-2.5 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-sm" title="Ouvrir les paramètres">
+                        <span>⚙️</span>
+                        <span class="hidden lg:inline">Paramètres</span>
+                    </button>
+
+                    <button onclick="openNewTicketModal()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs sm:text-sm font-semibold px-3 py-2 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center gap-1.5 transform active:scale-95">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                        <span>Nouvelle demande</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 flex flex-col w-full">
+        
+        <!-- Context Banner -->
+        <div id="roleContextBanner" class="no-print mb-5 bg-gradient-to-r from-blue-900/90 to-slate-900 border border-brand-500/30 text-white rounded-xl p-4 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-brand-500/20 text-brand-300 rounded-lg text-lg">💡</div>
+                <div>
+                    <h2 id="roleBannerTitle" class="font-semibold text-sm sm:text-base text-blue-100">Espace Responsable du Service Technique</h2>
+                    <p id="roleBannerDesc" class="text-xs text-slate-300">Validation, affectation aux agents, planification et suivi direct du matériel.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+                <span id="backendStatusBadge" class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full font-medium flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> LAMP / SQLite Connecté
+                </span>
+            </div>
+        </div>
+
+        <!-- MAIN TABS -->
+        <div class="no-print border-b border-slate-200 mb-6 flex space-x-2 sm:space-x-4 overflow-x-auto text-xs sm:text-sm font-medium">
+            <button onclick="switchTab('interventions')" id="tab-interventions" class="tab-btn pb-3 px-1 text-brand-600 border-b-2 border-brand-600 font-semibold flex items-center gap-1.5 whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 022 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <span>Interventions</span>
+                <span id="badgeOpenCount" class="bg-brand-100 text-brand-700 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+            </button>
+
+            <button onclick="switchTab('mutualisation')" id="tab-mutualisation" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                <span>Mutualisation & Matériel</span>
+                <span class="bg-amber-100 text-amber-800 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold">Interco</span>
+            </button>
+
+            <button onclick="switchTab('equipe')" id="tab-equipe" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                <span>Équipe Technique</span>
+            </button>
+
+            <button onclick="switchTab('statistiques')" id="tab-statistiques" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                <span>Statistiques</span>
+            </button>
+
+            <button onclick="switchTab('parametres')" id="tab-parametres" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap bg-amber-50/50 rounded-t-lg">
+                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span class="font-bold text-slate-800">⚙️ Paramétrage</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: INTERVENTIONS VIEW -->
+        <div id="view-interventions" class="space-y-6">
+            <div class="no-print bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+                <div class="relative flex-1">
+                    <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Rechercher une demande, un lieu, un demandeur..." class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+                    <select id="filterCategory" onchange="applyFilters()" class="border border-slate-300 rounded-lg px-3 py-2 bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="ALL">Toutes catégories</option>
+                    </select>
+
+                    <select id="filterStatus" onchange="applyFilters()" class="border border-slate-300 rounded-lg px-3 py-2 bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="ALL">Tous les statuts</option>
+                        <option value="NOUVELLE">🆕 Nouvelle demande</option>
+                        <option value="VALIDEE">Planifiée / Validée</option>
+                        <option value="EN_COURS">⚡ En cours</option>
+                        <option value="ATTENTE_PIECE">⏸️ En attente matériel/pièces</option>
+                        <option value="TERMINEE">✅ Terminée</option>
+                    </select>
+
+                    <select id="filterPriority" onchange="applyFilters()" class="border border-slate-300 rounded-lg px-3 py-2 bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="ALL">Toutes urgences</option>
+                        <option value="URGENT">🚨 Urgente / Sécurité</option>
+                        <option value="MOYEN">🟠 Normale</option>
+                        <option value="BASSE">🟢 Basse / Planifiable</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="gridDisplayContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+            <div id="emptyState" class="hidden text-center py-12 bg-white rounded-xl border border-dashed border-slate-300">
+                <p class="text-4xl mb-2">🔍</p>
+                <h3 class="font-semibold text-slate-800 text-lg">Aucune demande ne correspond à vos filtres</h3>
+                <button onclick="resetFilters()" class="mt-4 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold text-slate-700">Réinitialiser les filtres</button>
+            </div>
+        </div>
+
+        <!-- TAB 2: MUTUALISATION INTERCOM -->
+        <div id="view-mutualisation" class="hidden space-y-6">
+            <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="p-3 bg-amber-200/80 rounded-lg text-xl">🚜</div>
+                    <div>
+                        <h3 class="font-bold text-base">Plateforme de Mutualisation des Équipements Lourds</h3>
+                        <p class="text-xs text-amber-800">Partagez vos engins spécifiques entre communes pour optimiser les coûts d'achat et d'entretien.</p>
+                    </div>
+                </div>
+            </div>
+            <div id="equipmentGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
+
+        <!-- TAB 3: ÉQUIPE TECHNIQUE -->
+        <div id="view-equipe" class="hidden space-y-6">
+            <div id="agentsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"></div>
+        </div>
+
+        <!-- TAB 4: STATISTIQUES -->
+        <div id="view-statistiques" class="hidden space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs text-slate-500 font-medium">Total Interventions</div>
+                    <div class="text-2xl font-bold text-slate-900 mt-1" id="stat-total-interventions">142</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs text-slate-500 font-medium">Délai Moyen Prise en Charge</div>
+                    <div class="text-2xl font-bold text-brand-600 mt-1">1.8 jour</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs text-slate-500 font-medium">Taux de Résolution</div>
+                    <div class="text-2xl font-bold text-emerald-600 mt-1">94%</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs text-slate-500 font-medium">Satisfaction Usagers</div>
+                    <div class="text-2xl font-bold text-amber-500 mt-1">4.8 / 5</div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm"><canvas id="chartCategory"></canvas></div>
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm"><canvas id="chartCommunes"></canvas></div>
+            </div>
+        </div>
+
+        <!-- TAB 5: PARAMÉTRAGE -->
+        <div id="view-parametres" class="hidden space-y-6">
+            <div class="bg-slate-100 p-1.5 rounded-xl border border-slate-200 flex flex-wrap gap-2 text-xs font-semibold">
+                <button onclick="switchParamSubTab('roles')" id="btn-param-roles" class="param-sub-btn px-4 py-2 rounded-lg bg-white text-brand-600 shadow-xs">🔒 Rôles & Droits</button>
+                <button onclick="switchParamSubTab('referentiels')" id="btn-param-referentiels" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">🏷️ Catégories & Lieux</button>
+                <button onclick="switchParamSubTab('utilisateurs')" id="btn-param-utilisateurs" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">👤 Comptes Utilisateurs</button>
+                <button onclick="switchParamSubTab('agents')" id="btn-param-agents" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">👨‍🔧 Agents</button>
+                <button onclick="switchParamSubTab('equipements')" id="btn-param-equipements" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">🚜 Équipements</button>
+                <button onclick="switchParamSubTab('communes')" id="btn-param-communes" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">🏛️ Communes</button>
+                <button onclick="switchParamSubTab('general')" id="btn-param-general" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">🎨 Logo & Style</button>
+            </div>
+
+            <!-- Subview Content Containers -->
+            <div id="param-subview-roles" class="bg-white rounded-xl border border-slate-200 p-5">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-50 font-semibold"><tr><th class="p-3">Rôle</th><th class="p-3 text-center">Interventions</th><th class="p-3 text-center">Mutualisation</th><th class="p-3 text-center">Équipe</th><th class="p-3 text-center">Statistiques</th><th class="p-3 text-center">Paramètres</th></tr></thead>
+                    <tbody id="rolePermissionsTableBody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+
+            <div id="param-subview-referentiels" class="hidden space-y-6">
+                <div class="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+                    <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Catégories</h4><button onclick="openCategoryModal()" class="bg-brand-600 text-white px-3 py-1 rounded text-xs">+ Ajouter</button></div>
+                    <table class="w-full text-left text-xs"><tbody id="tableCategoriesBody" class="divide-y divide-slate-100"></tbody></table>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+                    <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Lieux Préconfigurés</h4><button onclick="openLocationModal()" class="bg-brand-600 text-white px-3 py-1 rounded text-xs">+ Ajouter</button></div>
+                    <table class="w-full text-left text-xs"><tbody id="tableLocationsBody" class="divide-y divide-slate-100"></tbody></table>
+                </div>
+            </div>
+
+            <div id="param-subview-utilisateurs" class="hidden bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+                <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Utilisateurs</h4><button onclick="openUserModal()" class="bg-brand-600 text-white px-3 py-1 rounded text-xs">+ Créer</button></div>
+                <table class="w-full text-left text-xs"><tbody id="tableUsersBody" class="divide-y divide-slate-100"></tbody></table>
+            </div>
+
+            <div id="param-subview-agents" class="hidden bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+                <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Agents</h4><button onclick="openAgentModal()" class="bg-brand-600 text-white px-3 py-1 rounded text-xs">+ Ajouter</button></div>
+                <table class="w-full text-left text-xs"><tbody id="tableAgentsBody" class="divide-y divide-slate-100"></tbody></table>
+            </div>
+
+            <div id="param-subview-equipements" class="hidden bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+                <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Équipements</h4><button onclick="openEquipmentModal()" class="bg-brand-600 text-white px-3 py-1 rounded text-xs">+ Ajouter</button></div>
+                <table class="w-full text-left text-xs"><tbody id="tableEquipmentBody" class="divide-y divide-slate-100"></tbody></table>
+            </div>
+
+            <div id="param-subview-communes" class="hidden bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+                <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Communes</h4><button onclick="openCommuneModal()" class="bg-brand-600 text-white px-3 py-1 rounded text-xs">+ Ajouter</button></div>
+                <table class="w-full text-left text-xs"><tbody id="tableCommunesBody" class="divide-y divide-slate-100"></tbody></table>
+            </div>
+
+            <div id="param-subview-general" class="hidden bg-white rounded-xl border border-slate-200 p-5 space-y-4">
+                <h4 class="font-bold text-sm">Logo Officiel</h4>
+                <input type="file" accept="image/*" onchange="handleLogoFileUpload(event)" class="text-xs">
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODALS -->
+    <div id="newTicketModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800">🛠️ Nouvelle Demande</h3><button onclick="closeNewTicketModal()" class="text-2xl font-bold">&times;</button></div>
+            <form onsubmit="handleCreateTicket(event)" class="space-y-3 text-xs">
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="font-semibold block mb-1">Commune</label><select id="modalCommune" onchange="updateModalLocationDropdown()" required class="w-full border rounded p-2"></select></div>
+                    <div><label class="font-semibold block mb-1">Catégorie</label><select id="modalCategory" required class="w-full border rounded p-2"></select></div>
+                </div>
+                <div><label class="font-semibold block mb-1">Intitulé court</label><input type="text" id="modalTitle" required placeholder="ex: Fuite d'eau école" class="w-full border rounded p-2"></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="font-semibold block mb-1">Lieu</label><select id="modalLocationSelect" onchange="handleLocationSelectChange(this.value)" class="w-full border rounded p-2"></select><input type="text" id="modalLocationCustom" placeholder="Saisie libre..." class="w-full border rounded p-2 mt-1 hidden"></div>
+                    <div><label class="font-semibold block mb-1">Urgence</label><select id="modalPriority" required class="w-full border rounded p-2"><option value="BASSE">🟢 Basse</option><option value="MOYEN" selected>🟠 Normale</option><option value="URGENT">🚨 Urgente</option></select></div>
+                </div>
+                <div><label class="font-semibold block mb-1">Description</label><textarea id="modalDescription" rows="3" class="w-full border rounded p-2"></textarea></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="font-semibold block mb-1">Demandeur</label><input type="text" id="modalRequester" required value="Mairie / École" class="w-full border rounded p-2"></div>
+                    <div><label class="font-semibold block mb-1">Contact</label><input type="text" id="modalContact" placeholder="Téléphone" class="w-full border rounded p-2"></div>
+                </div>
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeNewTicketModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Envoyer</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- DETAIL TICKET MODAL -->
+    <div id="detailTicketModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 space-y-4">
+            <div id="detailModalHeader" class="flex justify-between border-b pb-3"></div>
+            <div id="detailModalBody" class="space-y-3 text-xs"></div>
+            <div class="bg-slate-50 p-3 rounded-lg space-y-2 text-xs">
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label class="font-semibold block">Statut :</label><select id="detailStatusSelect" onchange="updateTicketStatusFromDetail()" class="w-full border rounded p-1.5"><option value="NOUVELLE">🆕 Nouvelle</option><option value="VALIDEE">📅 Planifiée</option><option value="EN_COURS">⚡ En cours</option><option value="ATTENTE_PIECE">⏸️ En attente</option><option value="TERMINEE">✅ Terminée</option></select></div>
+                    <div><label class="font-semibold block">Agent :</label><select id="detailAgentSelect" onchange="updateTicketAgentFromDetail()" class="w-full border rounded p-1.5"></select></div>
+                </div>
+            </div>
+            <div id="commentsTimeline" class="space-y-2 bg-slate-50 p-3 rounded-lg text-xs max-h-40 overflow-y-auto"></div>
+            <form onsubmit="handleAddComment(event)" class="flex gap-2 text-xs"><input type="text" id="newCommentInput" placeholder="Note technique..." class="flex-1 border rounded p-2"><button type="submit" class="bg-slate-800 text-white px-3 py-2 rounded">Ajouter</button></form>
+            <div class="pt-3 border-t flex justify-between"><button onclick="window.print()" class="px-3 py-1 border rounded text-xs">🖨️ Imprimer</button><button onclick="closeDetailTicketModal()" class="px-4 py-1 bg-slate-800 text-white rounded text-xs">Fermer</button></div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+    <script>
+        let currentRole = 'responsable';
+        let currentCommuneFilter = 'Saint-Aurin';
+        let activeTab = 'interventions';
+        let activeTicketId = null;
+
+        let categoriesList = [
+            { id: 1, name: "Voirie & Signalisat.", emoji: "🛣️" },
+            { id: 2, name: "Bâtiments & Écoles", emoji: "🏫" },
+            { id: 3, name: "Espaces Verts", emoji: "🌳" },
+            { id: 4, name: "Éclairage / Élec", emoji: "💡" },
+            { id: 5, name: "Festivités & Matériel", emoji: "🎪" },
+            { id: 6, name: "Propreté & Salubrité", emoji: "🧹" }
+        ];
+
+        let locationsList = [
+            { id: 1, commune: "Saint-Aurin", name: "École Maternelle Les Lutins" },
+            { id: 2, commune: "Saint-Aurin", name: "Mairie Centrale & Place" },
+            { id: 3, commune: "Saint-Aurin", name: "Gymnase Municipal" },
+            { id: 4, commune: "Val-de-Marse", name: "Place de la Halle" },
+            { id: 5, commune: "Beaulieu-les-Pins", name: "Salle des Fêtes Communale" }
+        ];
+
+        let communesList = [
+            { id: 1, name: "Saint-Aurin", population: 3120 },
+            { id: 2, name: "Val-de-Marse", population: 1850 },
+            { id: 3, name: "Beaulieu-les-Pins", population: 2410 }
+        ];
+
+        let agentsList = [
+            { id: 1, name: "Jean Dupont", role: "Chef Plomberie", skill: "CACES Nacelle", commune: "Saint-Aurin", status: "Disponible", avatar: "👨‍🔧" },
+            { id: 2, name: "Marc Lambert", role: "Électricien", skill: "Habilitation BR/HO", commune: "Saint-Aurin", status: "En mission", avatar: "⚡" },
+            { id: 3, name: "Pierre Moreau", role: "Espaces Verts", skill: "Taille / Élagage", commune: "Saint-Aurin", status: "Disponible", avatar: "🌳" }
+        ];
+
+        let equipmentList = [
+            { id: "EQ-1", name: "Nacelle Élévatrice 18M", owner: "Saint-Aurin", status: "Libre", desc: "Élagage et éclairage public.", icon: "🏗️" },
+            { id: "EQ-2", name: "Broyeur de branches (80 HP)", owner: "Val-de-Marse", status: "En utilisation", desc: "Broyeur de branches tracté.", icon: "🪵" }
+        ];
+
+        let tickets = [
+            { id: "INT-101", commune: "Saint-Aurin", category: "Bâtiments & Écoles", title: "Fuite d'eau lavabo école", location: "École Maternelle Les Lutins", priority: "URGENT", status: "EN_COURS", requester: "Mme Dubois", contact: "06 12 34 56 78", description: "Robinet fuit abondamment.", dateCreated: "2026-09-08 08:30", assignedAgentId: 1, comments: [{ author: "Mme Dubois", text: "Signalé à l'ouverture", date: "08:30" }] },
+            { id: "INT-102", commune: "Saint-Aurin", category: "Voirie & Signalisat.", title: "Nid-de-poule rue du Stade", location: "Rue du Stade", priority: "MOYEN", status: "NOUVELLE", requester: "Mairie", contact: "05 62 00 11 22", description: "Trou de 15cm sur la chaussée.", dateCreated: "2026-09-08 09:10", assignedAgentId: null, comments: [] }
+        ];
+
+        window.onload = function() {
+            updateCommuneDropdowns();
+            updateCategoryDropdowns();
+            updateModalLocationDropdown();
+            renderTickets();
+            renderAgents();
+            renderEquipment();
+            renderParamTables();
+            initCharts();
+            tryConnectBackendAPI();
+        };
+
+        function tryConnectBackendAPI() {
+            fetch('api.php?action=get_all')
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data.success) {
+                        if (data.tickets) tickets = data.tickets;
+                        if (data.categories) categoriesList = data.categories;
+                        if (data.locations) locationsList = data.locations;
+                        if (data.communes) communesList = data.communes;
+                        if (data.agents) agentsList = data.agents;
+                        if (data.equipment) equipmentList = data.equipment;
+                        
+                        updateCommuneDropdowns();
+                        updateCategoryDropdowns();
+                        renderTickets();
+                        renderAgents();
+                        renderEquipment();
+                        renderParamTables();
+                        showToast("Base de données SQLite synchronisée avec succès !", "success");
+                    }
+                })
+                .catch(() => {
+                    // Running standalone/offline demo mode
+                });
+        }
+
+        function switchTab(tabId) {
+            activeTab = tabId;
+            ['interventions', 'mutualisation', 'equipe', 'statistiques', 'parametres'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                const view = document.getElementById(`view-${t}`);
+                if (btn) btn.className = `tab-btn pb-3 px-1 flex items-center gap-1.5 whitespace-nowrap ${t === tabId ? 'text-brand-600 border-b-2 border-brand-600 font-semibold' : 'text-slate-500 border-b-2 border-transparent'}`;
+                if (view) view.classList.toggle('hidden', t !== tabId);
+            });
+        }
+
+        function quickSwitchUserRole(role) {
+            currentRole = role;
+            showToast(`Rôle activé : ${role.toUpperCase()}`, 'info');
+        }
+
+        function changeCommune(val) {
+            currentCommuneFilter = val;
+            applyFilters();
+        }
+
+        function updateCommuneDropdowns() {
+            ['communeSelect', 'modalCommune'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && id !== 'communeSelect') {
+                    el.innerHTML = communesList.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+                }
+            });
+        }
+
+        function updateCategoryDropdowns() {
+            const filterSelect = document.getElementById('filterCategory');
+            if (filterSelect) {
+                filterSelect.innerHTML = `<option value="ALL">Toutes catégories</option>` + categoriesList.map(c => `<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('');
+            }
+            const modalCatSelect = document.getElementById('modalCategory');
+            if (modalCatSelect) {
+                modalCatSelect.innerHTML = categoriesList.map(c => `<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('');
+            }
+        }
+
+        function updateModalLocationDropdown() {
+            const commSelect = document.getElementById('modalCommune');
+            const locSelect = document.getElementById('modalLocationSelect');
+            if (!commSelect || !locSelect) return;
+            const filtered = locationsList.filter(l => l.commune === commSelect.value);
+            locSelect.innerHTML = filtered.map(l => `<option value="${l.name}">${l.name}</option>`).join('') + `<option value="CUSTOM">➕ Autre lieu...</option>`;
+        }
+
+        function handleLocationSelectChange(val) {
+            const input = document.getElementById('modalLocationCustom');
+            if (input) input.classList.toggle('hidden', val !== 'CUSTOM');
+        }
+
+        function applyFilters() {
+            const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            const cat = document.getElementById('filterCategory')?.value || 'ALL';
+            const status = document.getElementById('filterStatus')?.value || 'ALL';
+            const prio = document.getElementById('filterPriority')?.value || 'ALL';
+
+            const filtered = tickets.filter(t => {
+                const matchCom = (currentCommuneFilter === 'ALL' || t.commune === currentCommuneFilter);
+                const matchSearch = !search || t.title.toLowerCase().includes(search) || t.location.toLowerCase().includes(search);
+                const matchCat = (cat === 'ALL' || t.category === cat);
+                const matchStat = (status === 'ALL' || t.status === status);
+                const matchPrio = (prio === 'ALL' || t.priority === prio);
+                return matchCom && matchSearch && matchCat && matchStat && matchPrio;
+            });
+            renderTickets(filtered);
+        }
+
+        function resetFilters() {
+            if (document.getElementById('searchInput')) document.getElementById('searchInput').value = '';
+            if (document.getElementById('filterCategory')) document.getElementById('filterCategory').value = 'ALL';
+            if (document.getElementById('filterStatus')) document.getElementById('filterStatus').value = 'ALL';
+            if (document.getElementById('filterPriority')) document.getElementById('filterPriority').value = 'ALL';
+            applyFilters();
+        }
+
+        function renderTickets(listToRender = null) {
+            const list = listToRender || tickets.filter(t => currentCommuneFilter === 'ALL' || t.commune === currentCommuneFilter);
+            const grid = document.getElementById('gridDisplayContainer');
+            document.getElementById('badgeOpenCount').innerText = list.filter(t => t.status !== 'TERMINEE').length;
+
+            grid.innerHTML = list.map(t => `
+                <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm space-y-3">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-mono text-slate-400">${t.id}</span>
+                        <span class="bg-brand-50 text-brand-700 px-2 py-0.5 rounded font-bold">${t.status}</span>
+                    </div>
+                    <h3 onclick="openDetailTicketModal('${t.id}')" class="font-bold text-slate-800 hover:text-brand-600 cursor-pointer text-sm">${t.title}</h3>
+                    <p class="text-xs text-slate-500">📍 ${t.location} (${t.commune})</p>
+                    <div class="pt-2 border-t flex justify-between items-center text-xs">
+                        <span class="text-slate-600">${t.requester}</span>
+                        <button onclick="openDetailTicketModal('${t.id}')" class="text-brand-600 font-semibold hover:underline">Voir →</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openNewTicketModal() { document.getElementById('newTicketModal').classList.remove('hidden'); }
+        function closeNewTicketModal() { document.getElementById('newTicketModal').classList.add('hidden'); }
+
+        function handleCreateTicket(e) {
+            e.preventDefault();
+            const locVal = document.getElementById('modalLocationSelect').value;
+            const customLoc = document.getElementById('modalLocationCustom').value;
+            const newTicket = {
+                id: `INT-${Math.floor(100 + Math.random() * 900)}`,
+                commune: document.getElementById('modalCommune').value,
+                category: document.getElementById('modalCategory').value,
+                title: document.getElementById('modalTitle').value,
+                location: locVal === 'CUSTOM' ? customLoc : locVal,
+                priority: document.getElementById('modalPriority').value,
+                status: 'NOUVELLE',
+                requester: document.getElementById('modalRequester').value,
+                contact: document.getElementById('modalContact').value || 'N/A',
+                description: document.getElementById('modalDescription').value || '',
+                dateCreated: new Date().toISOString().substring(0, 16),
+                assignedAgentId: null,
+                comments: []
+            };
+            tickets.unshift(newTicket);
+            renderTickets();
+            closeNewTicketModal();
+            showToast("Nouvelle demande créée !", "success");
+        }
+
+        function openDetailTicketModal(id) {
+            activeTicketId = id;
+            const t = tickets.find(x => x.id === id);
+            if (!t) return;
+            document.getElementById('detailModalHeader').innerHTML = `<div><span class="text-xs font-mono text-slate-400">${t.id}</span><h3 class="font-bold text-base">${t.title}</h3></div><button onclick="closeDetailTicketModal()">&times;</button>`;
+            document.getElementById('detailModalBody').innerHTML = `<p><strong>Lieu :</strong> ${t.location} (${t.commune})</p><p><strong>Demandeur :</strong> ${t.requester} (${t.contact})</p><p class="p-2 bg-slate-50 border rounded">${t.description}</p>`;
+            document.getElementById('detailStatusSelect').value = t.status;
+            
+            const agentSel = document.getElementById('detailAgentSelect');
+            agentSel.innerHTML = `<option value="">-- Non assigné --</option>` + agentsList.map(a => `<option value="${a.id}" ${t.assignedAgentId === a.id ? 'selected' : ''}>${a.name}</option>`).join('');
+            
+            renderComments(t);
+            document.getElementById('detailTicketModal').classList.remove('hidden');
+        }
+
+        function closeDetailTicketModal() { document.getElementById('detailTicketModal').classList.add('hidden'); }
+
+        function updateTicketStatusFromDetail() {
+            const t = tickets.find(x => x.id === activeTicketId);
+            if (t) {
+                t.status = document.getElementById('detailStatusSelect').value;
+                renderTickets();
+                showToast("Statut mis à jour", "info");
+            }
+        }
+
+        function updateTicketAgentFromDetail() {
+            const t = tickets.find(x => x.id === activeTicketId);
+            if (t) {
+                const val = document.getElementById('detailAgentSelect').value;
+                t.assignedAgentId = val ? parseInt(val) : null;
+                renderTickets();
+                showToast("Agent assigné", "info");
+            }
+        }
+
+        function renderComments(t) {
+            document.getElementById('commentsTimeline').innerHTML = t.comments.map(c => `<div class="bg-white p-2 border rounded"><span class="font-bold">${c.author}</span>: ${c.text}</div>`).join('') || `<p class="text-slate-400">Aucun commentaire.</p>`;
+        }
+
+        function handleAddComment(e) {
+            e.preventDefault();
+            const input = document.getElementById('newCommentInput');
+            const t = tickets.find(x => x.id === activeTicketId);
+            if (t && input.value) {
+                t.comments.push({ author: currentRole, text: input.value });
+                renderComments(t);
+                input.value = '';
+            }
+        }
+
+        function renderAgents() {
+            document.getElementById('agentsGrid').innerHTML = agentsList.map(a => `<div class="bg-white p-3 border rounded shadow-xs"><span class="text-xl">${a.avatar}</span><h4 class="font-bold text-sm mt-1">${a.name}</h4><p class="text-xs text-brand-600">${a.role}</p><p class="text-[10px] text-slate-400">${a.commune}</p></div>`).join('');
+        }
+
+        function renderEquipment() {
+            document.getElementById('equipmentGrid').innerHTML = equipmentList.map(e => `<div class="bg-white p-4 border rounded shadow-xs"><span class="text-2xl">${e.icon}</span><h4 class="font-bold text-sm mt-1">${e.name}</h4><p class="text-xs text-slate-500">${e.desc}</p><span class="inline-block mt-2 text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">${e.owner}</span></div>`).join('');
+        }
+
+        function switchParamSubTab(sub) {
+            ['roles', 'referentiels', 'utilisateurs', 'agents', 'equipements', 'communes', 'general'].forEach(s => {
+                const el = document.getElementById(`param-subview-${s}`);
+                if (el) el.classList.toggle('hidden', s !== sub);
+            });
+        }
+
+        function renderParamTables() {
+            document.getElementById('tableCategoriesBody').innerHTML = categoriesList.map(c => `<tr><td class="p-2">${c.emoji}</td><td class="p-2 font-semibold">${c.name}</td></tr>`).join('');
+            document.getElementById('tableLocationsBody').innerHTML = locationsList.map(l => `<tr><td class="p-2 font-semibold">${l.name}</td><td class="p-2">${l.commune}</td></tr>`).join('');
+            document.getElementById('tableCommunesBody').innerHTML = communesList.map(c => `<tr><td class="p-2 font-semibold">${c.name}</td><td class="p-2">${c.population} hab.</td></tr>`).join('');
+        }
+
+        function openCategoryModal() { showToast("Ouvre la modale catégorie", "info"); }
+        function openLocationModal() { showToast("Ouvre la modale lieu", "info"); }
+        function openUserModal() { showToast("Ouvre la modale utilisateur", "info"); }
+        function openAgentModal() { showToast("Ouvre la modale agent", "info"); }
+        function openEquipmentModal() { showToast("Ouvre la modale équipement", "info"); }
+        function openCommuneModal() { showToast("Ouvre la modale commune", "info"); }
+        function handleLogoFileUpload(e) { showToast("Aperçu du logo chargé", "success"); }
+        function handleLogoError(img) { if (img) img.classList.add('hidden'); }
+
+        function initCharts() {
+            const ctx1 = document.getElementById('chartCategory');
+            if (ctx1) new Chart(ctx1.getContext('2d'), { type: 'doughnut', data: { labels: ['Voirie', 'Bâtiments', 'Espaces Verts'], datasets: [{ data: [40, 30, 30], backgroundColor: ['#2563eb', '#10b981', '#f59e0b'] }] } });
+        }
+
+        function showToast(msg, type='info') {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = `bg-slate-800 text-white px-4 py-2 rounded shadow text-xs pointer-events-auto`;
+            t.innerText = msg;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
