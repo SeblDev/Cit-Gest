@@ -1,7 +1,7 @@
 <?php
 /**
- * Cit-Gest - Backend API PHP & Base de Données SQLite (Mise à jour v3.1)
- * Dépôt GitHub : https://github.com/SeblDev/Cit-Gest
+ * Cit-Gest - API Backend PHP & Base SQLite v4.0
+ * Gestion des interventions, lieux, compteurs de consommation et utilisateurs unifiés.
  */
 
 header('Content-Type: application/json; charset=utf-8');
@@ -20,7 +20,6 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
-    // Initialisation automatique de la base de données
     initDatabase($pdo);
 
     $action = $_GET['action'] ?? 'get_all';
@@ -34,9 +33,9 @@ try {
                 'categories' => getTableData($pdo, 'categories'),
                 'locations' => getTableData($pdo, 'lieux'),
                 'communes' => getTableData($pdo, 'communes'),
-                'agents' => getTableData($pdo, 'agents'),
+                'users' => getTableData($pdo, 'utilisateurs'),
                 'equipment' => getTableData($pdo, 'equipements'),
-                'users' => getTableData($pdo, 'utilisateurs')
+                'releves' => getTableData($pdo, 'releves_consommation')
             ]);
             break;
 
@@ -58,8 +57,26 @@ try {
             }
             break;
 
+        case 'save_releve':
+            if (!empty($input['lieu_id']) && isset($input['valeur'])) {
+                saveReleve($pdo, $input);
+                echo json_encode(['success' => true, 'message' => 'Relevé enregistré']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Relevé incomplet']);
+            }
+            break;
+
+        case 'delete_releve':
+            $id = $_GET['id'] ?? null;
+            if ($id) {
+                deleteGenericItem($pdo, 'releves_consommation', $id);
+                echo json_encode(['success' => true, 'message' => 'Relevé supprimé']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'ID manquant']);
+            }
+            break;
+
         case 'save_item':
-            // Endpoint générique pour sauvegarder (catégorie, lieu, agent, etc.)
             $table = $_GET['table'] ?? '';
             if (isValidTable($table) && !empty($input)) {
                 saveGenericItem($pdo, $table, $input);
@@ -81,7 +98,7 @@ try {
             break;
 
         default:
-            echo json_encode(['success' => true, 'status' => 'API Cit-Gest v3.1 opérationnelle']);
+            echo json_encode(['success' => true, 'status' => 'API Cit-Gest v4.0 opérationnelle']);
             break;
     }
 
@@ -90,7 +107,7 @@ try {
 }
 
 /**
- * Initialisation automatique des tables et données par défaut
+ * STREAMING_CHUNK:Database tables initialization and default data seeding...
  */
 function initDatabase($pdo) {
     $pdo->exec("CREATE TABLE IF NOT EXISTS communes (
@@ -109,15 +126,31 @@ function initDatabase($pdo) {
     $pdo->exec("CREATE TABLE IF NOT EXISTS lieux (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         commune TEXT,
-        name TEXT
+        name TEXT,
+        address TEXT,
+        category TEXT,
+        elecMeter TEXT,
+        waterMeter TEXT,
+        notes TEXT
     )");
 
-    $pdo->exec("CREATE TABLE IF NOT EXISTS agents (
+    $pdo->exec("CREATE TABLE IF NOT EXISTS releves_consommation (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        lieu_id INTEGER,
+        type TEXT,
+        valeur REAL,
+        dateReleve TEXT,
+        agentName TEXT
+    )");
+
+    // Structure utilisateurs unifiée (Agents inclus avec role='agent')
+    $pdo->exec("CREATE TABLE IF NOT EXISTS utilisateurs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
+        email TEXT UNIQUE,
         role TEXT,
-        skill TEXT,
         commune TEXT,
+        skill TEXT,
         status TEXT,
         avatar TEXT
     )");
@@ -129,14 +162,6 @@ function initDatabase($pdo) {
         status TEXT,
         desc TEXT,
         icon TEXT
-    )");
-
-    $pdo->exec("CREATE TABLE IF NOT EXISTS utilisateurs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        email TEXT UNIQUE,
-        role TEXT,
-        commune TEXT
     )");
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS tickets (
@@ -162,25 +187,59 @@ function initDatabase($pdo) {
         dateCreated TEXT
     )");
 
-    // Insertion des données initiales de démonstration si les tables sont vides
+    // Données initiales
     $stmt = $pdo->query("SELECT COUNT(*) FROM communes");
     if ($stmt->fetchColumn() == 0) {
-        $pdo->exec("INSERT INTO communes (name, respTech, phone) VALUES ('Saint-Aurin', 'Jean Dupont', '05 62 00 11 22'), ('Val-de-Marse', 'Marc Bernard', '05 62 11 22 33'), ('Beaulieu-les-Pins', 'Alain Mercier', '05 62 22 33 44')");
-        $pdo->exec("INSERT INTO categories (name, emoji) VALUES ('Voirie & Signalisat.', '🛣️'), ('Bâtiments & Écoles', '🏫'), ('Espaces Verts', '🌳'), ('Éclairage / Élec', '💡'), ('Festivités & Matériel', '🎪'), ('Propreté & Salubrité', '🧹')");
-        $pdo->exec("INSERT INTO lieux (commune, name) VALUES ('Saint-Aurin', 'École Maternelle Les Lutins'), ('Saint-Aurin', 'Mairie Centrale & Place'), ('Saint-Aurin', 'Gymnase Municipal'), ('Val-de-Marse', 'Place de la Halle'), ('Beaulieu-les-Pins', 'Salle des Fêtes Communale')");
-        $pdo->exec("INSERT INTO agents (name, role, skill, commune, status, avatar) VALUES ('Jean Dupont', 'Chef Plomberie', 'CACES Nacelle', 'Saint-Aurin', 'Disponible', '👨‍🔧'), ('Marc Lambert', 'Électricien', 'Habilitation BR/HO', 'Saint-Aurin', 'En mission', '⚡'), ('Pierre Moreau', 'Espaces Verts', 'Taille / Élagage', 'Saint-Aurin', 'Disponible', '🌳')");
-        $pdo->exec("INSERT INTO equipements (id, name, owner, status, desc, icon) VALUES ('EQ-1', 'Nacelle Élévatrice 18M', 'Saint-Aurin', 'Libre', 'Élagage et éclairage public.', '🏗️'), ('EQ-2', 'Broyeur de branches (80 HP)', 'Val-de-Marse', 'En utilisation', 'Broyeur de branches tracté.', '🪵')");
-        $pdo->exec("INSERT INTO utilisateurs (name, email, role, commune) VALUES ('Jean Dupont', 'j.dupont@st-aurin.fr', 'responsable', 'Saint-Aurin'), ('Marie Curie', 'm.curie@val-demarse.fr', 'direction', 'Val-de-Marse'), ('Paul Martin', 'p.martin@st-aurin.fr', 'agent', 'Saint-Aurin')");
-        
-        // Ticket initial
-        $pdo->exec("INSERT INTO tickets (id, commune, category, title, location, priority, status, requester, contact, description, dateCreated, assignedAgentId) 
-                    VALUES ('INT-101', 'Saint-Aurin', 'Bâtiments & Écoles', 'Fuite d''eau lavabo école', 'École Maternelle Les Lutins', 'URGENT', 'EN_COURS', 'Mme Dubois', '06 12 34 56 78', 'Robinet fuit abondamment dans le bloc sanitaire.', '2026-09-08 08:30', 1)");
-        $pdo->exec("INSERT INTO commentaires (ticket_id, author, text, dateCreated) VALUES ('INT-101', 'Mme Dubois', 'Signalé à l''ouverture de l''école.', '08:30')");
+        $pdo->exec("INSERT INTO communes (name, respTech, phone) VALUES 
+            ('Saint-Aurin', 'Jean Dupont', '05 62 00 11 22'), 
+            ('Val-de-Marse', 'Marc Bernard', '05 62 11 22 33'), 
+            ('Beaulieu-les-Pins', 'Alain Mercier', '05 62 22 33 44')");
+
+        $pdo->exec("INSERT INTO categories (name, emoji) VALUES 
+            ('Voirie & Signalisat.', '🛣️'), 
+            ('Bâtiments & Écoles', '🏫'), 
+            ('Espaces Verts', '🌳'), 
+            ('Éclairage / Élec', '💡'), 
+            ('Festivités & Matériel', '🎪'), 
+            ('Propreté & Salubrité', '🧹')");
+
+        $pdo->exec("INSERT INTO lieux (commune, name, address, category, elecMeter, waterMeter, notes) VALUES 
+            ('Saint-Aurin', 'École Maternelle Les Lutins', '12 Rue des Écoles', 'Bâtiment', 'ELE-99823', 'EAU-1029', 'Accès par le portillon sud'),
+            ('Saint-Aurin', 'Mairie Centrale & Place', '1 Place de la République', 'Administration', 'ELE-10029', 'EAU-3301', 'Compteur eau dans la cave'),
+            ('Saint-Aurin', 'Gymnase Municipal', 'Avenue du Sport', 'Sport', 'ELE-44910', 'EAU-8821', 'Nécessite clé passe P1'),
+            ('Val-de-Marse', 'Place de la Halle', 'Place de la Halle', 'Espace Public', 'ELE-77210', '', 'Coffret électrique festivités'),
+            ('Beaulieu-les-Pins', 'Salle des Fêtes Communale', 'Route de la Forêt', 'Festivités', 'ELE-55201', 'EAU-4402', 'Disjoncteur général dans le sas')");
+
+        // Utilisateurs unifiés : Agents + Responsable + Direction + Admin
+        $pdo->exec("INSERT INTO utilisateurs (name, email, role, commune, skill, status, avatar) VALUES 
+            ('Jean Dupont', 'j.dupont@st-aurin.fr', 'responsable', 'Saint-Aurin', 'Gestion & Chef Plomberie', 'Disponible', '👨‍💼'),
+            ('Paul Martin', 'p.martin@st-aurin.fr', 'agent', 'Saint-Aurin', 'Plomberie / CACES Nacelle', 'Disponible', '👨‍🔧'),
+            ('Marc Lambert', 'm.lambert@st-aurin.fr', 'agent', 'Saint-Aurin', 'Électricien / Habilitation BR', 'En mission', '⚡'),
+            ('Pierre Moreau', 'p.moreau@st-aurin.fr', 'agent', 'Saint-Aurin', 'Espaces Verts / Élagage', 'Disponible', '🌳'),
+            ('Marie Curie', 'm.curie@val-demarse.fr', 'direction', 'Val-de-Marse', 'Directrice Générale', 'Disponible', '🏛️'),
+            ('Administrateur', 'admin@citgest.fr', 'admin', 'Saint-Aurin', 'Gestion Système', 'Disponible', '⚡')");
+
+        $pdo->exec("INSERT INTO equipements (id, name, owner, status, desc, icon) VALUES 
+            ('EQ-1', 'Nacelle Élévatrice 18M', 'Saint-Aurin', 'Libre', 'Élagage et éclairage public.', '🏗️'),
+            ('EQ-2', 'Broyeur de branches (80 HP)', 'Val-de-Marse', 'En utilisation', 'Broyeur de branches tracté.', '🪵')");
+
+        $pdo->exec("INSERT INTO tickets (id, commune, category, title, location, priority, status, requester, contact, description, dateCreated, assignedAgentId) VALUES 
+            ('INT-101', 'Saint-Aurin', 'Bâtiments & Écoles', 'Fuite d''eau lavabo école', 'École Maternelle Les Lutins', 'URGENT', 'EN_COURS', 'Mme Dubois', '06 12 34 56 78', 'Robinet fuit abondamment dans le bloc sanitaire.', '2026-09-08 08:30', 2)");
+
+        $pdo->exec("INSERT INTO commentaires (ticket_id, author, text, dateCreated) VALUES 
+            ('INT-101', 'Mme Dubois', 'Signalé à l''ouverture de l''école.', '08:30')");
+
+        // Relevés initiaux
+        $pdo->exec("INSERT INTO releves_consommation (lieu_id, type, valeur, dateReleve, agentName) VALUES 
+            (1, 'Eau', 1240.5, '2026-08-01', 'Paul Martin'),
+            (1, 'Eau', 1285.2, '2026-09-01', 'Paul Martin'),
+            (1, 'Électricité', 34100, '2026-08-01', 'Marc Lambert'),
+            (1, 'Électricité', 34820, '2026-09-01', 'Marc Lambert')");
     }
 }
 
 function isValidTable($table) {
-    return in_array($table, ['communes', 'categories', 'lieux', 'agents', 'equipements', 'utilisateurs', 'tickets']);
+    return in_array($table, ['communes', 'categories', 'lieux', 'utilisateurs', 'equipements', 'tickets', 'releves_consommation']);
 }
 
 function getTableData($pdo, $table) {
@@ -209,6 +268,13 @@ function saveTicket($pdo, $t) {
 function addComment($pdo, $ticketId, $author, $text) {
     $stmt = $pdo->prepare("INSERT INTO commentaires (ticket_id, author, text, dateCreated) VALUES (?, ?, ?, ?)");
     $stmt->execute([$ticketId, $author, $text, date('H:i')]);
+}
+
+function saveReleve($pdo, $r) {
+    $stmt = $pdo->prepare("INSERT INTO releves_consommation (lieu_id, type, valeur, dateReleve, agentName) VALUES (?, ?, ?, ?, ?)");
+    $stmt->execute([
+        $r['lieu_id'], $r['type'], $r['valeur'], $r['dateReleve'] ?? date('Y-m-d'), $r['agentName'] ?? 'Agent ST'
+    ]);
 }
 
 function saveGenericItem($pdo, $table, $item) {

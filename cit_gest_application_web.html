@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cit-Gest - Service Technique & Mutualisation Intercommunale</title>
-    <!-- Tailwind CSS -->
+    <title>Cit-Gest - Service Technique, Lieux & Mutualisation Intercommunale</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js for visual reports -->
+    <!-- Chart.js for analytics & meter reading graphs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -14,17 +14,10 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         brand: {
-                            50: '#f0f7ff',
-                            100: '#e0effe',
-                            500: '#2563eb',
-                            600: '#1d4ed8',
-                            700: '#1e40af',
-                            800: '#1e3a8a',
+                            50: '#f0f7ff', 100: '#e0effe', 500: '#2563eb', 600: '#1d4ed8', 700: '#1e40af', 800: '#1e3a8a'
                         }
                     }
                 }
@@ -46,42 +39,43 @@
 </head>
 <body class="h-full font-sans text-slate-800 flex flex-col antialiased selection:bg-brand-500 selection:text-white">
 
-    <!-- TOP BAR / HEADER -->
     <header class="no-print bg-slate-900 text-white sticky top-0 z-30 shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <!-- Logo & Commune Info -->
+                <!-- Logo & Commune Label -->
                 <div class="flex items-center gap-3">
                     <div id="logoContainer" class="bg-white p-1 rounded-xl text-slate-800 font-bold text-xl flex items-center justify-center w-11 h-11 shadow-sm border border-slate-700/50 overflow-hidden shrink-0">
-                        <img id="appLogoImg" src="" alt="Logo Commune" class="w-full h-full object-contain hidden" onerror="handleLogoError(this)">
+                        <img id="appLogoImg" src="" alt="Logo" class="w-full h-full object-contain hidden" onerror="handleLogoError(this)">
                         <span id="appLogoFallback" class="text-xl">🏛️</span>
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-lg tracking-tight">Cit-Gest</span>
-                            <span class="bg-brand-500/30 text-brand-200 text-xs px-2 py-0.5 rounded-full font-medium border border-brand-400/30">v3.0 Interco</span>
+                            <span class="bg-brand-500/30 text-brand-200 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-medium border border-brand-400/30">v4.0 Interco</span>
                         </div>
                         <p class="text-xs text-slate-400 flex items-center gap-1">
                             <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                            <span id="currentCommuneLabel">Commune de Saint-Aurin (3 120 hab.)</span>
+                            <span id="currentCommuneLabel">Saint-Aurin (3 120 hab.)</span>
                         </p>
                     </div>
                 </div>
 
-                <!-- Simulation Role Switcher Bar -->
-                <div class="hidden md:flex items-center bg-slate-800/90 rounded-xl p-1 border border-slate-700/60 shadow-inner text-xs">
-                    <span class="text-slate-400 font-medium px-2 flex items-center gap-1">
-                        <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        Profil rapide :
+                <!-- Admin Simulator Role Switcher Dropdown (Only visible for Admin user or in Test mode) -->
+                <div id="adminRoleSimulator" class="hidden md:flex items-center bg-slate-800/90 rounded-xl px-3 py-1 border border-amber-500/40 shadow-inner text-xs gap-2">
+                    <span class="text-amber-400 font-semibold flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        Simulateur Rôle :
                     </span>
-                    <button onclick="quickSwitchUserRole('demandeur')" id="btn-role-demandeur" class="role-btn px-2.5 py-1 rounded-lg transition-all font-medium text-slate-300 hover:text-white">Demandeur</button>
-                    <button onclick="quickSwitchUserRole('agent')" id="btn-role-agent" class="role-btn px-2.5 py-1 rounded-lg transition-all font-medium text-slate-300 hover:text-white">Agent ST</button>
-                    <button onclick="quickSwitchUserRole('responsable')" id="btn-role-responsable" class="role-btn px-2.5 py-1 rounded-lg transition-all font-medium bg-brand-600 text-white shadow">Responsable</button>
-                    <button onclick="quickSwitchUserRole('direction')" id="btn-role-direction" class="role-btn px-2.5 py-1 rounded-lg transition-all font-medium text-slate-300 hover:text-white">Maire/DGS</button>
-                    <button onclick="quickSwitchUserRole('admin')" id="btn-role-admin" class="role-btn px-2.5 py-1 rounded-lg transition-all font-medium text-slate-300 hover:text-white">Admin</button>
+                    <select id="roleSimulatorSelect" onchange="quickSwitchUserRole(this.value)" class="bg-slate-900 text-slate-200 text-xs rounded border border-slate-600 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-amber-400">
+                        <option value="demandeur">👤 Demandeur (Public / Interne)</option>
+                        <option value="agent">👨‍🔧 Agent Technique (Terrain)</option>
+                        <option value="responsable" selected>👔 Responsable Service Technique</option>
+                        <option value="direction">🏛️ Direction (Maire / DGS)</option>
+                        <option value="admin">⚡ Administrateur Système</option>
+                    </select>
                 </div>
 
-                <!-- Action Button, Auth & Interco selector -->
+                <!-- Right Actions: Commune Selector, Auth Widget, New Ticket Button -->
                 <div class="flex items-center gap-2 sm:gap-3">
                     <select id="communeSelect" onchange="changeCommune(this.value)" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500">
                         <option value="Saint-Aurin">Commune : Saint-Aurin</option>
@@ -90,14 +84,9 @@
                         <option value="ALL">🌐 Vue Communauté de Communes</option>
                     </select>
 
-                    <div id="userAuthProfileWidget" class="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white">
-                        <!-- Injected dynamically via JS -->
+                    <div id="userAuthWidget" class="flex items-center gap-2">
+                        <!-- Populated by JS: Login button or User Profile badge -->
                     </div>
-
-                    <button onclick="switchTab('parametres')" id="navHeaderParamBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold px-2.5 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-sm" title="Ouvrir les paramètres">
-                        <span>⚙️</span>
-                        <span class="hidden lg:inline">Paramètres</span>
-                    </button>
 
                     <button onclick="openNewTicketModal()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs sm:text-sm font-semibold px-3 py-2 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center gap-1.5 transform active:scale-95">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
@@ -108,13 +97,29 @@
         </div>
     </header>
 
-    <!-- MAIN CONTENT CONTAINER -->
+    <!-- MAIN CONTAINER -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 flex flex-col w-full">
         
-        <!-- Context Banner -->
-        <div id="roleContextBanner" class="no-print mb-5 bg-gradient-to-r from-blue-900/90 to-slate-900 border border-brand-500/30 text-white rounded-xl p-4 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div id="publicWelcomeBanner" class="mb-6 bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 border border-brand-500/30 text-white rounded-2xl p-6 shadow-md flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="space-y-2 text-center md:text-left">
+                <span class="bg-emerald-500/20 text-emerald-300 text-xs font-semibold px-2.5 py-1 rounded-full border border-emerald-500/30 inline-block">Portail Services Techniques & Citoyen</span>
+                <h1 class="text-xl sm:text-2xl font-bold tracking-tight">Signalement & Suivi des Demandes d'Intervention</h1>
+                <p class="text-xs sm:text-sm text-slate-300 max-w-2xl">Un dysfonctionnement, une fuite d'eau, un problème de voirie ou d'éclairage ? Signalez-le en quelques clics ou suivez l'avancement des travaux en direct.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 shrink-0">
+                <button onclick="openNewTicketModal()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-lg transition-all flex items-center gap-2">
+                    <span>📢 Signaler un problème</span>
+                </button>
+                <button onclick="openLoginModal()" id="btnBannerLogin" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-medium text-xs sm:text-sm px-4 py-2.5 rounded-xl transition-all">
+                    🔑 Connexion Agents / Mairie
+                </button>
+            </div>
+        </div>
+
+        <!-- Role Context Banner -->
+        <div id="roleContextBanner" class="no-print mb-5 bg-blue-900/40 border border-brand-500/30 text-white rounded-xl p-4 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div class="flex items-center gap-3">
-                <div class="p-2 bg-brand-500/20 text-brand-300 rounded-lg text-lg">💡</div>
+                <div class="p-2 bg-brand-500/20 text-brand-300 rounded-lg text-lg" id="roleBannerIcon">👔</div>
                 <div>
                     <h2 id="roleBannerTitle" class="font-semibold text-sm sm:text-base text-blue-100">Espace Responsable du Service Technique</h2>
                     <p id="roleBannerDesc" class="text-xs text-slate-300">Validation, affectation aux agents, planification et suivi direct du matériel.</p>
@@ -127,23 +132,30 @@
             </div>
         </div>
 
-        <!-- MAIN TABS -->
+        <!-- MAIN NAVIGATION TABS -->
         <div class="no-print border-b border-slate-200 mb-6 flex space-x-2 sm:space-x-4 overflow-x-auto text-xs sm:text-sm font-medium">
             <button onclick="switchTab('interventions')" id="tab-interventions" class="tab-btn pb-3 px-1 text-brand-600 border-b-2 border-brand-600 font-semibold flex items-center gap-1.5 whitespace-nowrap">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 022 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                <span>Interventions</span>
+                <span>Demandes Interventions</span>
                 <span id="badgeOpenCount" class="bg-brand-100 text-brand-700 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+            </button>
+
+            <!-- NEW TAB: LIEUX & BÂTIMENTS -->
+            <button onclick="switchTab('lieux')" id="tab-lieux" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span>📍 Lieux & Consommations</span>
+                <span class="bg-emerald-100 text-emerald-800 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold">Compteurs</span>
             </button>
 
             <button onclick="switchTab('mutualisation')" id="tab-mutualisation" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
-                <span>Mutualisation & Matériel</span>
+                <span>Mutualisation Matériel</span>
                 <span class="bg-amber-100 text-amber-800 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold">Interco</span>
             </button>
 
             <button onclick="switchTab('equipe')" id="tab-equipe" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                <span>Équipe Technique</span>
+                <span>Équipe Agents & Utilisateurs</span>
             </button>
 
             <button onclick="switchTab('statistiques')" id="tab-statistiques" class="tab-btn pb-3 px-1 text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-1.5 whitespace-nowrap">
@@ -157,7 +169,6 @@
             </button>
         </div>
 
-        <!-- TAB 1: INTERVENTIONS VIEW -->
         <div id="view-interventions" class="space-y-6">
             <div class="no-print bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
                 <div class="relative flex-1">
@@ -196,7 +207,76 @@
             </div>
         </div>
 
-        <!-- TAB 2: MUTUALISATION INTERCOM -->
+        <div id="view-lieux" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-emerald-900 to-teal-900 border border-emerald-500/30 text-white rounded-xl p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="p-3 bg-emerald-500/20 rounded-xl text-2xl">📍</div>
+                    <div>
+                        <h3 class="font-bold text-base">Gestion des Bâtiments, Lieux & Relevés de Consommation</h3>
+                        <p class="text-xs text-emerald-200">Suivi complet des infrastructures communales, numéros de compteurs d'eau/électricité et historique des consommations.</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="openReleveModal()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-3 py-2 rounded-lg transition-all shadow">+ Nouveau Relevé</button>
+                    <button onclick="openLocationModal()" class="bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 font-medium text-xs px-3 py-2 rounded-lg transition-all">+ Ajouter Lieu</button>
+                </div>
+            </div>
+
+            <!-- Locations list and consumption detail analytics -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Location Cards -->
+                <div class="lg:col-span-1 space-y-3" id="locationsListContainer"></div>
+
+                <!-- Active Location Meter Analysis -->
+                <div class="lg:col-span-2 space-y-5">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                        <div class="flex justify-between items-center border-b pb-3">
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-base" id="activeLieuTitle">École Maternelle Les Lutins</h3>
+                                <p class="text-xs text-slate-500" id="activeLieuAddress">12 Rue des Écoles - Saint-Aurin</p>
+                            </div>
+                            <span class="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded" id="activeLieuCategory">Bâtiment</span>
+                        </div>
+
+                        <!-- Meter Specs Grid -->
+                        <div class="grid grid-cols-2 gap-4 text-xs">
+                            <div class="p-3 bg-blue-50/60 rounded-lg border border-blue-100">
+                                <span class="text-slate-500 block">⚡ Compteur Électrique :</span>
+                                <span class="font-mono font-bold text-slate-800 text-sm" id="activeLieuElecMeter">ELE-99823</span>
+                            </div>
+                            <div class="p-3 bg-emerald-50/60 rounded-lg border border-emerald-100">
+                                <span class="text-slate-500 block">💧 Compteur d'Eau :</span>
+                                <span class="font-mono font-bold text-slate-800 text-sm" id="activeLieuWaterMeter">EAU-1029</span>
+                            </div>
+                        </div>
+
+                        <!-- Meter Consumption Chart -->
+                        <div class="pt-2">
+                            <h4 class="font-bold text-xs text-slate-700 mb-2">📊 Historique des Consommations</h4>
+                            <div class="h-56"><canvas id="lieuConsumptionChart"></canvas></div>
+                        </div>
+                    </div>
+
+                    <!-- Readings Log Table -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                        <h4 class="font-bold text-xs text-slate-800">📋 Relevés Récents pour ce lieu</h4>
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 font-semibold text-slate-600">
+                                <tr>
+                                    <th class="p-2">Date</th>
+                                    <th class="p-2">Fluide</th>
+                                    <th class="p-2">Index Relevé</th>
+                                    <th class="p-2">Agent</th>
+                                    <th class="p-2 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lieuReadingsTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="view-mutualisation" class="hidden space-y-6">
             <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
@@ -210,12 +290,17 @@
             <div id="equipmentGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </div>
 
-        <!-- TAB 3: ÉQUIPE TECHNIQUE -->
         <div id="view-equipe" class="hidden space-y-6">
-            <div id="agentsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"></div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-sm">Effectif des Agents & Utilisateurs Système</h3>
+                    <p class="text-xs text-slate-500">Les agents sont des utilisateurs rattachés au rôle "Agent ST" avec des qualifications terrain.</p>
+                </div>
+                <button onclick="openUserModal()" class="bg-brand-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-brand-700">+ Créer un utilisateur/agent</button>
+            </div>
+            <div id="agentsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </div>
 
-        <!-- TAB 4: STATISTIQUES -->
         <div id="view-statistiques" class="hidden space-y-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
@@ -241,22 +326,19 @@
             </div>
         </div>
 
-        <!-- TAB 5: PARAMÉTRAGE -->
         <div id="view-parametres" class="hidden space-y-6">
             <div class="bg-slate-100 p-1.5 rounded-xl border border-slate-200 flex flex-wrap gap-2 text-xs font-semibold">
                 <button onclick="switchParamSubTab('roles')" id="btn-param-roles" class="param-sub-btn px-4 py-2 rounded-lg bg-white text-brand-600 shadow-xs">🔒 Rôles & Droits</button>
                 <button onclick="switchParamSubTab('referentiels')" id="btn-param-referentiels" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">🏷️ Catégories & Lieux</button>
-                <button onclick="switchParamSubTab('utilisateurs')" id="btn-param-utilisateurs" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">👤 Comptes Utilisateurs</button>
-                <button onclick="switchParamSubTab('agents')" id="btn-param-agents" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">👨‍🔧 Agents</button>
+                <button onclick="switchParamSubTab('utilisateurs')" id="btn-param-utilisateurs" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">👤 Comptes Utilisateurs / Agents</button>
                 <button onclick="switchParamSubTab('equipements')" id="btn-param-equipements" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">🚜 Équipements</button>
                 <button onclick="switchParamSubTab('communes')" id="btn-param-communes" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">🏛️ Communes</button>
-                <button onclick="switchParamSubTab('general')" id="btn-param-general" class="param-sub-btn px-4 py-2 rounded-lg text-slate-600">🎨 Logo & Style</button>
             </div>
 
-            <!-- Subview Content Containers -->
+            <!-- Param subviews -->
             <div id="param-subview-roles" class="bg-white rounded-xl border border-slate-200 p-5">
                 <table class="w-full text-left text-xs">
-                    <thead class="bg-slate-50 font-semibold"><tr><th class="p-3">Rôle</th><th class="p-3 text-center">Interventions</th><th class="p-3 text-center">Mutualisation</th><th class="p-3 text-center">Équipe</th><th class="p-3 text-center">Statistiques</th><th class="p-3 text-center">Paramètres</th></tr></thead>
+                    <thead class="bg-slate-50 font-semibold"><tr><th class="p-3">Rôle</th><th class="p-3 text-center">Interventions</th><th class="p-3 text-center">Lieux</th><th class="p-3 text-center">Mutualisation</th><th class="p-3 text-center">Équipe</th><th class="p-3 text-center">Statistiques</th><th class="p-3 text-center">Paramètres</th></tr></thead>
                     <tbody id="rolePermissionsTableBody" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
@@ -266,20 +348,11 @@
                     <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Catégories</h4><button onclick="openCategoryModal()" class="bg-brand-600 text-white px-3 py-1 rounded text-xs">+ Ajouter</button></div>
                     <table class="w-full text-left text-xs"><tbody id="tableCategoriesBody" class="divide-y divide-slate-100"></tbody></table>
                 </div>
-                <div class="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
-                    <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Lieux Préconfigurés</h4><button onclick="openLocationModal()" class="bg-brand-600 text-white px-3 py-1 rounded text-xs">+ Ajouter</button></div>
-                    <table class="w-full text-left text-xs"><tbody id="tableLocationsBody" class="divide-y divide-slate-100"></tbody></table>
-                </div>
             </div>
 
             <div id="param-subview-utilisateurs" class="hidden bg-white rounded-xl border border-slate-200 p-5 space-y-3">
-                <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Utilisateurs</h4><button onclick="openUserModal()" class="bg-brand-600 text-white px-3 py-1 rounded text-xs">+ Créer</button></div>
+                <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Utilisateurs & Agents</h4><button onclick="openUserModal()" class="bg-brand-600 text-white px-3 py-1 rounded text-xs">+ Créer</button></div>
                 <table class="w-full text-left text-xs"><tbody id="tableUsersBody" class="divide-y divide-slate-100"></tbody></table>
-            </div>
-
-            <div id="param-subview-agents" class="hidden bg-white rounded-xl border border-slate-200 p-5 space-y-3">
-                <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Agents</h4><button onclick="openAgentModal()" class="bg-brand-600 text-white px-3 py-1 rounded text-xs">+ Ajouter</button></div>
-                <table class="w-full text-left text-xs"><tbody id="tableAgentsBody" class="divide-y divide-slate-100"></tbody></table>
             </div>
 
             <div id="param-subview-equipements" class="hidden bg-white rounded-xl border border-slate-200 p-5 space-y-3">
@@ -291,40 +364,36 @@
                 <div class="flex justify-between items-center"><h4 class="font-bold text-sm">Communes</h4><button onclick="openCommuneModal()" class="bg-brand-600 text-white px-3 py-1 rounded text-xs">+ Ajouter</button></div>
                 <table class="w-full text-left text-xs"><tbody id="tableCommunesBody" class="divide-y divide-slate-100"></tbody></table>
             </div>
-
-            <div id="param-subview-general" class="hidden bg-white rounded-xl border border-slate-200 p-5 space-y-4">
-                <h4 class="font-bold text-sm">Logo Officiel</h4>
-                <input type="file" accept="image/*" onchange="handleLogoFileUpload(event)" class="text-xs">
-            </div>
         </div>
 
     </div>
 
-    <!-- MODALS -->
+
+    <!-- MODAL 1: NEW TICKET -->
     <div id="newTicketModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800">🛠️ Nouvelle Demande</h3><button onclick="closeNewTicketModal()" class="text-2xl font-bold">&times;</button></div>
+            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800">🛠️ Nouvelle Demande d'Intervention</h3><button onclick="closeNewTicketModal()" class="text-2xl font-bold">&times;</button></div>
             <form onsubmit="handleCreateTicket(event)" class="space-y-3 text-xs">
                 <div class="grid grid-cols-2 gap-3">
                     <div><label class="font-semibold block mb-1">Commune</label><select id="modalCommune" onchange="updateModalLocationDropdown()" required class="w-full border rounded p-2"></select></div>
                     <div><label class="font-semibold block mb-1">Catégorie</label><select id="modalCategory" required class="w-full border rounded p-2"></select></div>
                 </div>
-                <div><label class="font-semibold block mb-1">Intitulé court</label><input type="text" id="modalTitle" required placeholder="ex: Fuite d'eau école" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Intitulé court</label><input type="text" id="modalTitle" required placeholder="ex: Fuite d'eau lavabo école" class="w-full border rounded p-2"></div>
                 <div class="grid grid-cols-2 gap-3">
-                    <div><label class="font-semibold block mb-1">Lieu</label><select id="modalLocationSelect" onchange="handleLocationSelectChange(this.value)" class="w-full border rounded p-2"></select><input type="text" id="modalLocationCustom" placeholder="Saisie libre..." class="w-full border rounded p-2 mt-1 hidden"></div>
+                    <div><label class="font-semibold block mb-1">Lieu / Bâtiment</label><select id="modalLocationSelect" onchange="handleLocationSelectChange(this.value)" class="w-full border rounded p-2"></select><input type="text" id="modalLocationCustom" placeholder="Saisie libre..." class="w-full border rounded p-2 mt-1 hidden"></div>
                     <div><label class="font-semibold block mb-1">Urgence</label><select id="modalPriority" required class="w-full border rounded p-2"><option value="BASSE">🟢 Basse</option><option value="MOYEN" selected>🟠 Normale</option><option value="URGENT">🚨 Urgente</option></select></div>
                 </div>
                 <div><label class="font-semibold block mb-1">Description</label><textarea id="modalDescription" rows="3" class="w-full border rounded p-2"></textarea></div>
                 <div class="grid grid-cols-2 gap-3">
-                    <div><label class="font-semibold block mb-1">Demandeur</label><input type="text" id="modalRequester" required value="Mairie / École" class="w-full border rounded p-2"></div>
-                    <div><label class="font-semibold block mb-1">Contact</label><input type="text" id="modalContact" placeholder="Téléphone" class="w-full border rounded p-2"></div>
+                    <div><label class="font-semibold block mb-1">Demandeur</label><input type="text" id="modalRequester" required value="Mairie / École / Usager" class="w-full border rounded p-2"></div>
+                    <div><label class="font-semibold block mb-1">Contact (Tél / Email)</label><input type="text" id="modalContact" placeholder="ex: 06 12 34 56 78" class="w-full border rounded p-2"></div>
                 </div>
-                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeNewTicketModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Envoyer</button></div>
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeNewTicketModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Envoyer la demande</button></div>
             </form>
         </div>
     </div>
 
-    <!-- DETAIL TICKET MODAL -->
+    <!-- MODAL 2: DETAIL TICKET -->
     <div id="detailTicketModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 space-y-4">
             <div id="detailModalHeader" class="flex justify-between border-b pb-3"></div>
@@ -332,97 +401,88 @@
             <div class="bg-slate-50 p-3 rounded-lg space-y-2 text-xs">
                 <div class="grid grid-cols-2 gap-2">
                     <div><label class="font-semibold block">Statut :</label><select id="detailStatusSelect" onchange="updateTicketStatusFromDetail()" class="w-full border rounded p-1.5"><option value="NOUVELLE">🆕 Nouvelle</option><option value="VALIDEE">📅 Planifiée</option><option value="EN_COURS">⚡ En cours</option><option value="ATTENTE_PIECE">⏸️ En attente</option><option value="TERMINEE">✅ Terminée</option></select></div>
-                    <div><label class="font-semibold block">Agent :</label><select id="detailAgentSelect" onchange="updateTicketAgentFromDetail()" class="w-full border rounded p-1.5"></select></div>
+                    <div><label class="font-semibold block">Agent Assigné :</label><select id="detailAgentSelect" onchange="updateTicketAgentFromDetail()" class="w-full border rounded p-1.5"></select></div>
                 </div>
             </div>
             <div id="commentsTimeline" class="space-y-2 bg-slate-50 p-3 rounded-lg text-xs max-h-40 overflow-y-auto"></div>
-            <form onsubmit="handleAddComment(event)" class="flex gap-2 text-xs"><input type="text" id="newCommentInput" placeholder="Note technique..." class="flex-1 border rounded p-2"><button type="submit" class="bg-slate-800 text-white px-3 py-2 rounded">Ajouter</button></form>
+            <form onsubmit="handleAddComment(event)" class="flex gap-2 text-xs"><input type="text" id="newCommentInput" placeholder="Note technique / Rapport..." class="flex-1 border rounded p-2"><button type="submit" class="bg-slate-800 text-white px-3 py-2 rounded">Ajouter</button></form>
             <div class="pt-3 border-t flex justify-between"><button onclick="window.print()" class="px-3 py-1 border rounded text-xs">🖨️ Imprimer</button><button onclick="closeDetailTicketModal()" class="px-4 py-1 bg-slate-800 text-white rounded text-xs">Fermer</button></div>
         </div>
     </div>
 
-    <!-- MODAL CATEGORIE -->
-    <div id="categoryModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3"><h3 id="categoryModalTitle" class="font-bold text-slate-800 text-sm">🏷️ Ajouter une Catégorie</h3><button onclick="closeCategoryModal()" class="text-xl font-bold">&times;</button></div>
-            <form onsubmit="handleAddCategory(event)" class="space-y-3 text-xs">
-                <input type="hidden" id="catIdInput" value="">
-                <div><label class="font-semibold block mb-1">Nom de la catégorie</label><input type="text" id="catNameInput" required placeholder="ex: Voirie / Espaces Verts" class="w-full border rounded p-2"></div>
-                <div><label class="font-semibold block mb-1">Émoji / Icône</label><input type="text" id="catEmojiInput" required placeholder="ex: 🛣️" value="📌" class="w-full border rounded p-2"></div>
-                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeCategoryModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
+    <!-- MODAL 3: LOGIN / AUTH -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800">🔑 Connexion Espace Agent</h3><button onclick="closeLoginModal()" class="text-xl font-bold">&times;</button></div>
+            <form onsubmit="handleUserLogin(event)" class="space-y-3 text-xs">
+                <div><label class="font-semibold block mb-1">Email / Identifiant</label><input type="email" id="loginEmail" required placeholder="nom@commune.fr" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Mot de passe</label><input type="password" id="loginPass" required value="demo123" class="w-full border rounded p-2"></div>
+                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white py-2 rounded font-semibold text-xs">Se Connecter</button>
             </form>
+            <div class="border-t pt-3 text-center text-xs text-slate-500">
+                <p class="mb-2">Ou simulation rapide :</p>
+                <div class="grid grid-cols-2 gap-1.5">
+                    <button onclick="loginAs('p.martin@st-aurin.fr')" class="bg-slate-100 hover:bg-slate-200 p-1.5 rounded font-medium text-[10px]">👨‍🔧 Agent Paul</button>
+                    <button onclick="loginAs('j.dupont@st-aurin.fr')" class="bg-slate-100 hover:bg-slate-200 p-1.5 rounded font-medium text-[10px]">👔 Resp. Dupont</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- MODAL LIEU -->
+    <!-- MODAL 4: LIEU & COMPTEURS -->
     <div id="locationModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3"><h3 id="locationModalTitle" class="font-bold text-slate-800 text-sm">📍 Ajouter un Lieu Récurrent</h3><button onclick="closeLocationModal()" class="text-xl font-bold">&times;</button></div>
+            <div class="flex items-center justify-between border-b pb-3"><h3 id="locationModalTitle" class="font-bold text-slate-800 text-sm">📍 Fiche Lieu & Compteurs</h3><button onclick="closeLocationModal()" class="text-xl font-bold">&times;</button></div>
             <form onsubmit="handleAddLocation(event)" class="space-y-3 text-xs">
                 <input type="hidden" id="locIdInput" value="">
                 <div><label class="font-semibold block mb-1">Commune</label><select id="locCommuneSelect" class="w-full border rounded p-2"></select></div>
-                <div><label class="font-semibold block mb-1">Nom du lieu / Bâtiment</label><input type="text" id="locNameInput" required placeholder="ex: Gymnase Municipal" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Nom du Bâtiment / Site</label><input type="text" id="locNameInput" required placeholder="ex: École Maternelle" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Adresse</label><input type="text" id="locAddressInput" placeholder="ex: 12 Rue des Écoles" class="w-full border rounded p-2"></div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label class="font-semibold block mb-1">Compteur Élec (Réf)</label><input type="text" id="locElecInput" placeholder="ex: ELE-1234" class="w-full border rounded p-2"></div>
+                    <div><label class="font-semibold block mb-1">Compteur Eau (Réf)</label><input type="text" id="locWaterInput" placeholder="ex: EAU-5678" class="w-full border rounded p-2"></div>
+                </div>
+                <div><label class="font-semibold block mb-1">Notes / Consignes d'accès</label><textarea id="locNotesInput" rows="2" class="w-full border rounded p-2"></textarea></div>
                 <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeLocationModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL UTILISATEUR -->
+    <!-- MODAL 5: RELEVÉ DE COMPTEUR -->
+    <div id="releveModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3"><h3 class="font-bold text-slate-800 text-sm">📊 Nouveau Relevé de Compteur</h3><button onclick="closeReleveModal()" class="text-xl font-bold">&times;</button></div>
+            <form onsubmit="handleSaveReleve(event)" class="space-y-3 text-xs">
+                <div><label class="font-semibold block mb-1">Bâtiment / Lieu</label><select id="releveLieuSelect" class="w-full border rounded p-2"></select></div>
+                <div><label class="font-semibold block mb-1">Type de Fluide</label><select id="releveTypeSelect" class="w-full border rounded p-2"><option value="Eau">💧 Eau (m³)</option><option value="Électricité">⚡ Électricité (kWh)</option></select></div>
+                <div><label class="font-semibold block mb-1">Index Relevé</label><input type="number" step="0.1" id="releveValueInput" required placeholder="ex: 1285.2" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Date du relevé</label><input type="date" id="releveDateInput" required class="w-full border rounded p-2"></div>
+                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeReleveModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-emerald-600 text-white rounded font-semibold">Enregistrer Relevé</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 6: UTILISATEUR & AGENT UNIFIÉ -->
     <div id="userModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3"><h3 id="userModalTitle" class="font-bold text-slate-800 text-sm">👤 Ajouter un Utilisateur</h3><button onclick="closeUserModal()" class="text-xl font-bold">&times;</button></div>
+            <div class="flex items-center justify-between border-b pb-3"><h3 id="userModalTitle" class="font-bold text-slate-800 text-sm">👤 Compte Utilisateur / Agent ST</h3><button onclick="closeUserModal()" class="text-xl font-bold">&times;</button></div>
             <form onsubmit="handleAddUser(event)" class="space-y-3 text-xs">
                 <input type="hidden" id="userIdInput" value="">
-                <div><label class="font-semibold block mb-1">Nom complet</label><input type="text" id="userNameInput" required placeholder="Jean Dupont" class="w-full border rounded p-2"></div>
-                <div><label class="font-semibold block mb-1">Email / Identifiant</label><input type="email" id="userEmailInput" required placeholder="jean.dupont@commune.fr" class="w-full border rounded p-2"></div>
-                <div><label class="font-semibold block mb-1">Rôle</label><select id="userRoleSelect" class="w-full border rounded p-2"><option value="demandeur">Demandeur</option><option value="agent">Agent ST</option><option value="responsable" selected>Responsable ST</option><option value="direction">Maire / DGS</option><option value="admin">Admin</option></select></div>
-                <div><label class="font-semibold block mb-1">Commune rattachée</label><select id="userCommuneSelect" class="w-full border rounded p-2"></select></div>
+                <div><label class="font-semibold block mb-1">Nom & Prénom</label><input type="text" id="userNameInput" required placeholder="Paul Martin" class="w-full border rounded p-2"></div>
+                <div><label class="font-semibold block mb-1">Email / Identifiant</label><input type="email" id="userEmailInput" required placeholder="p.martin@commune.fr" class="w-full border rounded p-2"></div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label class="font-semibold block mb-1">Rôle</label><select id="userRoleSelect" onchange="toggleAgentFieldsInUserModal(this.value)" class="w-full border rounded p-2"><option value="demandeur">Demandeur</option><option value="agent" selected>Agent ST (Terrain)</option><option value="responsable">Responsable ST</option><option value="direction">Maire / DGS</option><option value="admin">Admin</option></select></div>
+                    <div><label class="font-semibold block mb-1">Commune</label><select id="userCommuneSelect" class="w-full border rounded p-2"></select></div>
+                </div>
+                <!-- Agent specific fields -->
+                <div id="agentFieldsContainer" class="p-3 bg-slate-50 border rounded space-y-2">
+                    <div><label class="font-semibold block mb-1">Spécialité / Qualifications</label><input type="text" id="userSkillInput" placeholder="ex: Plomberie / CACES Nacelle" class="w-full border rounded p-1.5"></div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label class="font-semibold block mb-1">Statut</label><select id="userStatusSelect" class="w-full border rounded p-1.5"><option value="Disponible">Disponible</option><option value="En mission">En mission</option><option value="Congés">Congés / Absent</option></select></div>
+                        <div><label class="font-semibold block mb-1">Avatar Emoji</label><input type="text" id="userAvatarInput" value="👨‍🔧" class="w-full border rounded p-1.5 text-center"></div>
+                    </div>
+                </div>
                 <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeUserModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL AGENT -->
-    <div id="agentModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3"><h3 id="agentModalTitle" class="font-bold text-slate-800 text-sm">👨‍🔧 Ajouter un Agent Technique</h3><button onclick="closeAgentModal()" class="text-xl font-bold">&times;</button></div>
-            <form onsubmit="handleAddAgent(event)" class="space-y-3 text-xs">
-                <input type="hidden" id="agentIdInput" value="">
-                <div><label class="font-semibold block mb-1">Nom & Prénom</label><input type="text" id="agentNameInput" required placeholder="Paul Martin" class="w-full border rounded p-2"></div>
-                <div><label class="font-semibold block mb-1">Rôle / Spécialité</label><input type="text" id="agentRoleInput" required placeholder="ex: Électricien / Voirie" class="w-full border rounded p-2"></div>
-                <div><label class="font-semibold block mb-1">Habilitations / Permis</label><input type="text" id="agentSkillInput" placeholder="ex: CACES / Habilitation BR" class="w-full border rounded p-2"></div>
-                <div><label class="font-semibold block mb-1">Commune</label><select id="agentCommuneSelect" class="w-full border rounded p-2"></select></div>
-                <div><label class="font-semibold block mb-1">Statut</label><select id="agentStatusSelect" class="w-full border rounded p-2"><option value="Disponible">Disponible</option><option value="En mission">En mission</option><option value="Congés">Congés / Absent</option></select></div>
-                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeAgentModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL EQUIPEMENT -->
-    <div id="equipmentModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3"><h3 id="equipmentModalTitle" class="font-bold text-slate-800 text-sm">🚜 Ajouter un Équipement / Engin</h3><button onclick="closeEquipmentModal()" class="text-xl font-bold">&times;</button></div>
-            <form onsubmit="handleAddEquipment(event)" class="space-y-3 text-xs">
-                <input type="hidden" id="eqIdInput" value="">
-                <div><label class="font-semibold block mb-1">Intitulé du matériel</label><input type="text" id="eqNameInput" required placeholder="ex: Camion Benne 3.5T" class="w-full border rounded p-2"></div>
-                <div><label class="font-semibold block mb-1">Commune propriétaire</label><select id="eqOwnerSelect" class="w-full border rounded p-2"></select></div>
-                <div><label class="font-semibold block mb-1">Description / Usage</label><textarea id="eqDescInput" rows="2" placeholder="Domaine d'utilisation..." class="w-full border rounded p-2"></textarea></div>
-                <div><label class="font-semibold block mb-1">Icône</label><input type="text" id="eqIconInput" value="🚜" class="w-full border rounded p-2"></div>
-                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeEquipmentModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL COMMUNE -->
-    <div id="communeModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3"><h3 id="communeModalTitle" class="font-bold text-slate-800 text-sm">🏛️ Ajouter une Commune Membre</h3><button onclick="closeCommuneModal()" class="text-xl font-bold">&times;</button></div>
-            <form onsubmit="handleAddCommune(event)" class="space-y-3 text-xs">
-                <input type="hidden" id="comIdInput" value="">
-                <div><label class="font-semibold block mb-1">Nom de la commune</label><input type="text" id="comNameInput" required placeholder="ex: Saint-Aurin" class="w-full border rounded p-2"></div>
-                <div><label class="font-semibold block mb-1">Responsable technique</label><input type="text" id="comRespInput" required placeholder="ex: Marc Bernard" class="w-full border rounded p-2"></div>
-                <div><label class="font-semibold block mb-1">Téléphone</label><input type="tel" id="comPhoneInput" required placeholder="ex: 05 62 00 11 22" class="w-full border rounded p-2"></div>
-                <div class="pt-3 border-t flex justify-end gap-2"><button type="button" onclick="closeCommuneModal()" class="px-3 py-1.5 border rounded">Annuler</button><button type="submit" class="px-4 py-1.5 bg-brand-600 text-white rounded font-semibold">Enregistrer</button></div>
             </form>
         </div>
     </div>
@@ -431,25 +491,28 @@
     <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
 
     <script>
+        let currentUser = null;
         let currentRole = 'responsable';
         let currentCommuneFilter = 'Saint-Aurin';
         let activeTab = 'interventions';
         let activeTicketId = null;
+        let activeLieuId = 1;
+        let lieuChartInstance = null;
 
         const roleData = {
-            demandeur: { title: "Espace Demandeur / Service Interne", desc: "Saisie rapide de nouvelles demandes et suivi en direct de vos signalements.", badge: "Demandeur", icon: "👤" },
-            agent: { title: "Espace Agent du Service Technique", desc: "Consultation des fiches de travail, mise à jour des statuts et rapports de terrain.", badge: "Agent ST", icon: "👨‍🔧" },
-            responsable: { title: "Espace Responsable du Service Technique", desc: "Validation, affectation aux agents, planification et suivi direct du matériel.", badge: "Responsable ST", icon: "👔" },
-            direction: { title: "Espace Direction (Maire / DGS)", desc: "Vue synthétique globale, suivi budgétaire, statistiques et mutualisation intercommunale.", badge: "Maire / DGS", icon: "🏛️" },
-            admin: { title: "Espace Administrateur Système", desc: "Gestion globale des droits, référentiels, comptes utilisateurs, communes et données.", badge: "Admin", icon: "⚡" }
+            demandeur: { title: "Espace Demandeur / Citoyen", desc: "Saisie rapide de nouvelles demandes et suivi direct des travaux.", icon: "👤" },
+            agent: { title: "Espace Agent du Service Technique", desc: "Consultation des fiches de travail, relevé des compteurs et suivi de chantier.", icon: "👨‍🔧" },
+            responsable: { title: "Espace Responsable Service Technique", desc: "Validation, affectation aux agents, planification et gestion des bâtiments.", icon: "👔" },
+            direction: { title: "Espace Direction (Maire / DGS)", desc: "Vue synthétique, suivi budgétaire, statistiques et consommations d'eau/élec.", icon: "🏛️" },
+            admin: { title: "Espace Administrateur Système", desc: "Gestion globale des accès, référentiels, communes et comptes utilisateurs.", icon: "⚡" }
         };
 
         const rolePermissions = {
-            demandeur: { interventions: true, mutualisation: false, equipe: false, statistiques: false, parametres: false },
-            agent: { interventions: true, mutualisation: true, equipe: true, statistiques: false, parametres: false },
-            responsable: { interventions: true, mutualisation: true, equipe: true, statistiques: true, parametres: true },
-            direction: { interventions: true, mutualisation: true, equipe: true, statistiques: true, parametres: false },
-            admin: { interventions: true, mutualisation: true, equipe: true, statistiques: true, parametres: true }
+            demandeur: { interventions: true, lieux: false, mutualisation: false, equipe: false, statistiques: false, parametres: false },
+            agent: { interventions: true, lieux: true, mutualisation: true, equipe: true, statistiques: false, parametres: false },
+            responsable: { interventions: true, lieux: true, mutualisation: true, equipe: true, statistiques: true, parametres: true },
+            direction: { interventions: true, lieux: true, mutualisation: true, equipe: true, statistiques: true, parametres: false },
+            admin: { interventions: true, lieux: true, mutualisation: true, equipe: true, statistiques: true, parametres: true }
         };
 
         let categoriesList = [
@@ -462,11 +525,9 @@
         ];
 
         let locationsList = [
-            { id: 1, commune: "Saint-Aurin", name: "École Maternelle Les Lutins" },
-            { id: 2, commune: "Saint-Aurin", name: "Mairie Centrale & Place" },
-            { id: 3, commune: "Saint-Aurin", name: "Gymnase Municipal" },
-            { id: 4, commune: "Val-de-Marse", name: "Place de la Halle" },
-            { id: 5, commune: "Beaulieu-les-Pins", name: "Salle des Fêtes Communale" }
+            { id: 1, commune: "Saint-Aurin", name: "École Maternelle Les Lutins", address: "12 Rue des Écoles", category: "Bâtiment", elecMeter: "ELE-99823", waterMeter: "EAU-1029", notes: "Accès portillon sud" },
+            { id: 2, commune: "Saint-Aurin", name: "Mairie Centrale & Place", address: "1 Place de la République", category: "Administration", elecMeter: "ELE-10029", waterMeter: "EAU-3301", notes: "Compteur eau cave" },
+            { id: 3, commune: "Saint-Aurin", name: "Gymnase Municipal", address: "Avenue du Sport", category: "Sport", elecMeter: "ELE-44910", waterMeter: "EAU-8821", notes: "Clef passe P1" }
         ];
 
         let communesList = [
@@ -476,15 +537,11 @@
         ];
 
         let usersList = [
-            { id: 1, name: "Jean Dupont", email: "j.dupont@st-aurin.fr", role: "responsable", commune: "Saint-Aurin" },
-            { id: 2, name: "Marie Curie", email: "m.curie@val-demarse.fr", role: "direction", commune: "Val-de-Marse" },
-            { id: 3, name: "Paul Martin", email: "p.martin@st-aurin.fr", role: "agent", commune: "Saint-Aurin" }
-        ];
-
-        let agentsList = [
-            { id: 1, name: "Jean Dupont", role: "Chef Plomberie", skill: "CACES Nacelle", commune: "Saint-Aurin", status: "Disponible", avatar: "👨‍🔧" },
-            { id: 2, name: "Marc Lambert", role: "Électricien", skill: "Habilitation BR/HO", commune: "Saint-Aurin", status: "En mission", avatar: "⚡" },
-            { id: 3, name: "Pierre Moreau", role: "Espaces Verts", skill: "Taille / Élagage", commune: "Saint-Aurin", status: "Disponible", avatar: "🌳" }
+            { id: 1, name: "Jean Dupont", email: "j.dupont@st-aurin.fr", role: "responsable", commune: "Saint-Aurin", skill: "Gestion & Plomberie", status: "Disponible", avatar: "👨‍💼" },
+            { id: 2, name: "Paul Martin", email: "p.martin@st-aurin.fr", role: "agent", commune: "Saint-Aurin", skill: "Plomberie / CACES Nacelle", status: "Disponible", avatar: "👨‍🔧" },
+            { id: 3, name: "Marc Lambert", email: "m.lambert@st-aurin.fr", role: "agent", commune: "Saint-Aurin", skill: "Électricien / Habilitation BR", status: "En mission", avatar: "⚡" },
+            { id: 4, name: "Marie Curie", email: "m.curie@val-demarse.fr", role: "direction", commune: "Val-de-Marse", skill: "DGS", status: "Disponible", avatar: "🏛️" },
+            { id: 5, name: "Administrateur", email: "admin@citgest.fr", role: "admin", commune: "Saint-Aurin", skill: "Admin Système", status: "Disponible", avatar: "⚡" }
         ];
 
         let equipmentList = [
@@ -492,8 +549,15 @@
             { id: "EQ-2", name: "Broyeur de branches (80 HP)", owner: "Val-de-Marse", status: "En utilisation", desc: "Broyeur de branches tracté.", icon: "🪵" }
         ];
 
+        let relevesList = [
+            { id: 1, lieu_id: 1, type: "Eau", valeur: 1240.5, dateReleve: "2026-08-01", agentName: "Paul Martin" },
+            { id: 2, lieu_id: 1, type: "Eau", valeur: 1285.2, dateReleve: "2026-09-01", agentName: "Paul Martin" },
+            { id: 3, lieu_id: 1, type: "Électricité", valeur: 34100, dateReleve: "2026-08-01", agentName: "Marc Lambert" },
+            { id: 4, lieu_id: 1, type: "Électricité", valeur: 34820, dateReleve: "2026-09-01", agentName: "Marc Lambert" }
+        ];
+
         let tickets = [
-            { id: "INT-101", commune: "Saint-Aurin", category: "Bâtiments & Écoles", title: "Fuite d'eau lavabo école", location: "École Maternelle Les Lutins", priority: "URGENT", status: "EN_COURS", requester: "Mme Dubois", contact: "06 12 34 56 78", description: "Robinet fuit abondamment.", dateCreated: "2026-09-08 08:30", assignedAgentId: 1, comments: [{ author: "Mme Dubois", text: "Signalé à l'ouverture", date: "08:30" }] },
+            { id: "INT-101", commune: "Saint-Aurin", category: "Bâtiments & Écoles", title: "Fuite d'eau lavabo école", location: "École Maternelle Les Lutins", priority: "URGENT", status: "EN_COURS", requester: "Mme Dubois", contact: "06 12 34 56 78", description: "Robinet fuit abondamment.", dateCreated: "2026-09-08 08:30", assignedAgentId: 2, comments: [{ author: "Mme Dubois", text: "Signalé à l'ouverture", date: "08:30" }] },
             { id: "INT-102", commune: "Saint-Aurin", category: "Voirie & Signalisat.", title: "Nid-de-poule rue du Stade", location: "Rue du Stade", priority: "MOYEN", status: "NOUVELLE", requester: "Mairie", contact: "05 62 00 11 22", description: "Trou de 15cm sur la chaussée.", dateCreated: "2026-09-08 09:10", assignedAgentId: null, comments: [] }
         ];
 
@@ -503,8 +567,9 @@
             updateModalLocationDropdown();
             quickSwitchUserRole(currentRole);
             renderTickets();
-            renderAgents();
+            renderAgentsAndUsers();
             renderEquipment();
+            renderLocationsView();
             renderParamTables();
             initCharts();
             tryConnectBackendAPI();
@@ -519,103 +584,106 @@
                         if (data.categories) categoriesList = data.categories;
                         if (data.locations) locationsList = data.locations;
                         if (data.communes) communesList = data.communes;
-                        if (data.agents) agentsList = data.agents;
+                        if (data.users) usersList = data.users;
                         if (data.equipment) equipmentList = data.equipment;
+                        if (data.releves) relevesList = data.releves;
                         
                         updateCommuneDropdowns();
                         updateCategoryDropdowns();
                         renderTickets();
-                        renderAgents();
+                        renderAgentsAndUsers();
                         renderEquipment();
+                        renderLocationsView();
                         renderParamTables();
-                        showToast("Base de données SQLite synchronisée avec succès !", "success");
+                        showToast("Base SQLite synchronisée", "success");
                     }
                 })
-                .catch(() => {
-                    // Running standalone/offline demo mode
-                });
+                .catch(() => {});
         }
 
         function switchTab(tabId) {
             activeTab = tabId;
-            ['interventions', 'mutualisation', 'equipe', 'statistiques', 'parametres'].forEach(t => {
+            ['interventions', 'lieux', 'mutualisation', 'equipe', 'statistiques', 'parametres'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
                 const view = document.getElementById(`view-${t}`);
                 if (btn) btn.className = `tab-btn pb-3 px-1 flex items-center gap-1.5 whitespace-nowrap ${t === tabId ? 'text-brand-600 border-b-2 border-brand-600 font-semibold' : 'text-slate-500 border-b-2 border-transparent'}`;
                 if (view) view.classList.toggle('hidden', t !== tabId);
             });
+            if (tabId === 'lieux') renderLocationsView();
         }
 
         function quickSwitchUserRole(role) {
-            if (!roleData[role]) role = 'responsable';
             currentRole = role;
+            const info = roleData[role] || roleData.responsable;
+            document.getElementById('roleBannerTitle').innerText = info.title;
+            document.getElementById('roleBannerDesc').innerText = info.desc;
+            document.getElementById('roleBannerIcon').innerText = info.icon;
+            
+            // Show Admin Simulator dropdown if role is admin
+            const adminSim = document.getElementById('adminRoleSimulator');
+            if (adminSim) adminSim.classList.toggle('hidden', currentRole !== 'admin' && (!currentUser || currentUser.role !== 'admin'));
 
-            // 1. Mettre à jour l'apparence des boutons de rôle
-            ['demandeur', 'agent', 'responsable', 'direction', 'admin'].forEach(r => {
-                const btn = document.getElementById(`btn-role-${r}`);
-                if (btn) {
-                    if (r === role) {
-                        btn.className = "role-btn px-2.5 py-1 rounded-lg transition-all font-medium bg-brand-600 text-white shadow";
-                    } else {
-                        btn.className = "role-btn px-2.5 py-1 rounded-lg transition-all font-medium text-slate-300 hover:text-white";
-                    }
-                }
-            });
-
-            // 2. Mettre à jour le bandeau d'information du rôle
-            const info = roleData[role];
-            const titleEl = document.getElementById('roleBannerTitle');
-            const descEl = document.getElementById('roleBannerDesc');
-            if (titleEl) titleEl.innerText = info.title;
-            if (descEl) descEl.innerText = info.desc;
-
-            // 3. Mettre à jour le widget de profil dans l'en-tête
-            updateUserWidget();
-
-            // 4. Mettre à jour la visibilité des onglets selon les autorisations du rôle
+            updateUserAuthWidget();
             applyRolePermissions();
-
-            showToast(`Profil activé : ${info.badge}`, 'info');
         }
 
-        function updateUserWidget() {
-            const widget = document.getElementById('userAuthProfileWidget');
-            if (!widget) return;
-            const info = roleData[currentRole] || roleData.responsable;
-            widget.innerHTML = `
-                <span class="text-sm">${info.icon}</span>
-                <span class="font-semibold text-slate-200 hidden sm:inline">${info.badge}</span>
-                <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">Connecté</span>
-            `;
+        function updateUserAuthWidget() {
+            const w = document.getElementById('userAuthWidget');
+            if (!w) return;
+            if (currentUser) {
+                w.innerHTML = `
+                    <div class="flex items-center gap-2 bg-slate-800 border border-slate-700 px-2.5 py-1 rounded-lg text-xs">
+                        <span class="text-sm">${currentUser.avatar || '👤'}</span>
+                        <span class="font-semibold text-white hidden sm:inline">${currentUser.name}</span>
+                        <button onclick="logoutUser()" class="text-xs text-rose-400 hover:underline ml-1">Quitter</button>
+                    </div>
+                `;
+            } else {
+                w.innerHTML = `
+                    <button onclick="openLoginModal()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold px-2.5 py-2 rounded-lg transition-all">🔑 Connexion</button>
+                `;
+            }
         }
 
         function applyRolePermissions() {
             const perms = rolePermissions[currentRole] || rolePermissions.responsable;
-            ['interventions', 'mutualisation', 'equipe', 'statistiques', 'parametres'].forEach(tab => {
+            ['interventions', 'lieux', 'mutualisation', 'equipe', 'statistiques', 'parametres'].forEach(tab => {
                 const tabBtn = document.getElementById(`tab-${tab}`);
-                const isAllowed = perms[tab];
-                if (tabBtn) {
-                    if (isAllowed) {
-                        tabBtn.classList.remove('hidden');
-                    } else {
-                        tabBtn.classList.add('hidden');
-                    }
-                }
+                if (tabBtn) tabBtn.classList.toggle('hidden', !perms[tab]);
             });
+            if (!perms[activeTab]) switchTab('interventions');
+        }
 
-            // Si l'onglet actif n'est pas autorisé pour le rôle sélectionné, basculer vers 'interventions'
-            if (!perms[activeTab]) {
-                switchTab('interventions');
+        function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
+        function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
+        function loginAs(email) {
+            const u = usersList.find(x => x.email === email);
+            if (u) {
+                currentUser = u;
+                quickSwitchUserRole(u.role);
+                closeLoginModal();
+                showToast(`Connecté : ${u.name}`, "success");
             }
+        }
+        function handleUserLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            loginAs(email);
+        }
+        function logoutUser() {
+            currentUser = null;
+            quickSwitchUserRole('demandeur');
+            showToast("Déconnecté", "info");
         }
 
         function changeCommune(val) {
             currentCommuneFilter = val;
             applyFilters();
+            renderLocationsView();
         }
 
         function updateCommuneDropdowns() {
-            ['communeSelect', 'modalCommune', 'locCommuneSelect', 'userCommuneSelect', 'agentCommuneSelect', 'eqOwnerSelect'].forEach(id => {
+            ['communeSelect', 'modalCommune', 'locCommuneSelect', 'userCommuneSelect'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
                     if (id === 'communeSelect') {
@@ -630,13 +698,9 @@
 
         function updateCategoryDropdowns() {
             const filterSelect = document.getElementById('filterCategory');
-            if (filterSelect) {
-                filterSelect.innerHTML = `<option value="ALL">Toutes catégories</option>` + categoriesList.map(c => `<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('');
-            }
+            if (filterSelect) filterSelect.innerHTML = `<option value="ALL">Toutes catégories</option>` + categoriesList.map(c => `<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('');
             const modalCatSelect = document.getElementById('modalCategory');
-            if (modalCatSelect) {
-                modalCatSelect.innerHTML = categoriesList.map(c => `<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('');
-            }
+            if (modalCatSelect) modalCatSelect.innerHTML = categoriesList.map(c => `<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('');
         }
 
         function updateModalLocationDropdown() {
@@ -723,7 +787,7 @@
             tickets.unshift(newTicket);
             renderTickets();
             closeNewTicketModal();
-            showToast("Nouvelle demande créée !", "success");
+            showToast("Demande transmise avec succès !", "success");
         }
 
         function openDetailTicketModal(id) {
@@ -735,6 +799,7 @@
             document.getElementById('detailStatusSelect').value = t.status;
             
             const agentSel = document.getElementById('detailAgentSelect');
+            const agentsList = usersList.filter(u => u.role === 'agent' || u.role === 'responsable');
             agentSel.innerHTML = `<option value="">-- Non assigné --</option>` + agentsList.map(a => `<option value="${a.id}" ${t.assignedAgentId === a.id ? 'selected' : ''}>${a.name}</option>`).join('');
             
             renderComments(t);
@@ -771,206 +836,207 @@
             const input = document.getElementById('newCommentInput');
             const t = tickets.find(x => x.id === activeTicketId);
             if (t && input.value) {
-                t.comments.push({ author: currentRole, text: input.value });
+                t.comments.push({ author: currentUser ? currentUser.name : currentRole, text: input.value });
                 renderComments(t);
                 input.value = '';
             }
         }
 
-        function renderAgents() {
-            document.getElementById('agentsGrid').innerHTML = agentsList.map(a => `<div class="bg-white p-3 border rounded shadow-xs"><span class="text-xl">${a.avatar}</span><h4 class="font-bold text-sm mt-1">${a.name}</h4><p class="text-xs text-brand-600">${a.role}</p><p class="text-[10px] text-slate-400">${a.commune}</p></div>`).join('');
+        // UNIFIED USERS & AGENTS RENDER
+        function renderAgentsAndUsers() {
+            const grid = document.getElementById('agentsGrid');
+            if (!grid) return;
+            grid.innerHTML = usersList.map(u => `
+                <div class="bg-white p-4 border rounded-xl shadow-xs flex items-start gap-3">
+                    <span class="text-3xl">${u.avatar || (u.role === 'agent' ? '👨‍🔧' : '👤')}</span>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-sm text-slate-800">${u.name}</h4>
+                            <span class="text-[10px] bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-mono">${u.role}</span>
+                        </div>
+                        <p class="text-xs text-brand-600 font-medium">${u.skill || 'Utilisateur Système'}</p>
+                        <p class="text-[10px] text-slate-400 mt-1">🏛️ ${u.commune} | ✉️ ${u.email}</p>
+                    </div>
+                </div>
+            `).join('');
         }
 
         function renderEquipment() {
-            document.getElementById('equipmentGrid').innerHTML = equipmentList.map(e => `<div class="bg-white p-4 border rounded shadow-xs"><span class="text-2xl">${e.icon}</span><h4 class="font-bold text-sm mt-1">${e.name}</h4><p class="text-xs text-slate-500">${e.desc}</p><span class="inline-block mt-2 text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">${e.owner}</span></div>`).join('');
+            document.getElementById('equipmentGrid').innerHTML = equipmentList.map(e => `<div class="bg-white p-4 border rounded-xl shadow-xs"><span class="text-2xl">${e.icon}</span><h4 class="font-bold text-sm mt-1">${e.name}</h4><p class="text-xs text-slate-500">${e.desc}</p><span class="inline-block mt-2 text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">${e.owner}</span></div>`).join('');
+        }
+
+        // LOCATIONS & METER READINGS VIEW LOGIC
+        function renderLocationsView() {
+            const container = document.getElementById('locationsListContainer');
+            if (!container) return;
+            const filteredLocs = locationsList.filter(l => currentCommuneFilter === 'ALL' || l.commune === currentCommuneFilter);
+            
+            container.innerHTML = filteredLocs.map(l => `
+                <div onclick="selectActiveLieu(${l.id})" class="bg-white p-4 rounded-xl border ${l.id === activeLieuId ? 'border-brand-500 ring-2 ring-brand-100' : 'border-slate-200'} shadow-sm cursor-pointer hover:border-brand-300 transition-all">
+                    <div class="flex justify-between items-start">
+                        <h4 class="font-bold text-sm text-slate-800">${l.name}</h4>
+                        <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${l.category || 'Site'}</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">📍 ${l.address || l.commune}</p>
+                    <div class="mt-2 text-[10px] text-slate-400 flex gap-2">
+                        <span>⚡ ${l.elecMeter || 'N/A'}</span>
+                        <span>💧 ${l.waterMeter || 'N/A'}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            selectActiveLieu(activeLieuId);
+        }
+
+        function selectActiveLieu(id) {
+            activeLieuId = id;
+            const lieu = locationsList.find(l => l.id === id) || locationsList[0];
+            if (!lieu) return;
+
+            document.getElementById('activeLieuTitle').innerText = lieu.name;
+            document.getElementById('activeLieuAddress').innerText = `${lieu.address || ''} - ${lieu.commune}`;
+            document.getElementById('activeLieuCategory').innerText = lieu.category || 'Bâtiment';
+            document.getElementById('activeLieuElecMeter').innerText = lieu.elecMeter || 'Non équipé';
+            document.getElementById('activeLieuWaterMeter').innerText = lieu.waterMeter || 'Non équipé';
+
+            // Filter meter readings for active location
+            const readings = relevesList.filter(r => r.lieu_id === lieu.id);
+            document.getElementById('lieuReadingsTableBody').innerHTML = readings.map(r => `
+                <tr>
+                    <td class="p-2 font-mono">${r.dateReleve}</td>
+                    <td class="p-2 font-semibold">${r.type === 'Eau' ? '💧 Eau' : '⚡ Électricité'}</td>
+                    <td class="p-2 font-mono font-bold">${r.valeur} ${r.type === 'Eau' ? 'm³' : 'kWh'}</td>
+                    <td class="p-2 text-slate-500">${r.agentName || 'Agent'}</td>
+                    <td class="p-2 text-right"><button onclick="deleteReleve(${r.id})" class="text-rose-600 font-bold hover:underline">Supprimer</button></td>
+                </tr>
+            `).join('') || `<tr><td colspan="5" class="p-4 text-center text-slate-400">Aucun relevé enregistré pour ce bâtiment.</td></tr>`;
+
+            updateLieuChart(readings);
+        }
+
+        function updateLieuChart(readings) {
+            const ctx = document.getElementById('lieuConsumptionChart');
+            if (!ctx) return;
+            if (lieuChartInstance) lieuChartInstance.destroy();
+
+            const dates = Array.from(new Set(readings.map(r => r.dateReleve))).sort();
+            const waterData = dates.map(d => {
+                const item = readings.find(r => r.dateReleve === d && r.type === 'Eau');
+                return item ? item.valeur : null;
+            });
+            const elecData = dates.map(d => {
+                const item = readings.find(r => r.dateReleve === d && r.type === 'Électricité');
+                return item ? item.valeur : null;
+            });
+
+            lieuChartInstance = new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [
+                        { label: 'Eau (m³)', data: waterData, borderColor: '#0284c7', backgroundColor: '#e0f2fe', tension: 0.3 },
+                        { label: 'Électricité (kWh)', data: elecData, borderColor: '#eab308', backgroundColor: '#fef9c3', tension: 0.3 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function openReleveModal() {
+            const sel = document.getElementById('releveLieuSelect');
+            sel.innerHTML = locationsList.map(l => `<option value="${l.id}">${l.name} (${l.commune})</option>`).join('');
+            document.getElementById('releveDateInput').value = new Date().toISOString().substring(0, 10);
+            document.getElementById('releveModal').classList.remove('hidden');
+        }
+        function closeReleveModal() { document.getElementById('releveModal').classList.add('hidden'); }
+
+        function handleSaveReleve(e) {
+            e.preventDefault();
+            const newR = {
+                id: Date.now(),
+                lieu_id: parseInt(document.getElementById('releveLieuSelect').value),
+                type: document.getElementById('releveTypeSelect').value,
+                valeur: parseFloat(document.getElementById('releveValueInput').value),
+                dateReleve: document.getElementById('releveDateInput').value,
+                agentName: currentUser ? currentUser.name : 'Agent ST'
+            };
+            relevesList.push(newR);
+            closeReleveModal();
+            renderLocationsView();
+            showToast("Relevé de compteur enregistré !", "success");
+        }
+
+        function deleteReleve(id) {
+            relevesList = relevesList.filter(r => r.id !== id);
+            renderLocationsView();
+            showToast("Relevé supprimé", "info");
         }
 
         function switchParamSubTab(sub) {
-            ['roles', 'referentiels', 'utilisateurs', 'agents', 'equipements', 'communes', 'general'].forEach(s => {
+            ['roles', 'referentiels', 'utilisateurs', 'equipements', 'communes'].forEach(s => {
                 const el = document.getElementById(`param-subview-${s}`);
                 if (el) el.classList.toggle('hidden', s !== sub);
             });
         }
 
         function renderParamTables() {
-            // 1. Catégories
             document.getElementById('tableCategoriesBody').innerHTML = categoriesList.map(c => `
-                <tr>
-                    <td class="p-2">${c.emoji}</td>
-                    <td class="p-2 font-semibold">${c.name}</td>
-                    <td class="p-2 text-right space-x-1">
-                        <button onclick="editCategory(${c.id})" class="text-brand-600 hover:text-brand-800 font-bold px-2 py-1 bg-brand-50 rounded">✏️ Modifier</button>
-                        <button onclick="deleteCategory(${c.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button>
-                    </td>
-                </tr>
+                <tr><td class="p-2">${c.emoji}</td><td class="p-2 font-semibold">${c.name}</td></tr>
             `).join('');
 
-            // 2. Lieux
-            document.getElementById('tableLocationsBody').innerHTML = locationsList.map(l => `
-                <tr>
-                    <td class="p-2 font-semibold">${l.name}</td>
-                    <td class="p-2">${l.commune}</td>
-                    <td class="p-2 text-right space-x-1">
-                        <button onclick="editLocation(${l.id})" class="text-brand-600 hover:text-brand-800 font-bold px-2 py-1 bg-brand-50 rounded">✏️ Modifier</button>
-                        <button onclick="deleteLocation(${l.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button>
-                    </td>
-                </tr>
-            `).join('');
-
-            // 3. Utilisateurs
             document.getElementById('tableUsersBody').innerHTML = usersList.map(u => `
                 <tr>
-                    <td class="p-2 font-semibold">${u.name}</td>
+                    <td class="p-2 font-semibold">${u.avatar || '👤'} ${u.name}</td>
                     <td class="p-2 text-slate-500">${u.email}</td>
                     <td class="p-2"><span class="bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded text-[10px]">${u.role}</span></td>
                     <td class="p-2 text-slate-500">${u.commune}</td>
-                    <td class="p-2 text-right space-x-1">
-                        <button onclick="editUser(${u.id})" class="text-brand-600 hover:text-brand-800 font-bold px-2 py-1 bg-brand-50 rounded">✏️ Modifier</button>
-                        <button onclick="deleteUser(${u.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button>
-                    </td>
+                    <td class="p-2 text-right"><button onclick="editUser(${u.id})" class="text-brand-600 font-bold hover:underline">Éditer</button></td>
                 </tr>
             `).join('');
 
-            // 4. Agents
-            document.getElementById('tableAgentsBody').innerHTML = agentsList.map(a => `
-                <tr>
-                    <td class="p-2 font-semibold">${a.avatar} ${a.name}</td>
-                    <td class="p-2">${a.role}</td>
-                    <td class="p-2 text-slate-500">${a.commune}</td>
-                    <td class="p-2"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold">${a.status}</span></td>
-                    <td class="p-2 text-right space-x-1">
-                        <button onclick="editAgent(${a.id})" class="text-brand-600 hover:text-brand-800 font-bold px-2 py-1 bg-brand-50 rounded">✏️ Modifier</button>
-                        <button onclick="deleteAgent(${a.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button>
-                    </td>
-                </tr>
-            `).join('');
-
-            // 5. Équipements
             document.getElementById('tableEquipmentBody').innerHTML = equipmentList.map(e => `
-                <tr>
-                    <td class="p-2 font-semibold">${e.icon} ${e.name}</td>
-                    <td class="p-2">${e.owner}</td>
-                    <td class="p-2 text-slate-500">${e.status}</td>
-                    <td class="p-2 text-right space-x-1">
-                        <button onclick="editEquipment('${e.id}')" class="text-brand-600 hover:text-brand-800 font-bold px-2 py-1 bg-brand-50 rounded">✏️ Modifier</button>
-                        <button onclick="deleteEquipment('${e.id}')" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button>
-                    </td>
-                </tr>
+                <tr><td class="p-2 font-semibold">${e.icon} ${e.name}</td><td class="p-2">${e.owner}</td></tr>
             `).join('');
 
-            // 6. Communes
             document.getElementById('tableCommunesBody').innerHTML = communesList.map(c => `
-                <tr>
-                    <td class="p-2 font-semibold">${c.name}</td>
-                    <td class="p-2 font-medium text-slate-700">👤 ${c.respTech || 'N/A'}</td>
-                    <td class="p-2 text-slate-500">📞 ${c.phone || 'N/A'}</td>
-                    <td class="p-2 text-right space-x-1">
-                        <button onclick="editCommune(${c.id})" class="text-brand-600 hover:text-brand-800 font-bold px-2 py-1 bg-brand-50 rounded">✏️ Modifier</button>
-                        <button onclick="deleteCommune(${c.id})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">🗑️ Supprimer</button>
-                    </td>
-                </tr>
+                <tr><td class="p-2 font-semibold">${c.name}</td><td class="p-2">👤 ${c.respTech || 'N/A'}</td><td class="p-2">📞 ${c.phone || 'N/A'}</td></tr>
             `).join('');
-            
-            // Matrice des rôles et permissions
-            const roleLabels = { demandeur: "Demandeur", agent: "Agent ST", responsable: "Responsable ST", direction: "Maire / DGS", admin: "Administrateur" };
-            const tabsList = ["interventions", "mutualisation", "equipe", "statistiques", "parametres"];
-            const tableBody = document.getElementById('rolePermissionsTableBody');
-            if (tableBody) {
-                tableBody.innerHTML = Object.keys(rolePermissions).map(rKey => `
-                    <tr>
-                        <td class="p-3 font-semibold text-slate-800">${roleLabels[rKey]}</td>
-                        ${tabsList.map(tKey => `
-                            <td class="p-3 text-center">
-                                <span class="${rolePermissions[rKey][tKey] ? 'text-emerald-600 bg-emerald-50' : 'text-slate-300 bg-slate-50'} text-xs font-bold px-2 py-1 rounded">
-                                    ${rolePermissions[rKey][tKey] ? '✓ Autorisique' : '✕ Masqué'}
-                                </span>
-                            </td>
-                        `).join('')}
-                    </tr>
-                `).join('');
-            }
-        }
-
-        /* ACTIONS MODALES & CRUD PARAMETRES */
-        function openCategoryModal() {
-            document.getElementById('catIdInput').value = '';
-            document.getElementById('catNameInput').value = '';
-            document.getElementById('catEmojiInput').value = '📌';
-            document.getElementById('categoryModalTitle').innerText = '🏷️ Ajouter une Catégorie';
-            document.getElementById('categoryModal').classList.remove('hidden');
-        }
-        function closeCategoryModal() { document.getElementById('categoryModal').classList.add('hidden'); }
-        function editCategory(id) {
-            const cat = categoriesList.find(c => c.id === id);
-            if (!cat) return;
-            document.getElementById('catIdInput').value = cat.id;
-            document.getElementById('catNameInput').value = cat.name;
-            document.getElementById('catEmojiInput').value = cat.emoji;
-            document.getElementById('categoryModalTitle').innerText = '🏷️ Modifier la Catégorie';
-            document.getElementById('categoryModal').classList.remove('hidden');
-        }
-        function handleAddCategory(e) {
-            e.preventDefault();
-            const id = document.getElementById('catIdInput').value;
-            const name = document.getElementById('catNameInput').value;
-            const emoji = document.getElementById('catEmojiInput').value;
-            if (id) {
-                const item = categoriesList.find(c => c.id == id);
-                if (item) { item.name = name; item.emoji = emoji; }
-            } else {
-                categoriesList.push({ id: Date.now(), name, emoji });
-            }
-            updateCategoryDropdowns();
-            renderParamTables();
-            closeCategoryModal();
-            showToast("Catégorie enregistrée avec succès", "success");
-        }
-        function deleteCategory(id) {
-            categoriesList = categoriesList.filter(c => c.id !== id);
-            updateCategoryDropdowns();
-            renderParamTables();
-            showToast("Catégorie supprimée", "info");
         }
 
         function openLocationModal() {
             updateCommuneDropdowns();
             document.getElementById('locIdInput').value = '';
             document.getElementById('locNameInput').value = '';
-            document.getElementById('locationModalTitle').innerText = '📍 Ajouter un Lieu Récurrent';
+            document.getElementById('locAddressInput').value = '';
+            document.getElementById('locElecInput').value = '';
+            document.getElementById('locWaterInput').value = '';
+            document.getElementById('locNotesInput').value = '';
             document.getElementById('locationModal').classList.remove('hidden');
         }
         function closeLocationModal() { document.getElementById('locationModal').classList.add('hidden'); }
-        function editLocation(id) {
-            updateCommuneDropdowns();
-            const loc = locationsList.find(l => l.id === id);
-            if (!loc) return;
-            document.getElementById('locIdInput').value = loc.id;
-            document.getElementById('locCommuneSelect').value = loc.commune;
-            document.getElementById('locNameInput').value = loc.name;
-            document.getElementById('locationModalTitle').innerText = '📍 Modifier le Lieu';
-            document.getElementById('locationModal').classList.remove('hidden');
-        }
+
         function handleAddLocation(e) {
             e.preventDefault();
             const id = document.getElementById('locIdInput').value;
-            const commune = document.getElementById('locCommuneSelect').value;
-            const name = document.getElementById('locNameInput').value;
+            const newLoc = {
+                id: id ? parseInt(id) : Date.now(),
+                commune: document.getElementById('locCommuneSelect').value,
+                name: document.getElementById('locNameInput').value,
+                address: document.getElementById('locAddressInput').value,
+                category: 'Bâtiment',
+                elecMeter: document.getElementById('locElecInput').value,
+                waterMeter: document.getElementById('locWaterInput').value,
+                notes: document.getElementById('locNotesInput').value
+            };
             if (id) {
-                const item = locationsList.find(l => l.id == id);
-                if (item) { item.commune = commune; item.name = name; }
+                const idx = locationsList.findIndex(l => l.id == id);
+                if (idx !== -1) locationsList[idx] = newLoc;
             } else {
-                locationsList.push({ id: Date.now(), commune, name });
+                locationsList.push(newLoc);
             }
-            updateModalLocationDropdown();
-            renderParamTables();
             closeLocationModal();
-            showToast("Lieu enregistré", "success");
-        }
-        function deleteLocation(id) {
-            locationsList = locationsList.filter(l => l.id !== id);
-            updateModalLocationDropdown();
-            renderParamTables();
-            showToast("Lieu supprimé", "info");
+            renderLocationsView();
+            showToast("Fiche lieu mise à jour !", "success");
         }
 
         function openUserModal() {
@@ -978,185 +1044,55 @@
             document.getElementById('userIdInput').value = '';
             document.getElementById('userNameInput').value = '';
             document.getElementById('userEmailInput').value = '';
-            document.getElementById('userModalTitle').innerText = '👤 Ajouter un Utilisateur';
+            document.getElementById('userSkillInput').value = '';
             document.getElementById('userModal').classList.remove('hidden');
         }
         function closeUserModal() { document.getElementById('userModal').classList.add('hidden'); }
-        function editUser(id) {
-            updateCommuneDropdowns();
-            const usr = usersList.find(u => u.id === id);
-            if (!usr) return;
-            document.getElementById('userIdInput').value = usr.id;
-            document.getElementById('userNameInput').value = usr.name;
-            document.getElementById('userEmailInput').value = usr.email;
-            document.getElementById('userRoleSelect').value = usr.role;
-            document.getElementById('userCommuneSelect').value = usr.commune;
-            document.getElementById('userModalTitle').innerText = '👤 Modifier l\'Utilisateur';
-            document.getElementById('userModal').classList.remove('hidden');
-        }
+
         function handleAddUser(e) {
             e.preventDefault();
             const id = document.getElementById('userIdInput').value;
-            const name = document.getElementById('userNameInput').value;
-            const email = document.getElementById('userEmailInput').value;
             const role = document.getElementById('userRoleSelect').value;
-            const commune = document.getElementById('userCommuneSelect').value;
+            const newUser = {
+                id: id ? parseInt(id) : Date.now(),
+                name: document.getElementById('userNameInput').value,
+                email: document.getElementById('userEmailInput').value,
+                role: role,
+                commune: document.getElementById('userCommuneSelect').value,
+                skill: document.getElementById('userSkillInput').value || 'Agent Technique',
+                status: document.getElementById('userStatusSelect').value,
+                avatar: document.getElementById('userAvatarInput').value || '👤'
+            };
             if (id) {
-                const item = usersList.find(u => u.id == id);
-                if (item) { item.name = name; item.email = email; item.role = role; item.commune = commune; }
+                const idx = usersList.findIndex(u => u.id == id);
+                if (idx !== -1) usersList[idx] = newUser;
             } else {
-                usersList.push({ id: Date.now(), name, email, role, commune });
+                usersList.push(newUser);
             }
-            renderParamTables();
             closeUserModal();
-            showToast("Utilisateur enregistré", "success");
-        }
-        function deleteUser(id) {
-            usersList = usersList.filter(u => u.id !== id);
+            renderAgentsAndUsers();
             renderParamTables();
-            showToast("Utilisateur supprimé", "info");
+            showToast("Compte utilisateur/agent enregistré !", "success");
         }
 
-        function openAgentModal() {
-            updateCommuneDropdowns();
-            document.getElementById('agentIdInput').value = '';
-            document.getElementById('agentNameInput').value = '';
-            document.getElementById('agentRoleInput').value = '';
-            document.getElementById('agentSkillInput').value = '';
-            document.getElementById('agentModalTitle').innerText = '👨‍🔧 Ajouter un Agent Technique';
-            document.getElementById('agentModal').classList.remove('hidden');
-        }
-        function closeAgentModal() { document.getElementById('agentModal').classList.add('hidden'); }
-        function editAgent(id) {
-            updateCommuneDropdowns();
-            const ag = agentsList.find(a => a.id === id);
-            if (!ag) return;
-            document.getElementById('agentIdInput').value = ag.id;
-            document.getElementById('agentNameInput').value = ag.name;
-            document.getElementById('agentRoleInput').value = ag.role;
-            document.getElementById('agentSkillInput').value = ag.skill;
-            document.getElementById('agentCommuneSelect').value = ag.commune;
-            document.getElementById('agentStatusSelect').value = ag.status;
-            document.getElementById('agentModalTitle').innerText = '👨‍🔧 Modifier l\'Agent';
-            document.getElementById('agentModal').classList.remove('hidden');
-        }
-        function handleAddAgent(e) {
-            e.preventDefault();
-            const id = document.getElementById('agentIdInput').value;
-            const name = document.getElementById('agentNameInput').value;
-            const role = document.getElementById('agentRoleInput').value;
-            const skill = document.getElementById('agentSkillInput').value || 'Technicien';
-            const commune = document.getElementById('agentCommuneSelect').value;
-            const status = document.getElementById('agentStatusSelect').value;
-            if (id) {
-                const item = agentsList.find(a => a.id == id);
-                if (item) { item.name = name; item.role = role; item.skill = skill; item.commune = commune; item.status = status; }
-            } else {
-                agentsList.push({ id: Date.now(), name, role, skill, commune, status, avatar: "👨‍🔧" });
-            }
-            renderAgents();
-            renderParamTables();
-            closeAgentModal();
-            showToast("Agent technique enregistré", "success");
-        }
-        function deleteAgent(id) {
-            agentsList = agentsList.filter(a => a.id !== id);
-            renderAgents();
-            renderParamTables();
-            showToast("Agent supprimé", "info");
+        function editUser(id) {
+            const u = usersList.find(x => x.id === id);
+            if (!u) return;
+            openUserModal();
+            document.getElementById('userIdInput').value = u.id;
+            document.getElementById('userNameInput').value = u.name;
+            document.getElementById('userEmailInput').value = u.email;
+            document.getElementById('userRoleSelect').value = u.role;
+            document.getElementById('userCommuneSelect').value = u.commune;
+            document.getElementById('userSkillInput').value = u.skill || '';
+            document.getElementById('userStatusSelect').value = u.status || 'Disponible';
+            document.getElementById('userAvatarInput').value = u.avatar || '👤';
         }
 
-        function openEquipmentModal() {
-            updateCommuneDropdowns();
-            document.getElementById('eqIdInput').value = '';
-            document.getElementById('eqNameInput').value = '';
-            document.getElementById('eqDescInput').value = '';
-            document.getElementById('eqIconInput').value = '🚜';
-            document.getElementById('equipmentModalTitle').innerText = '🚜 Ajouter un Équipement / Engin';
-            document.getElementById('equipmentModal').classList.remove('hidden');
-        }
-        function closeEquipmentModal() { document.getElementById('equipmentModal').classList.add('hidden'); }
-        function editEquipment(id) {
-            updateCommuneDropdowns();
-            const eq = equipmentList.find(e => e.id === id);
-            if (!eq) return;
-            document.getElementById('eqIdInput').value = eq.id;
-            document.getElementById('eqNameInput').value = eq.name;
-            document.getElementById('eqOwnerSelect').value = eq.owner;
-            document.getElementById('eqDescInput').value = eq.desc;
-            document.getElementById('eqIconInput').value = eq.icon;
-            document.getElementById('equipmentModalTitle').innerText = '🚜 Modifier l\'Équipement';
-            document.getElementById('equipmentModal').classList.remove('hidden');
-        }
-        function handleAddEquipment(e) {
-            e.preventDefault();
-            const id = document.getElementById('eqIdInput').value;
-            const name = document.getElementById('eqNameInput').value;
-            const owner = document.getElementById('eqOwnerSelect').value;
-            const desc = document.getElementById('eqDescInput').value || 'Matériel communal';
-            const icon = document.getElementById('eqIconInput').value || '🚜';
-            if (id) {
-                const item = equipmentList.find(e => e.id === id);
-                if (item) { item.name = name; item.owner = owner; item.desc = desc; item.icon = icon; }
-            } else {
-                equipmentList.push({ id: `EQ-${Date.now().toString().slice(-3)}`, name, owner, status: 'Libre', desc, icon });
-            }
-            renderEquipment();
-            renderParamTables();
-            closeEquipmentModal();
-            showToast("Équipement enregistré", "success");
-        }
-        function deleteEquipment(id) {
-            equipmentList = equipmentList.filter(e => e.id !== id);
-            renderEquipment();
-            renderParamTables();
-            showToast("Équipement supprimé", "info");
+        function toggleAgentFieldsInUserModal(role) {
+            document.getElementById('agentFieldsContainer').classList.toggle('hidden', role !== 'agent');
         }
 
-        function openCommuneModal() {
-            document.getElementById('comIdInput').value = '';
-            document.getElementById('comNameInput').value = '';
-            document.getElementById('comRespInput').value = '';
-            document.getElementById('comPhoneInput').value = '';
-            document.getElementById('communeModalTitle').innerText = '🏛️ Ajouter une Commune Membre';
-            document.getElementById('communeModal').classList.remove('hidden');
-        }
-        function closeCommuneModal() { document.getElementById('communeModal').classList.add('hidden'); }
-        function editCommune(id) {
-            const com = communesList.find(c => c.id === id);
-            if (!com) return;
-            document.getElementById('comIdInput').value = com.id;
-            document.getElementById('comNameInput').value = com.name;
-            document.getElementById('comRespInput').value = com.respTech || '';
-            document.getElementById('comPhoneInput').value = com.phone || '';
-            document.getElementById('communeModalTitle').innerText = '🏛️ Modifier la Commune';
-            document.getElementById('communeModal').classList.remove('hidden');
-        }
-        function handleAddCommune(e) {
-            e.preventDefault();
-            const id = document.getElementById('comIdInput').value;
-            const name = document.getElementById('comNameInput').value;
-            const respTech = document.getElementById('comRespInput').value;
-            const phone = document.getElementById('comPhoneInput').value;
-            if (id) {
-                const item = communesList.find(c => c.id == id);
-                if (item) { item.name = name; item.respTech = respTech; item.phone = phone; }
-            } else {
-                communesList.push({ id: Date.now(), name, respTech, phone });
-            }
-            updateCommuneDropdowns();
-            renderParamTables();
-            closeCommuneModal();
-            showToast("Commune enregistrée", "success");
-        }
-        function deleteCommune(id) {
-            communesList = communesList.filter(c => c.id !== id);
-            updateCommuneDropdowns();
-            renderParamTables();
-            showToast("Commune supprimée", "info");
-        }
-
-        function handleLogoFileUpload(e) { showToast("Aperçu du logo chargé", "success"); }
         function handleLogoError(img) { if (img) img.classList.add('hidden'); }
 
         function initCharts() {
