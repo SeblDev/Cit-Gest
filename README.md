@@ -1,7 +1,7 @@
 # Cit-Gest
 
 Application web de gestion du patrimoine immobilier, des assets techniques et
-des services municipaux — Commune de Gimont (Gers) et son intercommunalité.
+des services municipaux
 
 > **État du projet** : socle technique (authentification, RBAC, structure,
 > sécurité) — les modules fonctionnels (Interventions, Patrimoine, Assets,
