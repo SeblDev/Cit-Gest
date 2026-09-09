@@ -1,0 +1,15 @@
+# Configuration locale — NE JAMAIS committer les identifiants réels
+/config/.env
+
+# Dépendances (si Composer est utilisé plus tard)
+/vendor/
+
+# Logs applicatifs
+/storage/logs/*.log
+
+# Fichiers système / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

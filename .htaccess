@@ -1,0 +1,38 @@
+# =============================================================================
+# Cit-Gest — .htaccess racine
+# -----------------------------------------------------------------------------
+# IMPORTANT : Idéalement, le "document root" du domaine/sous-domaine doit
+# être configuré directement sur le dossier /public (c'est le cas normal
+# chez la plupart des hébergeurs mutualisés : OVH, o2switch...). Ce fichier
+# racine sert de FILET DE SÉCURITÉ si ce n'est pas possible : il redirige
+# tout le trafic vers /public et empêche l'accès direct aux dossiers
+# sensibles (src, config, database, templates, storage).
+# =============================================================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Ne rien faire si l'appel concerne déjà /public/...
+    RewriteCond %{REQUEST_URI} ^/public/ [NC]
+    RewriteRule ^ - [L]
+
+    # Sinon, on réécrit transparemment vers /public/<le reste de l'URL>
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Interdit totalement l'accès direct aux dossiers sensibles, même si
+# quelqu'un devine une URL du type /config/.env
+<IfModule mod_authz_core.c>
+    <FilesMatch "\.(env|sql|log)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+<IfModule !mod_authz_core.c>
+    <FilesMatch "\.(env|sql|log)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+</IfModule>
+
+Options -Indexes
